@@ -88,11 +88,12 @@ use a different mapping and get a different appearance. Boom, animation!
 
 Each mapping entry starts with a byte saying how many sub-sprites there are. For each sub-sprite, there are five bytes
 as follows:
-	mapping[0] = vertical pixel offset
-	mapping[1] = horiz/vertical sprite size (according to megadrive measurements)
-	mapping[2] = horiz/vert flip flags (according to megadrive specs, though shifted right 8 bits to save space)
-	mapping[3] = pattern to use (an offset from the object's gfx field, added to obj->gfx when sprite is displayed)
-	mapping[4] = horizontal pixel offset
+
+- mapping[0] = vertical pixel offset
+- mapping[1] = horiz/vertical sprite size (according to megadrive measurements)
+- mapping[2] = horiz/vert flip flags (according to megadrive specs, though shifted right 8 bits to save space)
+- mapping[3] = pattern to use (an offset from the object's gfx field, added to obj->gfx when sprite is displayed)
+- mapping[4] = horizontal pixel offset
 
 Animation Scripts
 ------------------------------------------------------------
