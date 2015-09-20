@@ -1,9 +1,8 @@
-========================================================================================================================
 ASSEMBLY/PROGRAMMING TECHNIQUE NOTES
 ========================================================================================================================
 
 Register Usage
-============================================================
+------------------------------------------------------------
 
 d7, d6, d5 often used as for-loop indices
 d0 almost always used as scratch
@@ -14,7 +13,7 @@ a2, a3, a4 often used as local variables and/or function arguments
 a6 (and maybe a5??) often holds the VDP control/data port
 
 For Loops
-============================================================
+------------------------------------------------------------
 
 The "dbf" (decrement and branch if false) instruction is usually used to implement a for loop. Often the loop will look
 like:
@@ -30,7 +29,7 @@ times, it runs 8 times. The C equivalent would be:
 	for(int i = 7; i >= 0; i--)
 
 Low-byte Trickery
-============================================================
+------------------------------------------------------------
 
 Don't forget to look at the operand size of moves! It's easy to see something like:
 
@@ -44,7 +43,7 @@ loading the *high byte* of v_something and the *low byte* of v_somethingElse int
 	d0 = (v_something & 0xFF00) | v_somethingElse
 
 Timers
-============================================================
+------------------------------------------------------------
 
 By "timers" I mean variables which usually count down frames until something happens. For some reason -- and I presume
 this is entirely based on the personal preference of the programmers who were writing the code -- sometimes the timers
@@ -76,12 +75,11 @@ functions TimerZero and TimerNeg have been provided to simplify/abstract these p
 I've even encountered what seem to be (probably harmless) bugs where they do stuff like set the timer to 60 but use the
 "less than zero" convention, meaning it really runs for 61 frames.
 
-========================================================================================================================
 GAME ENGINE NOTES
 ========================================================================================================================
 
 Sprite Mappings
-============================================================
+------------------------------------------------------------
 
 A sprite mapping is a sort of mini-script that describes how to display a logical sprite. A logical sprite can be
 composed of one or more "real" hardware sprites. Each visible object is given a mapping pointer, which is really a
@@ -97,7 +95,7 @@ as follows:
 	mapping[4] = horizontal pixel offset
 
 Animation Scripts
-============================================================
+------------------------------------------------------------
 
 Animation scripts are a very simple scripting language that make objects animate and can affect object behavior too.
 Similar to mappings, each animation script pointer points to an array of pointers of actual animation scripts. Objects
@@ -117,7 +115,7 @@ Frame bytes have the top bit clear. The next two bits (0x40 and 0x20) are sprite
 changes objects' appearance.
 
 Object Spaces
-============================================================
+------------------------------------------------------------
 
 The object space (v_objspace) is an array of 128 slots. Sonic is always in slot 0, and is aliased as v_player. The first
 32 slots (31 ignoring Sonic) of v_objspace are reserved for special objects which are often "control" objects that you
@@ -125,7 +123,7 @@ don't collide with. The "level object space" (v_lvlobjspace) is really just slot
 interactive level objects get spawned as they scroll onscreen/get created by scripts.
 
 Object Script Miscellany
-============================================================
+------------------------------------------------------------
 
 Many object scripts take advantage of the fact that object variables are cleared to 0 when the object is created. Just
 something to watch out for, since sometimes logic will be confusing until you remember that.
