@@ -13,3 +13,7 @@ Language is C++ 11, cause I like it. Don't get too scared; the code is really wr
 Indentation is tabs at 4 spaces, braces on own lines, no spaces before parens on control structures/function calls, CamelCase for names, CamelCase_Underscored for "fake" namespacing. Soft limit of 120 chars/line, hard limit of 140.
 
 Every attempt is made to preserve the exact operating semantics of the original code, so it doesn't use any STL data structures or anything. Just plain old structs, pointers, and C arrays. This also means that the code is kinda messy/global-variable-dependent.
+
+## Notes
+
+Please see [notes.md](/notes.md) for more in-depth info.
