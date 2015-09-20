@@ -4,13 +4,13 @@ ASSEMBLY/PROGRAMMING TECHNIQUE NOTES
 Register Usage
 ------------------------------------------------------------
 
-d7, d6, d5 often used as for-loop indices
-d0 almost always used as scratch
-d1, d2, d3, d4 often used as local variables and/or function arguments
-a0 usually "this" for object-related routines
-a1 often points to Sonic's object (v_player) in object-related routines
-a2, a3, a4 often used as local variables and/or function arguments
-a6 (and maybe a5??) often holds the VDP control/data port
+- d7, d6, d5 often used as for-loop indices
+- d0 almost always used as scratch
+- d1, d2, d3, d4 often used as local variables and/or function arguments
+- a0 usually "this" for object-related routines
+- a1 often points to Sonic's object (v_player) in object-related routines
+- a2, a3, a4 often used as local variables and/or function arguments
+- a6 (and maybe a5??) often holds the VDP control/data port
 
 For Loops
 ------------------------------------------------------------
