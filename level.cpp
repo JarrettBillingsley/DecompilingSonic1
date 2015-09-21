@@ -11,6 +11,17 @@ struct LevelHeader
 
 static_assert(sizeof(LevelHeader) == 16);
 
+const LevelHeader LevelHeaders[] =
+{
+	{ (PLC::GHZ << 24) + Nem_GHZ_2nd, (PLC::GHZ2 << 24) + Blk16_GHZ, Blk256_GHZ, BGM::GHZ, Palette::GHZ    }, // Green Hill
+	{ (PLC::LZ << 24)  + Nem_LZ,      (PLC::LZ2 << 24)  + Blk16_LZ,  Blk256_LZ,  BGM::LZ,  Palette::LZ     }, // Labyrinth
+	{ (PLC::MZ << 24)  + Nem_MZ,      (PLC::MZ2 << 24)  + Blk16_MZ,  Blk256_MZ,  BGM::MZ,  Palette::MZ     }, // Marble
+	{ (PLC::SLZ << 24) + Nem_SLZ,     (PLC::SLZ2 << 24) + Blk16_SLZ, Blk256_SLZ, BGM::SLZ, Palette::SLZ    }, // Star Light
+	{ (PLC::SYZ << 24) + Nem_SYZ,     (PLC::SYZ2 << 24) + Blk16_SYZ, Blk256_SYZ, BGM::SYZ, Palette::SYZ    }, // Spring Yard
+	{ (PLC::SBZ << 24) + Nem_SBZ,     (PLC::SBZ2 << 24) + Blk16_SBZ, Blk256_SBZ, BGM::SBZ, Palette::SBZ1   }, // Scrap Brain
+	{                    Nem_GHZ_2nd,                     Blk16_GHZ, Blk256_GHZ, BGM::SBZ, Palette::Ending }, // Ending
+};
+
 void LevelDataLoad()
 {
 	auto header = LevelHeaders[v_zone];

@@ -42,6 +42,7 @@ namespace Zone
 
 void GameInit()
 {
+	// TODO:
 	// VDPSetupGame();
 	// SoundDriverLoad();
 	// JoypadInit();

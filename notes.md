@@ -146,3 +146,33 @@ and S3K disassemblies use my convention as well.)
 Routines are usually numbered such that their main routine is followed by the "delete self" routine, or something like
 that. This way animation scripts can delete the object by using the right animation flag to increment the routine
 number.
+
+Pattern Load Cues
+------------------------------------------------------------
+
+Most of the graphics in Sonic 1 are compressed (mostly with Nemesis compression, and one piece with Kosinski).
+Decompression takes time, and in order to offset some of the time it takes to decompress all the graphics, Sonic 1 uses
+something called Pattern Load Cues (or PLCs).
+
+A PLC is basically just a list of compressed art assets along with the location in VRAM where they should be copied
+after being decompressed. The game enqueues PLCs in a buffer, and the game will dequeue a PLC each VBlank period,
+decompress it, and copy it to VRAM.
+
+Level Tile Layout
+------------------------------------------------------------
+
+In Sonic 1, the smallest piece of levels is 16x16 pixel tiles. Each 16x16 tile is really made of 4 8x8 pixel tiles, the
+graphical unit that the Genesis/Mega Drive actually deals with. Each tile has some properties associated with it, namely
+the collision data and the "angle", which is basically the "surface normal" of the tile and is used in doing player
+physics.
+
+This probably sounds familiar to you if you know how other 8/16 bit 2D game engines of the era work, but this is where
+Sonic 1 gets a little weird. Instead of representing a level as a simple grid of 16x16 tiles, it instead represents it
+as a grid of 256x256-pixel "blocks". Each block is composed of 256 16x16-pixel tiles, arranged in a 16x16-tile square.
+So if you're keeping track: four 8x8-pixel art tiles make up one 16x16-pixel tile; 256 16x16-pixel tiles make up one
+16x16-tile (256x256-pixel) block; and the level itself is a grid of these 256x256-pixel blocks. Both the foreground and
+the background are composed the same way.
+
+Loading a level is a matter of loading the "tile mappings" (the descriptions of the 16x16-pixel tiles), the "block
+mappings" (the arrangements of 16x16 tiles into blocks), and then the "layout" (the actual list of blocks that make up
+the level, which is quite small as a result -- usually only a hundred bytes or less).
