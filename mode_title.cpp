@@ -119,7 +119,7 @@ void GM_Title()
 	}
 
 	v_objspace[4].id = ID::PSBTM;
-	v_objspace[4].frame = 2;
+	v_objspace[4].frame = 2; // sprite line limiter..?
 
 	ExecuteObjects();
 	DeformLayers();
