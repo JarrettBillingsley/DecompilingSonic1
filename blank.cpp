@@ -184,7 +184,7 @@ void VBlank()
 				V_H_BlankCommon();
 			else
 			{
-				v_FFFFF64F = true;
+				f_FFFFF64F = true;
 				v_vbla_count++;
 				return;
 			}
@@ -248,9 +248,9 @@ void HBlank()
 
 		// move.w	#$8A00+223,4(a1) ; reset HBlank register
 
-		if(v_FFFFF64F)
+		if(f_FFFFF64F)
 		{
-			v_FFFFF64F = false;
+			f_FFFFF64F = false;
 			V_H_BlankCommon();
 			UpdateMusic();
 		}

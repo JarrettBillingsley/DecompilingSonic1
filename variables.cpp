@@ -81,7 +81,7 @@ ushort v_waterpos3;                      // 0xFFFFF64A	; water height, next targ
 bool f_water;                            // 0xFFFFF64C	; flag set for water
 ubyte v_wtr_routine;                     // 0xFFFFF64D	; water event - routine counter
 bool f_wtr_state;                        // 0xFFFFF64E	; water palette state when water is above/below the screen (00 = partly/all dry; 01 = all underwater)
-bool v_FFFFF64F;                         // 0xFFFFF64F? ; something to do with v/hblanks
+bool f_FFFFF64F;                         // 0xFFFFF64F? ; something to do with v/hblanks
 ushort v_pal_buffer[24];                 // 0xFFFFF650	; palette data buffer (used for palette cycling) (0x30 bytes)
 PLCDesc v_plc_buffer[16];                // 0xFFFFF680	; pattern load cues buffer (maximum 0x10 PLCs) (0x60 bytes)
 NemDec_State nem_plcState;               // 0xFFFFF6E0  ; nemesis backup state for doing a few tiles of decompression per frame (0x18 bytes)
