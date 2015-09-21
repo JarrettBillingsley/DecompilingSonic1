@@ -26,7 +26,7 @@ void LevelDataLoad()
 {
 	auto header = LevelHeaders[v_zone];
 
-	EniDec(header.map16, v_16x16, 0);
+	EniDec(header.map16 & 0x00FFFFFF, v_16x16, 0);
 	KosDec(header.map256, v_256x256);
 	LevelLayoutLoad();
 
