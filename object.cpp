@@ -33,6 +33,20 @@ namespace ObjRender
 	};
 }
 
+namespace AnimFlags
+{
+	enum
+	{
+		Command =  0x80, // Top bit set means it's a command
+		End =      0xFF, // return to beginning of animation
+		Back =     0xFE, // go back (specified number) bytes
+		Change =   0xFD, // run specified animation
+		Routine =  0xFC, // increment routine counter
+		Reset =    0xFB, // reset animation and 2nd object routine counter
+		Routine2 = 0xFA, // increment 2nd routine counter
+	};
+};
+
 namespace ID
 {
 	enum : ubyte
