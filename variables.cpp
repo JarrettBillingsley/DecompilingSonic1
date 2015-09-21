@@ -85,26 +85,11 @@ bool v_FFFFF64F;                         // 0xFFFFF64F? ; something to do with v
 ushort v_pal_buffer[24];                 // 0xFFFFF650	; palette data buffer (used for palette cycling) (0x30 bytes)
 PLCDesc v_plc_buffer[16];                // 0xFFFFF680	; pattern load cues buffer (maximum 0x10 PLCs) (0x60 bytes)
 void(*)() v_ptrnemcode;                  // 0xFFFFF6E0	; pointer for nemesis decompression code (0x1502 or 0x150C) (4 bytes)
-                                         // 0xFFFFF6E4
-                                         // 0xFFFFF6E5
-                                         // 0xFFFFF6E6
-                                         // 0xFFFFF6E7
-                                         // 0xFFFFF6E8
-                                         // 0xFFFFF6E9
-                                         // 0xFFFFF6EA
-                                         // 0xFFFFF6EB
-                                         // 0xFFFFF6EC
-                                         // 0xFFFFF6ED
-                                         // 0xFFFFF6EE
-                                         // 0xFFFFF6EF
-                                         // 0xFFFFF6F0
-                                         // 0xFFFFF6F1
-                                         // 0xFFFFF6F2
-                                         // 0xFFFFF6F3
-                                         // 0xFFFFF6F4
-                                         // 0xFFFFF6F5
-                                         // 0xFFFFF6F6
-                                         // 0xFFFFF6F7
+uint nem_FFFFF6E4;                       // 0xFFFFF6E4  ; variables for Nemesis decompression
+uint nem_FFFFF6E8;                       // 0xFFFFF6E8  ; variables for Nemesis decompression
+uint nem_FFFFF6EC;                       // 0xFFFFF6EC  ; variables for Nemesis decompression
+uint nem_FFFFF6F0;                       // 0xFFFFF6F0  ; variables for Nemesis decompression
+uint nem_FFFFF6F4;                       // 0xFFFFF6F4  ; variables for Nemesis decompression
 ushort f_plc_execute;                    // 0xFFFFF6F8	; flag set for pattern load cue execution (2 bytes)
                                          // 0xFFFFF6FA
                                          // 0xFFFFF6FB

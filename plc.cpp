@@ -401,8 +401,7 @@ void AddPLC(uint plc)
 	while(buffer->gfx != 0)
 		buffer++;
 
-	// <= is right
-	for(int i = 0; i <= cues->numPLCs; i++)
+	for(int i = 0; i < cues->numPLCs; i++)
 		*buffer++ = cues->plcs[i];
 }
 
@@ -420,7 +419,7 @@ void ClearPLC()
 {
 	Clear_PLC_Buffer();
 	v_ptrnemcode = 0;
-	// also clears FFFFF6E4..FFFFF6F7
+	Clear_F6E4_F680();
 	f_plc_execute = 0;
 }
 
@@ -476,6 +475,7 @@ void PLC_sub_165E()
 
 void PLC_loc_1676(ushort d0)
 {
+	// TODO:
 	// Bunch of weird mysterious shit related to nemesis decompression into VRAM
 
 /*	lea	(vdp_control_port).l,a4

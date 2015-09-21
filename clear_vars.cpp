@@ -51,6 +51,11 @@ void Clear_F628_F680()
 	memset(v_pal_buffer, 0, sizeof(v_pal_buffer));
 }
 
+void Clear_F6E4_F680()
+{
+	// blerp
+}
+
 void Clear_F700_F800()
 {
 	v_screenposx = 0;
