@@ -437,23 +437,20 @@ void ClearPLC()
 
 void RunPLC()
 {
-	if(v_plc_buffer[0].gfx != 0 && f_plc_execute == 0)
+	if(v_plc_buffer[0].gfx != 0 && f_plc_execute == 0
 	{
-		auto plc = v_plc_buffer[0];
+		auto src = v_plc_buffer[0].gfx;
 
-		if(plc.gfx & 0x8000)
-			v_ptrnemcode = &loc_150C;
-		else
-			v_ptrnemcode = &loc_1502;
-
-		f_plc_execute = plc.gfx & 0x7FFF;
-		NemDec4(v_plc_buffer, v_ngfx_buffer);
-		nem_FFFFF6F0 = BSWAP16(*v_plc_buffer);
-		v_plc_buffer++;
-		nem_FFFFF6E4 = 0;
-		nem_FFFFF6E8 = 0;
-		nem_FFFFF6EC = 0;
-		nem_FFFFF6F4 = 16;
+		auto numPatterns = (src[0] << 8) | src[1]; src += 2;
+		nem_plcState.isXor = numPatterns & 0x8000;
+		f_plc_execute = numPatterns & 0x7FFF;
+		Nem_Build_Code_Table(src);
+		nem_plcState.bitBuffer = (src[0] << 8) | src[1]; src += 2;
+		v_plc_buffer[0].gfx = src;
+		nem_plcState.bitsInBuffer = 16;
+		nem_plcState.repeatCount = 0;
+		nem_plcState.palIdx = 0;
+		nem_plcState.prevRow = 0;
 	}
 }
 
@@ -465,69 +462,43 @@ void QuickPLC(ushort plc)
 		NemDec(cues->plcs[i].gfx, cues->plcs[i].vram);
 }
 
-void PLC_sub_1642()
+void PLC_Decode9Tiles()
 {
 	if(f_plc_execute != 0)
 	{
-		nem_FFFFF6FA = 9;
-		nem_FFFFF684 += 288;
-		PLC_loc_1676(nem_FFFFF684);
+		auto dest = v_plc_buffer[0].vram;
+		nem_tileDecodeCount = 9;
+		v_plc_buffer[0].vram += 32 * 9;
+		PLC_DecodeSomeTiles(dest);
 	}
 }
 
-void PLC_sub_165E()
+void PLC_Decode3Tiles()
 {
 	if(f_plc_execute != 0)
 	{
-		nem_FFFFF6FA = 3;
-		nem_FFFFF684 += 96;
-		PLC_loc_1676(nem_FFFFF684);
+		auto dest = v_plc_buffer[0].vram;
+		nem_tileDecodeCount = 3;
+		v_plc_buffer[0].vram += 32 * 3;
+		PLC_DecodeSomeTiles(dest);
 	}
 }
 
-void PLC_loc_1676(ushort d0)
+void PLC_DecodeSomeTiles(ushort vramAddr)
 {
-	// TODO:
-	// Bunch of weird mysterious shit related to nemesis decompression into VRAM
+	// Convert vramAddr into a VDP address command
+	VDP_CONTROL_PORT(WSWAP(((vramAddr << 2) | ((vramAddr & 0xFFFF) >> 2)) | 0x4000));
 
-/*	lea	(vdp_control_port).l,a4
+	for(; nem_tileDecodeCount > 0; nem_tileDecodeCount--)
+	{
+		NemDec3(nem_plcState, v_plc_buffer[0].gfx, 0, 0, 8, true);
 
-	// This initial bit manipulation is converting the address into a VDP command to set the VRAM write position.
-	lsl.l	#2,d0
-	lsr.w	#2,d0
-	ori.w	#$4000,d0
-	swap	d0
-	move.l	d0,(a4)
-
-	subq.w	#4,a4
-	movea.l	(v_plc_buffer).w,a0
-	movea.l	(v_ptrnemcode).w,a3
-	move.l	($FFFFF6E4).w,d0
-	move.l	($FFFFF6E8).w,d1
-	move.l	($FFFFF6EC).w,d2
-	move.l	($FFFFF6F0).w,d5
-	move.l	($FFFFF6F4).w,d6
-	lea	(v_ngfx_buffer).w,a1
-
-loc_16AA:				; XREF: PLC_sub_165E
-	movea.w	#8,a5
-	bsr.w	NemDec3
-	subq.w	#1,(f_plc_execute).w
-	beq.s	loc_16DC
-	subq.w	#1,($FFFFF6FA).w
-	bne.s	loc_16AA
-	move.l	a0,(v_plc_buffer).w
-	move.l	a3,(v_ptrnemcode).w
-	move.l	d0,($FFFFF6E4).w
-	move.l	d1,($FFFFF6E8).w
-	move.l	d2,($FFFFF6EC).w
-	move.l	d5,($FFFFF6F0).w
-	move.l	d6,($FFFFF6F4).w
-	rts
-
-loc_16DC:
-*/
-
-	// Copy PLC buffer entries down
-	memmove(v_plc_buffer, v_plc_buffer + 1, sizeof(PLCDesc) * (PLC_BUFFER_SIZE - 1));
+		// Have we decoded all the patterns?
+		if(TimerZero(f_plc_execute))
+		{
+			// Yes, copy PLC buffer entries down and leave
+			memmove(v_plc_buffer, v_plc_buffer + 1, sizeof(PLCDesc) * (PLC_BUFFER_SIZE - 1));
+			return;
+		}
+	}
 }

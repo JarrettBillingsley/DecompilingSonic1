@@ -37,7 +37,7 @@ void V_H_BlankCommon()
 	LoadTilesAsYouMove();
 	AnimateLevelGfx();
 	HUD_Update();
-	PLC_sub_165E();
+	PLC_Decode3Tiles();
 	VBlankDecreaseDemoLength();
 }
 
@@ -150,14 +150,14 @@ void VBlank()
 		case VBlank_Title:
 			VBlankCommon();
 			sub_6886(); // something to do with loading tiles
-			PLC_sub_1642();
+			PLC_Decode9Tiles();
 			break;
 
 		// Palette fading
 		case VBlank_PaletteFade:
 			VBlankCommon();
 			DoSomethingWithHblaHreg();
-			PLC_sub_1642();
+			PLC_Decode9Tiles();
 			break;
 
 		case VBlank_06:
@@ -199,7 +199,7 @@ void VBlank()
 			LoadTilesAsYouMove();
 			AnimateLevelGfx();
 			HUD_Update();
-			PLC_sub_1642();
+			PLC_Decode9Tiles();
 			break;
 
 		// Special stage

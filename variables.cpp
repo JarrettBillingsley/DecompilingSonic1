@@ -7,7 +7,7 @@ ubyte v_lvllayout[1024];                 // 0xFFFFA400	; level and background 25
                                          // 0xFFFFA800
                                          // ... (512 bytes unaccounted for)
                                          // 0xFFFFA9FF
-ubyte v_ngfx_buffer[512];                // 0xFFFFAA00	; Nemesis graphics decompression buffer (0x200 bytes)
+ushort v_ngfx_buffer[256];               // 0xFFFFAA00	; Nemesis graphics decompression dictionary buffer (0x200 bytes)
 Object* v_spritequeue[8][64];            // 0xFFFFAC00	; sprite display queue, in order of priority (0x400 bytes). (v_spritequeue[n][0] holds next free slot)
 ubyte v_16x16[0x1800];                   // 0xFFFFB000	; 16x16 tile mappings (? bytes)
                                          // possible unaccounted space? not sure how big v_16x16 is
@@ -84,15 +84,9 @@ bool f_wtr_state;                        // 0xFFFFF64E	; water palette state whe
 bool v_FFFFF64F;                         // 0xFFFFF64F? ; something to do with v/hblanks
 ushort v_pal_buffer[24];                 // 0xFFFFF650	; palette data buffer (used for palette cycling) (0x30 bytes)
 PLCDesc v_plc_buffer[16];                // 0xFFFFF680	; pattern load cues buffer (maximum 0x10 PLCs) (0x60 bytes)
-void(*)() v_ptrnemcode;                  // 0xFFFFF6E0	; pointer for nemesis decompression code (0x1502 or 0x150C) (4 bytes)
-uint nem_FFFFF6E4;                       // 0xFFFFF6E4  ; variables for Nemesis decompression
-uint nem_FFFFF6E8;                       // 0xFFFFF6E8  ; variables for Nemesis decompression
-uint nem_FFFFF6EC;                       // 0xFFFFF6EC  ; variables for Nemesis decompression
-uint nem_FFFFF6F0;                       // 0xFFFFF6F0  ; variables for Nemesis decompression
-uint nem_FFFFF6F4;                       // 0xFFFFF6F4  ; variables for Nemesis decompression
+NemDec_State nem_plcState;               // 0xFFFFF6E0  ; nemesis backup state for doing a few tiles of decompression per frame (0x18 bytes)
 ushort f_plc_execute;                    // 0xFFFFF6F8	; flag set for pattern load cue execution (2 bytes)
-                                         // 0xFFFFF6FA
-                                         // 0xFFFFF6FB
+ushort nem_tileDecodeCount;              // 0xFFFFF6FA  ; how many tiles to decompress this PLC cycle
                                          // 0xFFFFF6FC
                                          // 0xFFFFF6FD
                                          // 0xFFFFF6FE
