@@ -243,7 +243,7 @@ void Bridge_Bend(Object* self)
 // Delete self if offscreen
 void Bridge_CheckOffscreen(Object* self)
 {
-	if(((self->x & 0xFF80) - ((v_screenposx - 128) & 0xFF80)) > 128+320+192)
+	if(Object_OutOfRange(self))
 	{
 		for(int i = self->subtype - 1, j = 0x29; i >= 0; i--, j++)
 		{
