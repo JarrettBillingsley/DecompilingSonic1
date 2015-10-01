@@ -63,14 +63,14 @@ void BuildSprites()
 			int numPieces = 0;
 
 			if(BTST(self->render, ObjRender::SmashFragment))
-				EnqueueSprite(self, mapping, numPieces, spriteX, spriteY, self->render, spriteCount, spriteBuffer);
+				EnqueueSprite(self->gfx, mapping, numPieces, spriteX, spriteY, self->render, spriteCount, spriteBuffer);
 			else
 			{
 				mapping += mapping[self->frame]
 				numPieces = *mapping++ - 1;
 
 				if(numPieces >= 0)
-					EnqueueSprite(self, mapping, numPieces, spriteX, spriteY, self->render, spriteCount, spriteBuffer);
+					EnqueueSprite(self->gfx, mapping, numPieces, spriteX, spriteY, self->render, spriteCount, spriteBuffer);
 			}
 
 			BSET(self->render, ObjRender::Visible);
@@ -88,7 +88,7 @@ void BuildSprites()
 
 // sub_D750
 //                          a0            a1             d1             d3           d2            d4               d5                  a2
-void EnqueueSprite(Object* self, byte* mapping, int numPieces, int spriteX, int spriteY, int renderFlags, int& spriteCount, ushort*& spriteBuffer)
+void EnqueueSprite(ushort gfx, byte* mapping, int numPieces, int spriteX, int spriteY, int renderFlags, int& spriteCount, ushort*& spriteBuffer)
 {
 	if(BTST(renderFlags, ObjRender::HorizFlip))
 	{
@@ -104,7 +104,7 @@ void EnqueueSprite(Object* self, byte* mapping, int numPieces, int spriteX, int 
 
 				spriteBuffer[0] = (-mapping[0] - ((mapping[1] << 3) & 0x18 + 8)) + spriteY;
 				spriteBuffer[1] = (mapping[1] << 8) | spriteCount;
-				spriteBuffer[2] = ((mapping[2] << 8 | mapping[3]) + self->gfx) ^ 0x1800;
+				spriteBuffer[2] = ((mapping[2] << 8 | mapping[3]) + gfx) ^ 0x1800;
 				spriteBuffer[3] = (-mapping[4] - (((mapping[1] << 1) & 0x18) + 8) + spriteX) & 0x1FF;
 
 				if(spriteBuffer[3] == 0)
@@ -123,7 +123,7 @@ void EnqueueSprite(Object* self, byte* mapping, int numPieces, int spriteX, int 
 
 				spriteBuffer[0] = mapping[0] + spriteY;
 				spriteBuffer[1] = (mapping[1] << 8) | spriteCount;
-				spriteBuffer[2] = ((mapping[2] << 8 | mapping[3]) + self->gfx) ^ 0x0800;
+				spriteBuffer[2] = ((mapping[2] << 8 | mapping[3]) + gfx) ^ 0x0800;
 				spriteBuffer[3] = (-mapping[4] - (((mapping[1] << 1) & 0x18) + 8) + spriteX) & 0x1FF;
 
 				if(spriteBuffer[3] == 0)
@@ -143,7 +143,7 @@ void EnqueueSprite(Object* self, byte* mapping, int numPieces, int spriteX, int 
 
 			spriteBuffer[0] = (-mapping[0] - ((mapping[1] << 3) & 0x18 + 8)) + spriteY;
 			spriteBuffer[1] = (mapping[1] << 8) | spriteCount;
-			spriteBuffer[2] = ((mapping[2] << 8 | mapping[3]) + self->gfx) ^ 0x1000;
+			spriteBuffer[2] = ((mapping[2] << 8 | mapping[3]) + gfx) ^ 0x1000;
 			spriteBuffer[3] = (mapping[4] + spriteX) & 0x1FF;
 
 			if(spriteBuffer[3] == 0)
@@ -151,12 +151,12 @@ void EnqueueSprite(Object* self, byte* mapping, int numPieces, int spriteX, int 
 		}
 	}
 	else
-		EnqueueSpriteUnflipped(self, mapping, numPieces, spriteX, spriteY, spriteCount, spriteBuffer);
+		EnqueueSpriteUnflipped(gfx, mapping, numPieces, spriteX, spriteY, spriteCount, spriteBuffer);
 }
 
 // sub_D762
 //                                   a0           a1             d1           d3           d2               d5                  a2
-void EnqueueSpriteUnflipped(Object* self, byte* mapping, int numPieces, int spriteX, int spriteY, int& spriteCount, ushort*& spriteBuffer)
+void EnqueueSpriteUnflipped(ushort gfx, byte* mapping, int numPieces, int spriteX, int spriteY, int& spriteCount, ushort*& spriteBuffer)
 {
 	for(int i = 0; i <= numPieces; i++, spriteBuffer += 4, mapping += 5)
 	{
@@ -167,7 +167,7 @@ void EnqueueSpriteUnflipped(Object* self, byte* mapping, int numPieces, int spri
 
 		spriteBuffer[0] = mapping[0] + spriteY;
 		spriteBuffer[1] = (mapping[1] << 8) | spriteCount;
-		spriteBuffer[2] = (mapping[2] << 8 | mapping[3]) + self->gfx;
+		spriteBuffer[2] = (mapping[2] << 8 | mapping[3]) + gfx;
 		spriteBuffer[3] = (mapping[4] + spriteX) & 0x1FF;
 
 		if(spriteBuffer[3] == 0)
