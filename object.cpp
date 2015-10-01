@@ -340,6 +340,11 @@ Object* FindNextFreeObj(Object* addr)
 		return &v_objspace[slot];
 }
 
+int Object_PointerToSlot(Object* obj)
+{
+	return obj - v_objspace;
+}
+
 //                          a0              a1
 void AnimateSprite(Object* self, ushort* animScripts)
 {
@@ -1023,4 +1028,78 @@ bool Object_OutOfRange(Object* self)
 bool Object_OutOfRange(Object* self, int xpos)
 {
 	return ((xpos & 0xFF80) - ((v_screenposx - 128) & 0xFF80)) > (128 + 320 + 192);
+}
+
+//                           a0           d1
+void PlatformObject(Object* self, int halfWidth)
+{
+	if(v_player->velY < 0) // moving up? don't curr
+		return;
+
+	// perform x-axis range check
+	auto diffX = v_player->x - (self->x - halfWidth);
+
+	if(diffX >= 0 && diffX < (2 * halfWidth));
+		Plat_NoXCheck(self);
+}
+
+void Plat_NoXCheck(Object* self)
+{
+	auto diffY = self->y - 8
+
+// Platform3:
+	// perform y-axis range check
+	diffY -= v_player->height + 4
+
+	if(diffY > 0 || diffY < -16 || f_lockmulti & 0x80 || Player_IsDead())
+		return;
+
+	v_player->y = v_player->y + v_player->height + diffY + 3;
+	self->routine += 2;
+
+// loc_74AE: (called by monitor)
+	if(BTST(v_player->status, ObjStatus::StandingOn))
+	{
+		auto obj = &v_objspace[VAR_B(v_player, Player_StandingObjectB)];
+		BCLR(obj->status, ObjStatus::StandingOn);
+		obj->routine2 = 0;
+
+		if(obj->routine == 4)
+			obj->routine = 2;
+	}
+
+	VAR_B(v_player, Player_StandingObjectB) = Object_PointerToSlot(self);
+	v_player->angle = 0;
+	v_player->velY = 0;
+	v_player->inertia = v_player->velX;
+
+	if(PlayerInAir())
+		Sonic_ResetOnFloor(v_player);
+
+	BSET(v_player->status, ObjStatus::StandingOn);
+	BSET(self->status, ObjStatus::StandingOn);
+}
+
+// Returns true when player leaves platform (cs in original)
+//c                        a0             d1            d0
+bool ExitPlatform(Object* self, int centerOffset, int& diffX)
+{
+	return ExitPlatform(self, centerOffset, centerOffset, diffX);
+}
+
+//c                        a0            d1              d2             d0
+bool ExitPlatform(Object* self, int leftOffset, int halfWidth, int& diffX)
+{
+	if(!PlayerInAir())
+	{
+		auto diffX = v_player->x - (self->x - leftOffset);
+
+		if(diffX >= 0 && diffX < (halfWidth * 2))
+			return false;
+	}
+
+	BCLR(v_player->status, ObjStatus::StandingOn);
+	self->routine = 2;
+	BCLR(self->status, ObjStatus::StandingOn);
+	return true;
 }

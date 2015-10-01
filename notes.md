@@ -147,6 +147,9 @@ Routines are usually numbered such that their main routine is followed by the "d
 that. This way animation scripts can delete the object by using the right animation flag to increment the routine
 number.
 
+Platform routines are usually numbered so that routine 2 is the "idle" routine and routine 4 is the "being stood on"
+routine. This convention is used in some platform helper functions too.
+
 Pattern Load Cues
 ------------------------------------------------------------
 
