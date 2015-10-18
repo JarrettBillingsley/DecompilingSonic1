@@ -474,7 +474,7 @@ ushort* FindFloor(Object* self, int objBottom, int objX, int solidityBit, int wa
 	auto tileFlags = tile;
 	tile &= 0x7FF;
 
-	if(tile == 0 || !(tileFlags & (1 << solidityBit))
+	if(tile == 0 || !BTST(tileFlags, 1 << solidityBit))
 	{
 	_isBlank:
 		int dist;
@@ -495,38 +495,37 @@ ushort* FindFloor(Object* self, int objBottom, int objX, int solidityBit, int wa
 
 	auto xpos = objX;
 
-	if(tileFlags & 0xB)
+	if(BTST(tileFlags, 0x800))
 	{
 		xpos = ~xpos;
 		*outFloorAngle = -*outFloorAngle;
 	}
 
-	if(tileFlags & 0xC)
+	if(BTST(tileFlags, 0x1000))
 		*outFloorAngle = -(*outFloorAngle + 0x40) - 0x40;
 
-	short floorHeight = CollArray1[xpos & 0xF + collIndex << 4];
+	short height = CollArray1[(xpos & 0xF) + (collIndex << 4)];
 
 	tileFlags ^= wallFlag;
 
-	if(tileFlags & 0xC)
-		floorHeight = -floorHeight;
+	if(BTST(tileFlags, 0x1000))
+		height = -height;
 
-	if(floorHeight == 0)
+	if(height == 0)
 		goto _isBlank;
+	else if(height < 0)
+	{
+		height += objBottom & 0xF;
 
-	if(floorHeight >= 0)
+		if(height >= 0)
+			goto _isBlank;
+	}
+	else if(height != 16)
 	{
 		if(outDistance)
-			*outDistance = 0xF - (floorHeight + (objBottom & 0xF));
+			*outDistance = 15 - (height + (objBottom & 0xF));
 
 		return tileAddr;
-	}
-	else if(floorHeight != 0x10)
-	{
-		floorHeight += objBottom & 0xF;
-
-		if(floorHeight >= 0)
-			goto _isBlank;
 	}
 
 	int dist;
@@ -536,7 +535,6 @@ ushort* FindFloor(Object* self, int objBottom, int objX, int solidityBit, int wa
 		*outDistance = dist - 16;
 
 	return tileAddr;
-
 }
 
 // a1                       a0         d2             d3         d5                d6              d1                 a4
@@ -550,7 +548,7 @@ ushort* FindFloor2(Object* self, int objBottom, int objX, int solidityBit, int w
 	{
 	_isBlank:
 		if(outDistance)
-			*outDistance = 0xF - (objBottom & 0xF);
+			*outDistance = 15 - (objBottom & 0xF);
 
 		return tileAddr;
 	}
@@ -564,35 +562,170 @@ ushort* FindFloor2(Object* self, int objBottom, int objX, int solidityBit, int w
 
 	auto xpos = objX;
 
-	if(tileFlags & 0xB)
+	if(BTST(tileFlags, 0x800))
 	{
 		xpos = ~xpos
 		*outFloorAngle = -*outFloorAngle;
 	}
 
-	if(tileFlags & 0xC)
+	if(BTST(tileFlags, 0x1000))
 		*outFloorAngle = -(*outFloorAngle + 0x40) - 0x40;
 
-	short floorHeight = CollArray1[xpos & 0xF + collIndex << 4];
+	short height = CollArray1[(xpos & 0xF) + (collIndex << 4)];
 
 	tileFlags ^= wallFlag;
 
-	if(tileFlags & 0xC)
-		floorHeight = -floorHeight;
+	if(BTST(tileFlags, 0x1000))
+		height = -height;
 
-	if(floorHeight == 0)
+	if(height == 0)
 		goto _isBlank;
 
 	if(outDistance)
 	{
-		if(floorHeight >= 0)
-			*outDistance = 0xF - (floorHeight + (objBottom & 0xF))
+		if(height >= 0)
+			*outDistance = 0xF - (height + (objBottom & 0xF))
 		else
 		{
 			*outDistance = objBottom & 0xF;
-			floorHeight += *outDistance;
+			height += *outDistance;
 
-			if(floorHeight >= 0)
+			if(height >= 0)
+				goto _isBlank;
+
+			*outDistance = ~*outDistance;
+		}
+	}
+
+	return tileAddr;
+}
+
+//a1                      a0         d2             d3         d5                d6            a3             d1                 a4
+ushort* FindWall(Object* self, int objBottom, int objX, int solidityBit, int wallFlag, int direction, int* outDistance, ubyte* outFloorAngle)
+{
+	auto tileAddr = FindNearestTile(self, objBottom, objX);
+	auto tile = *tileAddr;
+	auto tileFlags = tile;
+	tile &= 0x7FF;
+
+	if(tile == 0 || !BTST(tileFlags, 1 << solidityBit))
+	{
+	_isBlank:
+		int dist;
+		tileAddr = FindWall2(self, objBottom, objX + direction, solidityBit, wallFlag, &dist, outFloorAngle);
+
+		if(outDistance)
+			*outDistance = dist + 16;
+
+		return tileAddr;
+	}
+
+	auto collIndex = v_collindex[tile] & 0xFF;
+
+	if(collIndex == 0)
+		goto _isBlank;
+
+	*outFloorAngle = AngleMap[collIndex];
+
+	auto ypos = objBottom;
+
+	if(BTST(tileFlags, 0x1000))
+	{
+		ypos = ~ypos
+		*outFloorAngle = -(*outFloorAngle + 0x40) - 0x40;
+	}
+
+	if(BTST(tileFlags, 0x800))
+		*outFloorAngle = -*outFloorAngle;
+
+	short height = CollArray2[(ypos & 0xF) + (collIndex << 4)]
+
+	tileFlags ^= wallFlag;
+
+	if(BTST(tileFlags, 0x800))
+		height = -height
+
+	if(height == 0)
+		goto _isBlank;
+	else if(height < 0)
+	{
+		height += objX & 0xF;
+
+		if(height >= 0)
+			goto _isBlank;
+	}
+	else if(height != 16)
+	{
+		if(outDistance)
+			*outDistance = 15 - (height + (objX & 0xF));
+
+		return tileAddr;
+	}
+
+	int dist;
+	tileAddr = FindWall2(self, objBottom, objX - direction, solidityBit, wallFlag, &dist, outFloorAngle);
+
+	if(outDistance)
+		*outDistance = dist - 16;
+
+	return tileAddr;
+
+}
+
+// a1                     a0         d2             d3         d5                d6              d1                 a4
+ushort* FindWall2(Object* self, int objBottom, int objX, int solidityBit, int wallFlag, int* outDistance, ubyte* outFloorAngle)
+{
+	auto tileAddr = FindNearestTile(self, objBottom, objX);
+	auto tile = *tileAddr;
+	auto tileFlags = tile;
+
+	if(tile == 0 || !(tileFlags & (1 << solidityBit)))
+	{
+	_isBlank:
+		if(outDistance)
+			*outDistance = 0xF - (objX & 0xF);
+
+		return tileAddr;
+	}
+
+	auto collIndex = v_collindex[tile] & 0xFF;
+
+	if(collIndex == 0)
+		goto _isBlank;
+
+	*outFloorAngle = AngleMap[collIndex];
+
+	auto ypos = objBottom;
+
+	if(BTST(tileFlags, 0x1000))
+	{
+		ypos = ~ypos
+		*outFloorAngle = -(*outFloorAngle + 0x40) - 0x40;
+	}
+
+	if(BTST(tileFlags, 0x800))
+		*outFloorAngle = -*outFloorAngle;
+
+	short height = CollArray2[ypos & 0xF + collIndex << 4];
+
+	tileFlags ^= wallFlag;
+
+	if(BTST(tileFlags, 0x800))
+		height = -height;
+
+	if(height == 0)
+		goto _isBlank;
+
+	if(outDistance)
+	{
+		if(height >= 0)
+			*outDistance = 0xF - (height + (objX & 0xF))
+		else
+		{
+			*outDistance = objX & 0xF;
+			height += *outDistance;
+
+			if(height >= 0)
 				goto _isBlank;
 
 			*outDistance = ~*outDistance;
@@ -680,6 +813,50 @@ ushort* ObjFloorDist2(Object* self, int objX, int* outDistance, int* outFloorAng
 		*outFloorAngle = v_anglebuffer & 1 ? 0 : v_anglebuffer;
 
 	return ret;
+}
+
+// Returns distance to the ceiling.
+// Original returns angle in d3, but nothing seems to use it.
+//d1                      a0
+int ObjHitCeiling(Object* self)
+{
+	int dist; // d1
+	v_anglebuffer = 0;
+	FindFloor(self, (self->y - self->height) ^ 15, self->x, 0xE, 0x1000, -16, &dist, &v_anglebuffer);
+	return dist;
+
+	// d3 = v_anglebuffer;
+	// if(d3 & 1)
+	// 	d3 = 0x80;
+}
+
+// Returns distance to the wall.
+// Original returns angle in d3, but nothing seems to use it.
+//d1                         a0        d3
+int ObjHitWallRight(Object* self, int xdir)
+{
+	int dist;
+	v_anglebuffer = 0;
+	FindWall(self, self->y, self->x + xdir, 0xE, 0, 16, &dist, &v_anglebuffer);
+	return dist;
+
+	// d3 = v_anglebuffer;
+	// if(d3 & 1)
+	// 	d3 = -0x40;
+}
+
+// Returns distance to the wall.
+// Original returns angle in d3, but nothing seems to use it.
+//d1                        a0        d3
+int ObjHitWallLeft(Object* self, int xdir)
+{
+	int dist;
+	FindWall(self, self->y, self->x + xdir, 0xE, 0x800, -16, &dist, &v_anglebuffer);
+	return dist;
+
+	// d3 = v_anglebuffer;
+	// if(d3 & 1)
+	// 	d3 = 0x40;
 }
 
 // out: a2 = v_objstate
