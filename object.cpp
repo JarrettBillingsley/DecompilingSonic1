@@ -851,6 +851,7 @@ int ObjHitWallRight(Object* self, int xdir)
 int ObjHitWallLeft(Object* self, int xdir)
 {
 	int dist;
+	v_anglebuffer = 0;
 	FindWall(self, self->y, self->x + xdir, 0xE, 0x800, -16, &dist, &v_anglebuffer);
 	return dist;
 
