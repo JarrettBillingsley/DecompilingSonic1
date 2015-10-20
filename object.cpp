@@ -1223,11 +1223,15 @@ void PlatformObject(Object* self, int halfWidth)
 
 void Plat_NoXCheck(Object* self)
 {
-	auto diffY = self->y - 8
+	Plat_NoXCheck2(self, self->y - 8);
+}
 
-// Platform3:
+// aka Platform3
+//                           a0         d0
+void Plat_NoXCheck2(Object* self, int platTop)
+{
 	// perform y-axis range check
-	diffY -= v_player->height + 4
+	auto diffY = platTop - v_player->height + 4;
 
 	if(diffY > 0 || diffY < -16 || f_lockmulti & 0x80 || Player_IsDead())
 		return;
@@ -1280,4 +1284,26 @@ bool ExitPlatform(Object* self, int leftOffset, int halfWidth, int& diffX)
 	self->routine = 2;
 	BCLR(self->status, ObjStatus::StandingOn);
 	return true;
+}
+
+//                          a0        d2          d3
+void MvSonicOnPtfm(Object* self, int prevX, int height)
+{
+	MvSonic2(self, self->y - height, prevX);
+}
+
+//                           a0         d2
+void MvSonicOnPtfm2(Object* self, int prevX)
+{
+	MvSonic2(self, self->y - 9, prevX);
+}
+
+//                     a0        d0       d2
+void MvSonic2(Object* self, int top, int prevX)
+{
+	if(!f_lockmulti && !PlayerDead() && !v_debuguse)
+	{
+		v_player->y = top - v_player->height;
+		v_player->x -= prevX - self->x;
+	}
 }
