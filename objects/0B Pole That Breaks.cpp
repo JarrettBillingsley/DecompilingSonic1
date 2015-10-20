@@ -43,7 +43,7 @@ void Pole(Object* self)
 			self->render = ObjRender::LayerNormal;
 			self->actWid = 8;
 			self->priority = 4;
-			self->colType = 0xE1;
+			self->colType = ColClass_Special | ColSize_4x32;
 			VAR_W(self, poleTimeW) = self->subtype * 60;
 			// fall through
 		case Routine_Action:

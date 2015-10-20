@@ -111,7 +111,7 @@ void SwingingPlatform(Object* self)
 				self->gfx = GFX_Swing_SLZ;
 				self->actWid = 32;
 				self->height = 16;
-				self->colType = 0x99; // hurty, 32x8
+				self->colType = ColClass_Hurt | ColSize_32x8;
 			}
 			else if(v_zone == Zone::SBZ)
 			{
@@ -120,7 +120,7 @@ void SwingingPlatform(Object* self)
 				self->gfx = GFX_BBall;
 				self->actWid = 24;
 				self->height = 24;
-				self->colType = 0x86; // hurty, 16x16
+				self->colType = ColClass_Hurt | ColSize_16x16;
 				self->routine = Routine_Swinging;
 			}
 			else
@@ -190,7 +190,7 @@ void SwingingPlatform(Object* self)
 				self->gfx = GFX_GBall;
 				self->frame = 1;
 				self->priority = 2;
-				self->colType = 0x81; // 20x20, hurty
+				self->colType = ColClass_Hurt | ColSize_20x20; // 20x20, hurty
 			}
 
 			if(v_zone == Zone::SBZ)

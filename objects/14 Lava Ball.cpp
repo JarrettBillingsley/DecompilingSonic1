@@ -68,7 +68,7 @@ void LavaBall(Object* self)
 			self->gfx = (v_zone == Zone::SLZ) ? GFX_LavaBall_SLZ : GFX_LavaBall_MZ;
 			self->render = ObjRender::LayerNormal;
 			self->priority = 3;
-			self->colType = 0x8B; // hurty, 8x8
+			self->colType = ColClass_Hurt | ColSize_8x8_A;
 
 			VAR_W(self, origYW) = self->y;
 
