@@ -611,6 +611,112 @@ loc_20BC:
 		moveq	#1,d0*/
 }
 
+struct SSPalCycleData
+{
+	int delay;
+	uint planeAIdx;
+	uint planeBOffs;
+	uint something;
+};
+
+const SSPalCycleData SSPalCycleStuff[] =
+{
+	// Delay, idx into SSPlaneAOffsets, Plane B Nametable offset, palette offset somethingorother
+	{  3, 0, 0x8407, 0x92 },
+	{  3, 0, 0x8407, 0x90 },
+	{  3, 0, 0x8407, 0x8E },
+	{  3, 0, 0x8407, 0x8C },
+	{  3, 0, 0x8407, 0x8B },
+	{  3, 0, 0x8407, 0x80 },
+	{  3, 0, 0x8407, 0x82 },
+	{  3, 0, 0x8407, 0x84 },
+	{  3, 0, 0x8407, 0x86 },
+	{  3, 0, 0x8407, 0x88 },
+	{  7, 4, 0x8407, 0x00 },
+	{  7, 5, 0x8407, 0x0C },
+	{ -1, 6, 0x8407, 0x18 },
+	{ -1, 6, 0x8407, 0x18 },
+	{  7, 5, 0x8407, 0x0C },
+	{  7, 4, 0x8407, 0x00 },
+	{  3, 0, 0x8406, 0x88 },
+	{  3, 0, 0x8406, 0x86 },
+	{  3, 0, 0x8406, 0x84 },
+	{  3, 0, 0x8406, 0x82 },
+	{  3, 0, 0x8406, 0x81 },
+	{  3, 0, 0x8406, 0x8A },
+	{  3, 0, 0x8406, 0x8C },
+	{  3, 0, 0x8406, 0x8E },
+	{  3, 0, 0x8406, 0x90 },
+	{  3, 0, 0x8406, 0x92 },
+	{  7, 1, 0x8406, 0x24 },
+	{  7, 2, 0x8406, 0x30 },
+	{ -1, 3, 0x8406, 0x3C },
+	{ -1, 3, 0x8406, 0x3C },
+	{  7, 2, 0x8406, 0x30 },
+	{  7, 1, 0x8406, 0x24 },
+};
+
+const ushort SSPlaneAOffsets[][] =
+{
+	// Plane A Nametable offset, scroll y position
+	{ 0x8210, 1 },
+	{ 0x8218, 0 },
+	{ 0x8218, 1 },
+	{ 0x8220, 0 },
+	{ 0x8220, 1 },
+	{ 0x8228, 0 },
+	{ 0x8228, 1 },
+};
+
+void PalCycle_SS()
+{
+	if(f_pause)
+		return;
+
+	// Update timer
+	if(!TimerZero(v_palss_time))
+		return;
+
+	auto cycleData = SSPalCycleStuff[v_palss_num & 31];
+	v_palss_num++;
+	v_palss_time = (cycleData.delay < 0) ? 511 : cycleData.delay;
+	v_FFFFF7A0 = cycleData.planeAIdx; // this variable has something to do with the BG animation
+
+	// Handle animating the background tiles (bird/fish transformation)
+	auto planeAOffset = SSPlaneAOffsets[cycleData.planeAIdx];
+	VDP_COMMAND(planeAOffset[0]);
+	v_scrposy_dup = planeAOffset[1];
+	VDP_COMMAND(cycleData.planeBOffs);
+	VDP_COMMAND(0x40000010);
+	VDP_DATA(v_scrposy_dup);
+
+	// Handle animating the palette.... somehow
+	auto something = cycleData.something;
+
+	if(something & 0x80)
+	{
+		memcpy(v_pal_dry + 0x4E, Pal_SSCyc1 + something, 12);
+		return;
+	}
+
+	auto src = Pal_SSCyc2 + (something < 0x8A ? v_FFFFF79E : v_FFFFF79E + 1) * 0x2A; // NO idea what this variable is
+	something &= 0x7E;
+
+	if(something != 0)
+		memcpy(v_pal_dry + 0x6E, src, 12);
+
+	src += 12;
+	auto dest = v_pal_dry + 0x5A;
+
+	if(something >= 10)
+	{
+		something -= 10;
+		dest = v_pal_dry + 0x7A;
+	}
+
+	memcpy(dest, src + (something * 3), 6);
+}
+
 // =====================================================================================================================
 // Palette Fading (to/from black/white)
 // =====================================================================================================================

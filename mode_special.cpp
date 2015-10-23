@@ -69,8 +69,7 @@ void GM_Special()
 		MoveSonicInDemo();
 		v_jpadhold2 = v_jpadhold1;
 		ExecuteObjects();
-		BuildSprites();
-		SS_ShowLayout();
+		SS_ShowLayout(BuildSprites());
 		SS_BGAnimate();
 
 		if(f_demo && v_demolength == 0)
@@ -107,8 +106,7 @@ void GM_Special()
 		MoveSonicInDemo();
 		v_jpadhold2 = v_jpadhold1;
 		ExecuteObjects();
-		BuildSprites();
-		SS_ShowLayout();
+		SS_ShowLayout(BuildSprites());
 		SS_BGAnimate();
 
 		if(TimerZero(v_palchgspeed)))
@@ -155,7 +153,7 @@ void GM_Special()
 void SS_BGLoad()
 {
 	// Birds and fish
-	EniDec(Eni_SSBg1, 0xFF00, 0x4051);
+	EniDec(Eni_SSBg1, 0xFF0000, 0x4051);
 
 	uint vramLoc = 0x50000001;
 	uint gfxLoc = 0xFF0080;
@@ -204,116 +202,6 @@ void SS_BGLoad()
 	TilemapToVRAM(0xFF0000, 0x50000003, 63, 63);
 }
 
-struct PalCycleData
-{
-	int delay;
-	uint planeAIdx;
-	uint planeBOffs;
-	uint something;
-};
-
-const PalCycleData PalCycleStuff[] =
-{
-	// Delay, idx into PlaneAOffsets, Plane B Nametable offset, palette offset somethingorother
-	{  3, 0, 0x8407, 0x92 },
-	{  3, 0, 0x8407, 0x90 },
-	{  3, 0, 0x8407, 0x8E },
-	{  3, 0, 0x8407, 0x8C },
-	{  3, 0, 0x8407, 0x8B },
-	{  3, 0, 0x8407, 0x80 },
-	{  3, 0, 0x8407, 0x82 },
-	{  3, 0, 0x8407, 0x84 },
-	{  3, 0, 0x8407, 0x86 },
-	{  3, 0, 0x8407, 0x88 },
-	{  7, 4, 0x8407, 0x00 },
-	{  7, 5, 0x8407, 0x0C },
-	{ -1, 6, 0x8407, 0x18 },
-	{ -1, 6, 0x8407, 0x18 },
-	{  7, 5, 0x8407, 0x0C },
-	{  7, 4, 0x8407, 0x00 },
-	{  3, 0, 0x8406, 0x88 },
-	{  3, 0, 0x8406, 0x86 },
-	{  3, 0, 0x8406, 0x84 },
-	{  3, 0, 0x8406, 0x82 },
-	{  3, 0, 0x8406, 0x81 },
-	{  3, 0, 0x8406, 0x8A },
-	{  3, 0, 0x8406, 0x8C },
-	{  3, 0, 0x8406, 0x8E },
-	{  3, 0, 0x8406, 0x90 },
-	{  3, 0, 0x8406, 0x92 },
-	{  7, 1, 0x8406, 0x24 },
-	{  7, 2, 0x8406, 0x30 },
-	{ -1, 3, 0x8406, 0x3C },
-	{ -1, 3, 0x8406, 0x3C },
-	{  7, 2, 0x8406, 0x30 },
-	{  7, 1, 0x8406, 0x24 },
-};
-
-const ushort PlaneAOffsets[][] =
-{
-	// Plane A Nametable offset, scroll y position
-	{ 0x8210, 1 },
-	{ 0x8218, 0 },
-	{ 0x8218, 1 },
-	{ 0x8220, 0 },
-	{ 0x8220, 1 },
-	{ 0x8228, 0 },
-	{ 0x8228, 1 },
-};
-
-void PalCycle_SS()
-{
-	if(f_pause)
-		return;
-
-	// Update timer
-	if(!TimerZero(v_palss_time))
-		return;
-
-	auto cycleData = PalCycleStuff[v_palss_num & 31];
-	v_palss_num++;
-	v_palss_time = (cycleData.delay < 0) ? 511 : cycleData.delay;
-	v_FFFFF7A0 = cycleData.planeAIdx; // this variable has something to do with the BG animation
-
-	// Handle animating the background tiles (bird/fish transformation)
-	auto planeAOffset = PlaneAOffsets[cycleData.planeAIdx];
-	VDP_COMMAND(planeAOffset[0]);
-	v_scrposy_dup = planeAOffset[1];
-	VDP_COMMAND(cycleData.planeBOffs);
-	VDP_COMMAND(0x40000010);
-	VDP_DATA(v_scrposy_dup);
-
-	// Handle animating the palette.... somehow
-	auto something = cycleData.something;
-
-	if(something & 0x80)
-	{
-		memcpy(v_pal_dry + 0x4E, Pal_SSCyc1 + something, 12);
-		return;
-	}
-
-	auto src = Pal_SSCyc2 + (something < 0x8A ? v_FFFFF79E : v_FFFFF79E + 1) * 0x2A; // NO idea what this variable is
-	something &= 0x7E;
-
-	if(something != 0)
-		memcpy(v_pal_dry + 0x6E, src, 12);
-
-	src += 12;
-	auto dest = v_pal_dry + 0x5A;
-
-	if(something >= 10)
-	{
-		something -= 10;
-		dest = v_pal_dry + 0x7A;
-	}
-
-	memcpy(dest, src + (something * 3), 6);
-}
-
-// Pal_SSCyc1:	incbin	"palette\Cycle - Special Stage 1.bin"
-// 		even
-// Pal_SSCyc2:	incbin	"palette\Cycle - Special Stage 2.bin"
-// 		even
 
 const ubyte byte_4CB8[] = { 9, 0x28, 0x18, 0x10, 0x28, 0x18, 0x10, 0x30, 0x18, 8, 0x10, 0 };
 const ubyte byte_4CC4[] = { 6, 0x30, 0x30, 0x30, 0x28, 0x18, 0x18, 0x18 };
@@ -394,593 +282,492 @@ void SS_BGAnimate()
 	}
 }
 
-// in: d1, d2, d3, d5, a1, a2, a3
-// out: d1, d5, a1, a2
-void sub_D762()
+//
+void SS_ShowLayout(ushort* spriteBuffer)
 {
-	for(; d1 >= 0; d1--)
+	SS_AniWallsRings();
+	SS_AniItems();
+
+	// First: calculate all the tile screen positions based on the rotation angle
+	short* posBuffer = 0xFFFF8000;
+	int cosine;
+	auto sine = CalcSine(v_ssangle & 0xFC, &cosine);
+	auto xstep = sine * 0x18;
+	auto ystep = cosine * 0x18;
+	auto x = ((v_screenposx / 0x18) << 16) | (-(v_screenposx % 0x18) - 180);
+	auto y = ((v_screenposy / 0x18) << 16) | (-(v_screenposy % 0x18) - 180);
+
+	for(int i = 0; i < 16; i++)
 	{
-		if(d5 == 0x50)
-			return;
+		// This is a typical 2D rotation
+		auto xp = (-sine * y) + (cosine * x);
+		auto yp = (cosine * y) + (sine * x);
 
-		d0 = a1++ //b>w
-		d0 += d2
-		*a2++ = d0 //w
-		*a2++ = *a1++ //b
-		d5++
-		*a2++ = d5
-		d0 = *a1++ << 8 //b
-		d0 |= *a1++ //b
-		d0 += a3
-		*a2++ = d0 //w
-		d0 = *a1++ //b>w
-		d0 += d3
-		d0 &= 0x1FF
+		for(int j = 0; j < 16; j++)
+		{
+			*posBuffer++ = xp >> 8;
+			*posBuffer++ = yp >> 8;
+			xp += ystep;
+			yp += xstep;
+		}
 
-		if(d0 == 0)
-			d0 = 1
+		y += 0x18;
+	}
 
-		*a2++ = d0 //w
+	// Next: actually draw the special stage tiles (as sprites!)
+	auto layout = &0xFFFF0000[((v_screenposy / 0x18) * 0x80) + (v_screenposx / 0x18)];
+	posBuffer = 0xFFFF8000;
+
+	for(int i = 0; i < 16; i++)
+	{
+		for(int j = 0; j < 16; j++, posBuffer += 2)
+		{
+			auto tile = *layout++;
+			auto xpos = posBuffer[0] + 0x120;
+			auto ypos = posBuffer[1] + 0xF0;
+
+			if(tile == 0 || tile > 0x4E || ypos < 0x70 || ypos >= 0x170 || xpos < 0x70 || xpos >= 0x1D0)
+				continue;
+
+			auto tileInfo = 0xFFFF4000[tile];
+			auto mapping = tileInfo.map[tileInfo.frame];
+			auto numPieces = *mapping++;
+			EnqueueSpriteUnflipped(tileInfo.vram, mapping, numPieces, xpos, ypos, v_spritecount, spriteBuffer);
+		}
+
+		// next row
+		layout += 0x70;
+	}
+
+	// Terminate sprite link list
+	if(v_spritecount == 0x50)
+		spriteBuffer[-5] = 0;
+	else
+		spriteBuffer[0] = 0;
+}
+
+const ushort SS_WaRiVramSet[] =
+{
+	0x0142, 0x6142, 0x0142, 0x0142, 0x0142, 0x0142, 0x0142, 0x6142,
+	0x0142, 0x6142, 0x0142, 0x0142, 0x0142, 0x0142, 0x0142, 0x6142,
+	0x2142, 0x0142, 0x2142, 0x2142, 0x2142, 0x2142, 0x2142, 0x0142,
+	0x2142, 0x0142, 0x2142, 0x2142, 0x2142, 0x2142, 0x2142, 0x0142,
+	0x4142, 0x2142, 0x4142, 0x4142, 0x4142, 0x4142, 0x4142, 0x2142,
+	0x4142, 0x2142, 0x4142, 0x4142, 0x4142, 0x4142, 0x4142, 0x2142,
+	0x6142, 0x4142, 0x6142, 0x6142, 0x6142, 0x6142, 0x6142, 0x4142,
+	0x6142, 0x4142, 0x6142, 0x6142, 0x6142, 0x6142, 0x6142, 0x4142,
+};
+
+void SS_AniWallsRings()
+{
+	// Update wall tile frame numbers according to stage rotation
+	auto frame = (v_ssangle / 4) & 0xF;
+
+	for(int i = 0; i < 36; i++)
+		v_sstileinfo[i].frame = frame;
+
+	if(TimerNeg(v_ani1_time))
+	{
+		v_ani1_time = 7;
+		v_ani1_frame = (v_ani1_frame + 1) & 3;
+	}
+
+	v_sstileinfo[58].frame = v_ani1_frame;
+
+	if(TimerNeg(v_ani2_time))
+	{
+		v_ani2_time = 7;
+		v_ani2_frame = (v_ani2_frame + 1) & 1;
+	}
+
+	v_sstileinfo[39].frame = v_ani2_frame;
+	v_sstileinfo[41].frame = v_ani2_frame;
+	v_sstileinfo[42].frame = v_ani2_frame;
+	v_sstileinfo[44].frame = v_ani2_frame;
+	v_sstileinfo[59].frame = v_ani2_frame;
+	v_sstileinfo[60].frame = v_ani2_frame;
+	v_sstileinfo[61].frame = v_ani2_frame;
+	v_sstileinfo[62].frame = v_ani2_frame;
+	v_sstileinfo[63].frame = v_ani2_frame;
+	v_sstileinfo[64].frame = v_ani2_frame;
+
+	if(TimerNeg(v_ani3_time))
+	{
+		v_ani3_time = 4;
+		v_ani3_frame = (v_ani3_frame + 1) & 3;
+	}
+
+	v_sstileinfo[45].frame = v_ani3_frame;
+	v_sstileinfo[46].frame = v_ani3_frame;
+	v_sstileinfo[47].frame = v_ani3_frame;
+	v_sstileinfo[48].frame = v_ani3_frame;
+
+	if(TimerNeg(v_ani0_time))
+	{
+		v_ani0_time = 7
+		v_ani0_frame = (v_ani0_frame + 1) & 7;
+	}
+
+	for(int i = 0, tile = 2, vram = v_ani0_frame; i < 4; i++, vram += 8, tile += 9)
+	{
+		v_sstileinfo[tile].vram = SS_WaRiVramSet[vram];
+		v_sstileinfo[tile + 1].vram = SS_WaRiVramSet[vram + 1];
+		v_sstileinfo[tile + 2].vram = SS_WaRiVramSet[vram + 2];
+		v_sstileinfo[tile + 3].vram = SS_WaRiVramSet[vram + 3];
+		v_sstileinfo[tile + 4].vram = SS_WaRiVramSet[vram + 4];
+		v_sstileinfo[tile + 5].vram = SS_WaRiVramSet[vram + 5];
+		v_sstileinfo[tile + 6].vram = SS_WaRiVramSet[vram + 6];
+		v_sstileinfo[tile + 7].vram = SS_WaRiVramSet[vram + 7];
 	}
 }
 
-// TODO:
-SS_ShowLayout:				; XREF: GM_Special
-		bsr.w	SS_AniWallsRings
-		bsr.w	SS_AniItems
-		move.w	d5,-(sp)
-		lea	(0xFFFF8000).w,a1
-		move.b	(v_ssangle).w,d0
-		andi.b	#0xFC,d0
-		jsr	(CalcSine).l
-		move.w	d0,d4
-		move.w	d1,d5
-		muls.w	#0x18,d4
-		muls.w	#0x18,d5
-		moveq	#0,d2
-		move.w	(v_screenposx).w,d2
-		divu.w	#0x18,d2
-		swap	d2
-		neg.w	d2
-		addi.w	#-0xB4,d2
-		moveq	#0,d3
-		move.w	(v_screenposy).w,d3
-		divu.w	#0x18,d3
-		swap	d3
-		neg.w	d3
-		addi.w	#-0xB4,d3
-		move.w	#0xF,d7
-
-loc_1B19E:
-		movem.w	d0-d2,-(sp)
-		movem.w	d0-d1,-(sp)
-		neg.w	d0
-		muls.w	d2,d1
-		muls.w	d3,d0
-		move.l	d0,d6
-		add.l	d1,d6
-		movem.w	(sp)+,d0-d1
-		muls.w	d2,d0
-		muls.w	d3,d1
-		add.l	d0,d1
-		move.l	d6,d2
-		move.w	#0xF,d6
-
-loc_1B1C0:
-		move.l	d2,d0
-		asr.l	#8,d0
-		move.w	d0,(a1)+
-		move.l	d1,d0
-		asr.l	#8,d0
-		move.w	d0,(a1)+
-		add.l	d5,d2
-		add.l	d4,d1
-		dbf	d6,loc_1B1C0
-
-		movem.w	(sp)+,d0-d2
-		addi.w	#0x18,d3
-		dbf	d7,loc_1B19E
-
-		move.w	(sp)+,d5
-		lea	(0xFF0000).l,a0
-		moveq	#0,d0
-		move.w	(v_screenposy).w,d0
-		divu.w	#0x18,d0
-		mulu.w	#0x80,d0
-		adda.l	d0,a0
-		moveq	#0,d0
-		move.w	(v_screenposx).w,d0
-		divu.w	#0x18,d0
-		adda.w	d0,a0
-		lea	(0xFFFF8000).w,a4
-		move.w	#0xF,d7
-
-loc_1B20C:
-		move.w	#0xF,d6
-
-loc_1B210:
-		moveq	#0,d0
-		move.b	(a0)+,d0
-		beq.s	loc_1B268
-		cmpi.b	#0x4E,d0
-		bhi.s	loc_1B268
-		move.w	(a4),d3
-		addi.w	#0x120,d3
-		cmpi.w	#0x70,d3
-		blo.s	loc_1B268
-		cmpi.w	#0x1D0,d3
-		bhs.s	loc_1B268
-		move.w	2(a4),d2
-		addi.w	#0xF0,d2
-		cmpi.w	#0x70,d2
-		blo.s	loc_1B268
-		cmpi.w	#0x170,d2
-		bhs.s	loc_1B268
-		lea	(0xFF4000).l,a5
-		lsl.w	#3,d0
-		lea	(a5,d0.w),a5
-		movea.l	(a5)+,a1
-		move.w	(a5)+,d1
-		add.w	d1,d1
-		adda.w	(a1,d1.w),a1
-		movea.w	(a5)+,a3
-		moveq	#0,d1
-		move.b	(a1)+,d1
-		subq.b	#1,d1
-		bmi.s	loc_1B268
-		jsr	sub_D762
-
-loc_1B268:
-		addq.w	#4,a4
-		dbf	d6,loc_1B210
-
-		lea	0x70(a0),a0
-		dbf	d7,loc_1B20C
-
-		move.b	d5,(v_spritecount).w
-		cmpi.b	#0x50,d5
-		beq.s	loc_1B288
-		move.l	#0,(a2)
-		rts
-; ===========================================================================
-
-loc_1B288:
-		move.b	#0,-5(a2)
-		rts
-; End of function SS_ShowLayout
-
-; ===========================================================================
-; Subroutine to	animate	walls and rings	in the special stage
-; ===========================================================================
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SS_AniWallsRings:			; XREF: SS_ShowLayout
-		lea	(0xFF400C).l,a1
-		moveq	#0,d0
-		move.b	(v_ssangle).w,d0
-		lsr.b	#2,d0
-		andi.w	#0xF,d0
-		moveq	#0x23,d1
-
-loc_1B2A4:
-		move.w	d0,(a1)
-		addq.w	#8,a1
-		dbf	d1,loc_1B2A4
-
-		lea	(0xFF4005).l,a1
-		subq.b	#1,(v_ani1_time).w
-		bpl.s	loc_1B2C8
-		move.b	#7,(v_ani1_time).w
-		addq.b	#1,(v_ani1_frame).w
-		andi.b	#3,(v_ani1_frame).w
-
-loc_1B2C8:
-		move.b	(v_ani1_frame).w,0x1D0(a1)
-		subq.b	#1,(v_ani2_time).w
-		bpl.s	loc_1B2E4
-		move.b	#7,(v_ani2_time).w
-		addq.b	#1,(v_ani2_frame).w
-		andi.b	#1,(v_ani2_frame).w
-
-loc_1B2E4:
-		move.b	(v_ani2_frame).w,d0
-		move.b	d0,0x138(a1)
-		move.b	d0,0x160(a1)
-		move.b	d0,0x148(a1)
-		move.b	d0,0x150(a1)
-		move.b	d0,0x1D8(a1)
-		move.b	d0,0x1E0(a1)
-		move.b	d0,0x1E8(a1)
-		move.b	d0,0x1F0(a1)
-		move.b	d0,0x1F8(a1)
-		move.b	d0,0x200(a1)
-		subq.b	#1,(v_ani3_time).w
-		bpl.s	loc_1B326
-		move.b	#4,(v_ani3_time).w
-		addq.b	#1,(v_ani3_frame).w
-		andi.b	#3,(v_ani3_frame).w
-
-loc_1B326:
-		move.b	(v_ani3_frame).w,d0
-		move.b	d0,0x168(a1)
-		move.b	d0,0x170(a1)
-		move.b	d0,0x178(a1)
-		move.b	d0,0x180(a1)
-		subq.b	#1,(v_ani0_time).w
-		bpl.s	loc_1B350
-		move.b	#7,(v_ani0_time).w
-		subq.b	#1,(v_ani0_frame).w
-		andi.b	#7,(v_ani0_frame).w
-
-loc_1B350:
-		lea	(0xFF4016).l,a1
-		lea	(SS_WaRiVramSet).l,a0
-		moveq	#0,d0
-		move.b	(v_ani0_frame).w,d0
-		add.w	d0,d0
-		lea	(a0,d0.w),a0
-		move.w	(a0),(a1)
-		move.w	2(a0),8(a1)
-		move.w	4(a0),0x10(a1)
-		move.w	6(a0),0x18(a1)
-		move.w	8(a0),0x20(a1)
-		move.w	0xA(a0),0x28(a1)
-		move.w	0xC(a0),0x30(a1)
-		move.w	0xE(a0),0x38(a1)
-		adda.w	#0x20,a0
-		adda.w	#0x48,a1
-		move.w	(a0),(a1)
-		move.w	2(a0),8(a1)
-		move.w	4(a0),0x10(a1)
-		move.w	6(a0),0x18(a1)
-		move.w	8(a0),0x20(a1)
-		move.w	0xA(a0),0x28(a1)
-		move.w	0xC(a0),0x30(a1)
-		move.w	0xE(a0),0x38(a1)
-		adda.w	#0x20,a0
-		adda.w	#0x48,a1
-		move.w	(a0),(a1)
-		move.w	2(a0),8(a1)
-		move.w	4(a0),0x10(a1)
-		move.w	6(a0),0x18(a1)
-		move.w	8(a0),0x20(a1)
-		move.w	0xA(a0),0x28(a1)
-		move.w	0xC(a0),0x30(a1)
-		move.w	0xE(a0),0x38(a1)
-		adda.w	#0x20,a0
-		adda.w	#0x48,a1
-		move.w	(a0),(a1)
-		move.w	2(a0),8(a1)
-		move.w	4(a0),0x10(a1)
-		move.w	6(a0),0x18(a1)
-		move.w	8(a0),0x20(a1)
-		move.w	0xA(a0),0x28(a1)
-		move.w	0xC(a0),0x30(a1)
-		move.w	0xE(a0),0x38(a1)
-		adda.w	#0x20,a0
-		adda.w	#0x48,a1
-		rts
-; End of function SS_AniWallsRings
-
-; ===========================================================================
-SS_WaRiVramSet:	dc.w 0x142, 0x6142, 0x142,	0x142, 0x142, 0x142, 0x142,	0x6142
-		dc.w 0x142, 0x6142, 0x142,	0x142, 0x142, 0x142, 0x142,	0x6142
-		dc.w 0x2142, 0x142, 0x2142, 0x2142,	0x2142, 0x2142, 0x2142, 0x142
-		dc.w 0x2142, 0x142, 0x2142, 0x2142,	0x2142, 0x2142, 0x2142, 0x142
-		dc.w 0x4142, 0x2142, 0x4142, 0x4142, 0x4142,	0x4142, 0x4142, 0x2142
-		dc.w 0x4142, 0x2142, 0x4142, 0x4142, 0x4142,	0x4142, 0x4142, 0x2142
-		dc.w 0x6142, 0x4142, 0x6142, 0x6142, 0x6142,	0x6142, 0x6142, 0x4142
-		dc.w 0x6142, 0x4142, 0x6142, 0x6142, 0x6142,	0x6142, 0x6142, 0x4142
-; ===========================================================================
-; Subroutine to	remove items when you collect them in the special stage
-; ===========================================================================
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SS_RemoveCollectedItem:			; XREF: Obj09_ChkItems
-		lea	(0xFF4400).l,a2
-		move.w	#0x1F,d0
-
-loc_1B4C4:
-		tst.b	(a2)
-		beq.s	locret_1B4CE
-		addq.w	#8,a2
-		dbf	d0,loc_1B4C4
-
-locret_1B4CE:
-		rts
-; End of function SS_RemoveCollectedItem
-
-; ===========================================================================
-; Subroutine to	animate	special	stage items when you touch them
-; ===========================================================================
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SS_AniItems:				; XREF: SS_ShowLayout
-		lea	(0xFF4400).l,a0
-		move.w	#0x1F,d7
-
-loc_1B4DA:
-		moveq	#0,d0
-		move.b	(a0),d0
-		beq.s	loc_1B4E8
-		lsl.w	#2,d0
-		movea.l	SS_AniIndex-4(pc,d0.w),a1
-		jsr	(a1)
-
-loc_1B4E8:
-		addq.w	#8,a0
-
-loc_1B4EA:
-		dbf	d7,loc_1B4DA
-
-		rts
-; End of function SS_AniItems
-
-; ===========================================================================
-SS_AniIndex:	dc.l SS_AniRingSparks
-		dc.l SS_AniBumper
-		dc.l SS_Ani1Up
-		dc.l SS_AniReverse
-		dc.l SS_AniEmeraldSparks
-		dc.l SS_AniGlassBlock
-; ===========================================================================
-
-SS_AniRingSparks:			; XREF: SS_AniIndex
-		subq.b	#1,2(a0)
-		bpl.s	locret_1B530
-		move.b	#5,2(a0)
-		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_AniRingData(pc,d0.w),d0
-		move.b	d0,(a1)
-		bne.s	locret_1B530
-		clr.l	(a0)
-		clr.l	4(a0)
-
-locret_1B530:
-		rts
-; ===========================================================================
-SS_AniRingData:	dc.b 0x42, 0x43, 0x44, 0x45, 0, 0
-; ===========================================================================
-
-SS_AniBumper:				; XREF: SS_AniIndex
-		subq.b	#1,2(a0)
-		bpl.s	locret_1B566
-		move.b	#7,2(a0)
-		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_AniBumpData(pc,d0.w),d0
-		bne.s	loc_1B564
-		clr.l	(a0)
-		clr.l	4(a0)
-		move.b	#0x25,(a1)
-		rts
-; ===========================================================================
-
-loc_1B564:
-		move.b	d0,(a1)
-
-locret_1B566:
-		rts
-; ===========================================================================
-SS_AniBumpData:	dc.b 0x32, 0x33, 0x32, 0x33, 0, 0
-; ===========================================================================
-
-SS_Ani1Up:				; XREF: SS_AniIndex
-		subq.b	#1,2(a0)
-		bpl.s	locret_1B596
-		move.b	#5,2(a0)
-		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_Ani1UpData(pc,d0.w),d0
-		move.b	d0,(a1)
-		bne.s	locret_1B596
-		clr.l	(a0)
-		clr.l	4(a0)
-
-locret_1B596:
-		rts
-; ===========================================================================
-SS_Ani1UpData:	dc.b 0x46, 0x47, 0x48, 0x49, 0, 0
-; ===========================================================================
-
-SS_AniReverse:				; XREF: SS_AniIndex
-		subq.b	#1,2(a0)
-		bpl.s	locret_1B5CC
-		move.b	#7,2(a0)
-		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_AniRevData(pc,d0.w),d0
-		bne.s	loc_1B5CA
-		clr.l	(a0)
-		clr.l	4(a0)
-		move.b	#0x2B,(a1)
-		rts
-; ===========================================================================
-
-loc_1B5CA:
-		move.b	d0,(a1)
-
-locret_1B5CC:
-		rts
-; ===========================================================================
-SS_AniRevData:	dc.b 0x2B, 0x31, 0x2B, 0x31, 0, 0
-; ===========================================================================
-
-SS_AniEmeraldSparks:			; XREF: SS_AniIndex
-		subq.b	#1,2(a0)
-		bpl.s	locret_1B60C
-		move.b	#5,2(a0)
-		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_AniEmerData(pc,d0.w),d0
-		move.b	d0,(a1)
-		bne.s	locret_1B60C
-		clr.l	(a0)
-		clr.l	4(a0)
-		move.b	#4,(0xFFFFD024).w
-		sfx	sfx_SSGoal	; play special stage GOAL sound
-
-locret_1B60C:
-		rts
-; ===========================================================================
-SS_AniEmerData:	dc.b 0x46, 0x47, 0x48, 0x49, 0, 0
-; ===========================================================================
-
-SS_AniGlassBlock:			; XREF: SS_AniIndex
-		subq.b	#1,2(a0)
-		bpl.s	locret_1B640
-		move.b	#1,2(a0)
-		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_AniGlassData(pc,d0.w),d0
-		move.b	d0,(a1)
-		bne.s	locret_1B640
-		move.b	4(a0),(a1)
-		clr.l	(a0)
-		clr.l	4(a0)
-
-locret_1B640:
-		rts
-; ===========================================================================
-SS_AniGlassData:dc.b 0x4B, 0x4C, 0x4D, 0x4E, 0x4B, 0x4C, 0x4D,	0x4E, 0,	0
-
-; ===========================================================================
-; Special stage	layout pointers
-; ===========================================================================
-SS_LayoutIndex:
-		dc.l SS_1
-		dc.l SS_2
-		dc.l SS_3
-		dc.l SS_4
-		dc.l SS_5
-		dc.l SS_6
-		even
-
-; ===========================================================================
-; Special stage start locations
-; ===========================================================================
-SS_StartLoc:	include	"_inc\Start Location Array - Special Stages.asm"
-
-; ===========================================================================
-; Subroutine to	load special stage layout
-; ===========================================================================
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SS_Load:				; XREF: GM_Special
-		moveq	#0,d0
-		move.b	(v_lastspecial).w,d0 ; load number of last special stage entered
-		addq.b	#1,(v_lastspecial).w
-		cmpi.b	#6,(v_lastspecial).w
-		blo.s	SS_ChkEmldNum
-		move.b	#0,(v_lastspecial).w ; reset if higher than 6
-
-SS_ChkEmldNum:
-		cmpi.b	#6,(v_emeralds).w ; do you have all emeralds?
-		beq.s	SS_LoadData	; if yes, branch
-		moveq	#0,d1
-		move.b	(v_emeralds).w,d1
-		subq.b	#1,d1
-		blo.s	SS_LoadData
-		lea	(v_emldlist).w,a3 ; check which emeralds you have
-
-SS_ChkEmldLoop:
-		cmp.b	(a3,d1.w),d0
-		bne.s	SS_ChkEmldRepeat
-		bra.s	SS_Load
-; ===========================================================================
-
-SS_ChkEmldRepeat:
-		dbf	d1,SS_ChkEmldLoop
-
-SS_LoadData:
-		lsl.w	#2,d0
-		lea	SS_StartLoc(pc,d0.w),a1
-		move.w	(a1)+,(v_player+obX).w
-		move.w	(a1)+,(v_player+obY).w
-		movea.l	SS_LayoutIndex(pc,d0.w),a0
-		lea	(0xFF4000).l,a1
-		move.w	#0,d0
-		jsr	(EniDec).l
-		lea	(0xFF0000).l,a1
-		move.w	#0xFFF,d0
-
-SS_ClrRAM3:
-		clr.l	(a1)+
-		dbf	d0,SS_ClrRAM3
-
-		lea	(0xFF1020).l,a1
-		lea	(0xFF4000).l,a0
-		moveq	#0x3F,d1
-
-loc_1B6F6:
-		moveq	#0x3F,d2
-
-loc_1B6F8:
-		move.b	(a0)+,(a1)+
-		dbf	d2,loc_1B6F8
-
-		lea	0x40(a1),a1
-		dbf	d1,loc_1B6F6
-
-		lea	(0xFF4008).l,a1
-		lea	(SS_MapIndex).l,a0
-		moveq	#0x4D,d1
-
-loc_1B714:
-		move.l	(a0)+,(a1)+
-		move.w	#0,(a1)+
-		move.b	-4(a0),-1(a1)
-		move.w	(a0)+,(a1)+
-		dbf	d1,loc_1B714
-
-		lea	(0xFF4400).l,a1
-		move.w	#0x3F,d1
-
-loc_1B730:
-
-		clr.l	(a1)+
-		dbf	d1,loc_1B730
-
-		rts
-; End of function SS_Load
-
-; ===========================================================================
-
-SS_MapIndex:
-		include	"_inc\Special Stage Mappings & VRAM Pointers.asm"
-
-		include	"_maps\SS R Block.asm"
-		include	"_maps\SS Glass Block.asm"
-		include	"_maps\SS UP Block.asm"
-		include	"_maps\SS DOWN Block.asm"
-		include	"_maps\SS Chaos Emeralds.asm"
-
-		include	"_incObj\09 Sonic in Special Stage.asm"
-
-		include	"_incObj\10.asm"
-
-		include	"_inc\AnimateLevelGfx.asm"
-
-		include	"_incObj\21 HUD.asm"
-		include	"_maps\HUD.asm"
+// I don't think this function actually DOES anything.......
+void SS_RemoveCollectedItem()
+{
+	// for(int i = 0; i < 32; i++)
+	// {
+	// 	if(0xFF4400[i * 8] == 0)
+	// 		return;
+	// }
+}
+
+const ubyte SS_AniRingData[] =  { 0x42, 0x43, 0x44, 0x45, 0, 0 };
+const ubyte SS_AniBumpData[] =  { 0x32, 0x33, 0x32, 0x33, 0, 0 };
+const ubyte SS_Ani1UpData[] =   { 0x46, 0x47, 0x48, 0x49, 0, 0 };
+const ubyte SS_AniRevData[] =   { 0x2B, 0x31, 0x2B, 0x31, 0, 0 };
+const ubyte SS_AniEmerData[] =  { 0x46, 0x47, 0x48, 0x49, 0, 0 };
+const ubyte SS_AniGlassData[] = { 0x4B, 0x4C, 0x4D, 0x4E, 0x4B, 0x4C, 0x4D, 0x4E, 0, 0 };
+
+struct SS_Object
+{
+	ubyte id;
+	ubyte unused;
+	ubyte timer;
+	ubyte frame;
+	uint* gfxmaybe;
+};
+
+void SS_AniItems()
+{
+	SS_Object* obj = 0xFF4400;
+
+	for(int i = 0; i < 32; i++, obj++)
+	{
+		switch(obj->id)
+		{
+			case SS_AniRingSparks:
+				if(TimerNeg(obj->timer))
+				{
+					obj->timer = 5;
+					*obj->gfxmaybe = SS_AniRingData[obj->frame++]
+
+					if(*obj->gfxmaybe == 0)
+						memset(a0, 0, sizeof(SS_Object));
+				}
+				break;
+
+			case SS_AniBumper:
+				if(TimerNeg(obj->timer))
+				{
+					obj->timer = 7;
+					auto frame = SS_AniBumpData[obj->frame++];
+
+					if(frame == 0)
+					{
+						memset(a0, 0, sizeof(SS_Object));
+						obj->gfxmaybe = 0x25;
+					}
+					else
+						obj->gfxmaybe = frame;
+				}
+				break;
+
+			case SS_Ani1Up:
+				if(TimerNeg(obj->timer))
+				{
+					obj->timer = 5;
+					*obj->gfxmaybe = SS_Ani1UpData[obj->frame++]
+
+					if(*obj->gfxmaybe == 0)
+						memset(a0, 0, sizeof(SS_Object));
+				}
+				break;
+
+			case SS_AniReverse:
+				if(TimerNeg(obj->timer))
+				{
+					obj->timer = 7;
+					auto frame = SS_AniBumpData[obj->frame++];
+
+					if(frame == 0)
+					{
+						memset(a0, 0, sizeof(SS_Object));
+						obj->gfxmaybe = 0x2B;
+					}
+					else
+						obj->gfxmaybe = frame;
+				}
+				break;
+
+			case SS_AniEmeraldSparks:
+				if(TimerNeg(obj->timer))
+				{
+					obj->timer = 5;
+
+					*obj->gfxmaybe = SS_AniEmerData[obj->frame++]
+
+					if(*obj->gfxmaybe == 0)
+					{
+						memset(a0, 0, sizeof(SS_Object));
+						v_FFFFD024 = 4;
+						PlaySound_Special(SFX::SSGoal);
+					}
+				}
+				break;
+
+			case SS_AniGlassBlock:
+				if(TimerNeg(obj->timer))
+				{
+					obj->timer = 1;
+					*obj->gfxmaybe = SS_AniGlassData[obj->frame++]
+
+					if(*obj->gfxmaybe == 0)
+						memset(a0, 0, sizeof(SS_Object));
+				}
+				break;
+
+			case 0: break;
+		}
+	}
+}
+
+const ubyte Map_SSWalls[][] =
+{
+	{ 1, 0xF4, 0xA, 0, 0x00, 0xF4 },
+	{ 1, 0xF0, 0xF, 0, 0x09, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0x19, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0x29, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0x39, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0x49, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0x59, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0x69, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0x79, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0x89, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0x99, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0xA9, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0xB9, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0xC9, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0xD9, 0xF0 },
+	{ 1, 0xF0, 0xF, 0, 0xE9, 0xF0 },
+};
+
+const ubyte Map_SS_R[][] =
+{
+	{ 1,  0xF4, 0xA, 0, 0, 0xF4 },
+	{ 1,  0xF4, 0xA, 0, 9, 0xF4 },
+	{ 0 }
+};
+
+const ubyte Map_SS_Glass[][] =
+{
+	{ 1, 0xF4, 0xA, 0x00, 0, 0xF4 },
+	{ 1, 0xF4, 0xA, 0x08, 0, 0xF4 },
+	{ 1, 0xF4, 0xA, 0x18, 0, 0xF4 },
+	{ 1, 0xF4, 0xA, 0x10, 0, 0xF4 },
+};
+
+const ubyte Map_SS_Up[][] =
+{
+	{ 1, 0xF4, 0xA, 0, 0x00, 0xF4 },
+	{ 1, 0xF4, 0xA, 0, 0x12, 0xF4 },
+};
+
+const ubyte Map_SS_Down[][] =
+{
+	{ 1, 0xF4, 0xA, 0, 0x09, 0xF4 },
+	{ 1, 0xF4, 0xA, 0, 0x12, 0xF4 },
+};
+
+const ubyte Map_SS_Chaos1[][] =
+{
+	{ 1, 0xF8, 5, 0, 0x00, 0xF8 },
+	{ 1, 0xF8, 5, 0, 0x0C, 0xF8 },
+};
+
+const ubyte Map_SS_Chaos2[][] =
+{
+	{ 1, 0xF8, 5, 0, 0x04, 0xF8 },
+	{ 1, 0xF8, 5, 0, 0x0C, 0xF8 },
+};
+
+const ubyte Map_SS_Chaos3[][] =
+{
+	{ 1, 0xF8, 5, 0, 0x08, 0xF8 },
+	{ 1, 0xF8, 5, 0, 0x0C, 0xF8 },
+};
+
+struct StartPos
+{
+	ushort x, y;
+};
+
+const StartPos SS_StartLoc[] =
+{
+	{ 0x03D0, 0x02E0 },
+	{ 0x0328, 0x0574 },
+	{ 0x04E4, 0x02E0 },
+	{ 0x03AD, 0x02E0 },
+	{ 0x0340, 0x06B8 },
+	{ 0x049B, 0x0358 },
+};
+
+const ubyte** SS_LayoutIndex[] =
+{
+	SS_1,
+	SS_2,
+	SS_3,
+	SS_4,
+	SS_5,
+	SS_6,
+};
+
+struct SSTileInfo
+{
+	ubyte* map;
+	ushort frame;
+	ushort vram;
+};
+
+struct SSMap
+{
+	ubyte* map;
+	ubyte frame;
+	ushort vram;
+};
+
+const SSMap SS_MapIndex[] =
+{
+	{ Map_SSWalls,   0, 0x0142 },
+	{ Map_SSWalls,   0, 0x0142 },
+	{ Map_SSWalls,   0, 0x0142 },
+	{ Map_SSWalls,   0, 0x0142 },
+	{ Map_SSWalls,   0, 0x0142 },
+	{ Map_SSWalls,   0, 0x0142 },
+	{ Map_SSWalls,   0, 0x0142 },
+	{ Map_SSWalls,   0, 0x0142 },
+	{ Map_SSWalls,   0, 0x0142 },
+	{ Map_SSWalls,   0, 0x2142 },
+	{ Map_SSWalls,   0, 0x2142 },
+	{ Map_SSWalls,   0, 0x2142 },
+	{ Map_SSWalls,   0, 0x2142 },
+	{ Map_SSWalls,   0, 0x2142 },
+	{ Map_SSWalls,   0, 0x2142 },
+	{ Map_SSWalls,   0, 0x2142 },
+	{ Map_SSWalls,   0, 0x2142 },
+	{ Map_SSWalls,   0, 0x2142 },
+	{ Map_SSWalls,   0, 0x4142 },
+	{ Map_SSWalls,   0, 0x4142 },
+	{ Map_SSWalls,   0, 0x4142 },
+	{ Map_SSWalls,   0, 0x4142 },
+	{ Map_SSWalls,   0, 0x4142 },
+	{ Map_SSWalls,   0, 0x4142 },
+	{ Map_SSWalls,   0, 0x4142 },
+	{ Map_SSWalls,   0, 0x4142 },
+	{ Map_SSWalls,   0, 0x4142 },
+	{ Map_SSWalls,   0, 0x6142 },
+	{ Map_SSWalls,   0, 0x6142 },
+	{ Map_SSWalls,   0, 0x6142 },
+	{ Map_SSWalls,   0, 0x6142 },
+	{ Map_SSWalls,   0, 0x6142 },
+	{ Map_SSWalls,   0, 0x6142 },
+	{ Map_SSWalls,   0, 0x6142 },
+	{ Map_SSWalls,   0, 0x6142 },
+	{ Map_SSWalls,   0, 0x6142 },
+	{ Map_Bump,      0, 0x023B },
+	{ Map_SS_R,      0, 0x0570 },
+	{ Map_SS_R,      0, 0x0251 },
+	{ Map_SS_R,      0, 0x0370 },
+	{ Map_SS_Up,     0, 0x0263 },
+	{ Map_SS_Down,   0, 0x0263 },
+	{ Map_SS_R,      0, 0x22F0 },
+	{ Map_SS_Glass,  0, 0x0470 },
+	{ Map_SS_Glass,  0, 0x05F0 },
+	{ Map_SS_Glass,  0, 0x65F0 },
+	{ Map_SS_Glass,  0, 0x25F0 },
+	{ Map_SS_Glass,  0, 0x45F0 },
+	{ Map_SS_R,      0, 0x02F0 },
+	{ Map_Bump,      1, 0x023B },
+	{ Map_Bump,      2, 0x023B },
+	{ Map_SS_R,      0, 0x0797 },
+	{ Map_SS_R,      0, 0x07A0 },
+	{ Map_SS_R,      0, 0x07A9 },
+	{ Map_SS_R,      0, 0x0797 },
+	{ Map_SS_R,      0, 0x07A0 },
+	{ Map_SS_R,      0, 0x07A9 },
+	{ Map_Ring,      0, 0x27B2 },
+	{ Map_SS_Chaos3, 0, 0x0770 },
+	{ Map_SS_Chaos3, 0, 0x2770 },
+	{ Map_SS_Chaos3, 0, 0x4770 },
+	{ Map_SS_Chaos3, 0, 0x6770 },
+	{ Map_SS_Chaos1, 0, 0x0770 },
+	{ Map_SS_Chaos2, 0, 0x0770 },
+	{ Map_SS_R,      0, 0x04F0 },
+	{ Map_Ring,      4, 0x27B2 },
+	{ Map_Ring,      5, 0x27B2 },
+	{ Map_Ring,      6, 0x27B2 },
+	{ Map_Ring,      7, 0x27B2 },
+	{ Map_SS_Glass,  0, 0x23F0 },
+	{ Map_SS_Glass,  1, 0x23F0 },
+	{ Map_SS_Glass,  2, 0x23F0 },
+	{ Map_SS_Glass,  3, 0x23F0 },
+	{ Map_SS_R,      2, 0x04F0 },
+	{ Map_SS_Glass,  0, 0x05F0 },
+	{ Map_SS_Glass,  0, 0x65F0 },
+	{ Map_SS_Glass,  0, 0x25F0 },
+	{ Map_SS_Glass,  0, 0x45F0 },
+	{ nullptr, 0, 0 }
+};
+
+void SS_Load()
+{
+_retry:
+	auto ssidx = v_lastspecial++;
+
+	if(v_lastspecial == 6)
+		v_lastspecial = 0;
+
+	if(v_emeralds != 6)
+	{
+		for(int i = v_emeralds - 1; i >= 0; i--)
+		{
+			if(v_emldlist[i] == 0)
+				goto _retry;
+		}
+	}
+
+	v_player->x = SS_StartLoc[ssidx].x;
+	v_player->y = SS_StartLoc[ssidx].y;
+
+	EniDec(SS_LayoutIndex[ssidx], 0xFFFF4000, 0);
+	memset(0xFF0000, 0, 0x1000);
+
+	ubyte* layout = 0xFFFF1020;
+	ubyte* decompressedLayout = 0xFFFF4000;
+
+	// Not sure why they have 0x80 bytes for each row of the layout. Maybe they planned on having much larger stages?
+	for(int i = 0; i < 64; i++)
+	{
+		memcpy(layout, decompressedLayout, 64);
+		layout += 0x80;
+		decompressedLayout += 0x40;
+	}
+
+	for(int i = 0; SS_MapIndex[i].map != nullptr; i++)
+	{
+		v_sstileinfo[i + 1].map = SS_MapIndex[i].map;
+		v_sstileinfo[i + 1].frame = SS_MapIndex[i].frame;
+		v_sstileinfo[i + 1].vram = SS_MapIndex[i].vram;
+	}
+
+	memset(0xFFFF4400, 0, 64 * sizeof(int));
+}

@@ -2,6 +2,15 @@
 #define MAX_OBJECTS 128
 #define NUM_LEVEL_OBJECTS 96
 
+/*
+Special stage variables:
+0xFFFF0000: graphics decompression buffer (0x1000 bytes)
+0xFFFF1000: layout data (0x3000 bytes?)
+0xFFFF4000: v_sstileinfo tile info (78 * 8 bytes)
+0xFFFF4400: collected flags for rings and stuff (0x100 bytes)
+0xFFFF8000: calculated screen positions of SS tiles based on rotation (0x400 bytes)
+*/
+
 ubyte v_256x256[0xA400];                 // 0xFFFF0000	; 256x256 tile mappings (0xA400 bytes)
 ubyte v_lvllayout[1024];                 // 0xFFFFA400	; level and background 256tile layouts (0x400 bytes) (indices are interleaved FG, BG, FG, BG...)
                                          // 0xFFFFA800

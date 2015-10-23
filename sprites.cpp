@@ -6,7 +6,7 @@ const ushort* BldSpr_ScrPos[] =
 	&v_bg2posx,    &v_bg2posy
 };
 
-void BuildSprites()
+ushort* BuildSprites()
 {
 	auto spriteBuffer = v_spritetablebuffer;
 	auto spriteCount = 0;
@@ -79,11 +79,13 @@ void BuildSprites()
 
 	v_spritecount = spriteCount;
 
-	// probably setting the link of the last sprite in the buffer?
+	// Terminate sprite link list
 	if(spriteCount != 0x50)
-		*spriteBuffer = 0;
+		spriteBuffer[0] = 0;
 	else
-		*(spriteBuffer - 5) = 0;
+		spriteBuffer[-5] = 0;
+
+	return spriteBuffer;
 }
 
 // sub_D750
