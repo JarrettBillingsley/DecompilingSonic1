@@ -74,7 +74,7 @@ void Pole(Object* self)
 				// Yep
 				self->colProp = 0;
 
-				if(PlayerControllable())
+				if(Player_IsControllable())
 				{
 					v_player->velX = 0;
 					v_player->velY = 0;

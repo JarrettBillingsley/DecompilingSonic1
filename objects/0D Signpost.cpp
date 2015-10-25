@@ -108,7 +108,7 @@ void Signpost(Object* self)
 		case Routine_SonicRun:
 			if(!v_debuguse)
 			{
-				if(!PlayerInAir())
+				if(!Player_IsInAir())
 				{
 					f_lockctrl = true;
 					v_jpadhold2 = Buttons_R;

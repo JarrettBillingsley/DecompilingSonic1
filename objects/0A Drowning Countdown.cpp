@@ -249,7 +249,7 @@ void DrownCount(Object* self)
 			if(VAR_W(self, drowningTimeW) == 0)
 			{
 				// Manage counting down the timer and stuff
-				if(PlayerDead() || !PlayerUnderwater())
+				if(Player_IsDead() || !Player_IsUnderwater())
 					return;
 
 				// Count down frames until the next second
@@ -279,8 +279,8 @@ void DrownCount(Object* self)
 						VAR_W(self, bubbleFlagsW) = BubbleFlags_Enable;
 						VAR_W(self, drowningTimeW) = Drown_Length;
 						Sonic_ResetOnFloor(v_player);
-						SetPlayerAnim_Drowning();
-						SetPlayerAir();
+						Player_SetAnimDrowning();
+						Player_SetInAir();
 						v_player->gfx |= 0x80;
 						v_player->velY = 0;
 						v_player->velX = 0;
@@ -297,7 +297,7 @@ void DrownCount(Object* self)
 				// Manage the drowning animation (Sonic falling offscreen)
 				if(TimerZero(VAR_W(self, drowningTimeW)))
 				{
-					SetPlayerDead();
+					Player_SetDead();
 					return;
 				}
 
@@ -317,9 +317,9 @@ void DrownCount(Object* self)
 					{
 						auto bubble = &v_objspace[slot];
 						bubble->id = ID_DrownCount;
-						bubble->x v_player->x + (PlayerFlipped() ? -Bubble_OffsX : Bubble_OffsX);
+						bubble->x v_player->x + (Player_IsFlipped() ? -Bubble_OffsX : Bubble_OffsX);
 						bubble->y = v_player->y;
-						bubble->angle = PlayerFlipped() ? Bubble_AngleFlipped : 0;
+						bubble->angle = Player_IsFlipped() ? Bubble_AngleFlipped : 0;
 						bubble->subtype = Subtype_SmallBubble;
 
 						// If we're doing drowning-bubbles..

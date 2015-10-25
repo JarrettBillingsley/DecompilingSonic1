@@ -45,7 +45,7 @@ void Plat_NoXCheck2(Object* self, int platTop)
 	v_player->velY = 0;
 	v_player->inertia = v_player->velX;
 
-	if(PlayerInAir())
+	if(Player_IsInAir())
 		Sonic_ResetOnFloor(v_player);
 
 	BSET(v_player->status, ObjStatus_StandingOn);
@@ -62,7 +62,7 @@ bool ExitPlatform(Object* self, int centerOffset, int& diffX)
 //c                        a0            d1              d2             d0
 bool ExitPlatform(Object* self, int leftOffset, int halfWidth, int& diffX)
 {
-	if(!PlayerInAir())
+	if(!Player_IsInAir())
 	{
 		auto diffX = v_player->x - (self->x - leftOffset);
 
@@ -91,7 +91,7 @@ void MvSonicOnPtfm2(Object* self, int prevX)
 //                                a0        d0       d2
 void MvSonicOnPtfmCommon(Object* self, int top, int prevX)
 {
-	if(!f_lockmulti && !PlayerDead() && !v_debuguse)
+	if(!f_lockmulti && !Player_IsDead() && !v_debuguse)
 	{
 		v_player->y = top - v_player->height;
 		v_player->x -= prevX - self->x;

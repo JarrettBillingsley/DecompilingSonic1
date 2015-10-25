@@ -170,5 +170,5 @@ void React_ChkHurt(Object* player, Object* obj)
 	if(v_invinc || VAR_W(player, Player_InvincibilityW) != 0) // invincible or hurt-flashing?
 		return;
 
-	HurtSonic(player, obj);
+	Player_Hurt(player, obj);
 }

@@ -1,50 +1,50 @@
-bool PlayerFlipped()
+bool Player_IsFlipped()
 {
 	return BTST(v_player->status, ObjStatus_Flip);
 }
 
-bool PlayerInAir()
+bool Player_IsInAir()
 {
 	return BTST(v_player->status, ObjStatus_Air);
 }
 
-bool PlayerUnderwater()
+bool Player_IsUnderwater()
 {
 	return BTST(v_player->status, ObjStatus_Underwater);
 }
 
-bool PlayerDead()
+bool Player_IsDead()
 {
 	return v_player->routine >= PlayerRoutine_Dead;
 }
 
-bool PlayerControllable()
+bool Player_IsControllable()
 {
 	return v_player->routine < PlayerRoutine_Hurt;
 }
 
-void SetPlayerHurt()
+void Player_SetHurt()
 {
 	v_player->routine = PlayerRoutine_Hurt;
 }
 
-void SetPlayerDead()
+void Player_SetDead()
 {
 	v_player->routine = PlayerRoutine_Dead;
 }
 
-void SetPlayerAir()
+void Player_SetInAir()
 {
 	BSET(v_player->status, ObjStatus_Air);
 }
 
-void SetPlayerAnim_Drowning()
+void Player_SetAnimDrowning()
 {
 	v_player->anim = 0x17;
 }
 
 //                       a0             a2
-void HurtSonic(Object* player, Object* obj)
+void Player_Hurt(Object* player, Object* obj)
 {
 	// If he has no shield..
 	if(!v_shield)
@@ -61,19 +61,19 @@ void HurtSonic(Object* player, Object* obj)
 		}
 		else if(!f_debugmode) // otherwise, kill him (if debug mode isn't on)
 		{
-			KillSonic(player, obj);
+			Player_Kill(player, obj);
 			return;
 		}
 	}
 
 	// Hurt sonic
 	v_shield = 0;
-	SetPlayerHurt();
+	Player_SetHurt();
 	Sonic_ResetOnFloor(player);
-	SetPlayerAir();
+	Player_SetInAir();
 
 	// Bounce him away
-	if(PlayerUnderwater())
+	if(Player_IsUnderwater())
 	{
 		player->velY = -0x200;
 		player->velX = -0x100;
@@ -100,16 +100,16 @@ void HurtSonic(Object* player, Object* obj)
 }
 
 //                       a0             a2
-void KillSonic(Object* player, Object* killer)
+void Player_Kill(Object* player, Object* killer)
 {
 	if(v_debuguse)
 		return;
 
 	// Set him up to do the death bounce
 	v_invinc = 0;
-	SetPlayerDead();
+	Player_SetDead();
 	Sonic_ResetOnFloor(player);
-	SetPlayerAir();
+	Player_SetInAir();
 	player->velY = -0x700;
 	player->velX = 0;
 	player->inertia = 0;

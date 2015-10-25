@@ -174,7 +174,7 @@ void Solid_TopBottom(Object* self, int distY)
 	if(distY < 0)
 	{
 		if(v_player->velY == 0 && !BTST(v_player->status, ObjStatus_Air))
-			KillSonic(v_player); // squisho
+			Player_Kill(v_player); // squisho
 		else if(v_player->velY < 0 && distY <= 0) // moving down and sonic is above?
 		{
 			v_player->y -= distY; // push out of object
