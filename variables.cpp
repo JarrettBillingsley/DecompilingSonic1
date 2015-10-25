@@ -1,7 +1,4 @@
 
-#define MAX_OBJECTS 128
-#define NUM_LEVEL_OBJECTS 96
-
 // Special stage variables:
 ubyte v_sslayout[SS_LayoutRows][SS_LayoutColumns];         // 0xFFFF0000* ; tile layout data (0x4000 bytes)
 SSTileInfo v_sstileinfo[SSObj_COUNT + 1];                  // 0xFFFF4000* ; tile info (78 tile types, plus empty slot 0)
@@ -21,7 +18,7 @@ ubyte v_16x16[0x1800];                   // 0xFFFFB000	; 16x16 tile mappings (? 
 ubyte v_sgfx_buffer[768];                // 0xFFFFC800	; buffered Sonic graphics (0x18 cells) (0x300 bytes)
 ushort v_tracksonic[128];                // 0xFFFFCB00	; position tracking data for Sonic (0x100 bytes)
 ubyte v_hscrolltablebuffer[1024];        // 0xFFFFCC00	; scrolling table data (0x400 bytes)
-Object v_objspace[MAX_OBJECTS];          // 0xFFFFD000	; object variable space (0x40 bytes per object) (0x2000 bytes)
+Object v_objspace[MaxObjects];           // 0xFFFFD000	; object variable space (0x40 bytes per object) (0x2000 bytes)
 Object* v_player = &v_objspace[0];       // 0xFFFFD000*	; object variable space for Sonic (0x40 bytes)
 Object* v_lvlobjspace = &v_objspace[32]; // 0xFFFFD800*	; level object variable space (0x1800 bytes)
 ubyte v_snddriver_ram[0x600];            // 0xFFFFF000  ; sound driver RAM

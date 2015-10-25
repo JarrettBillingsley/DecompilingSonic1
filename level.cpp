@@ -1,3 +1,15 @@
+enum
+{
+	Zone_GHZ,
+	Zone_LZ,
+	Zone_MZ,
+	Zone_SLZ,
+	Zone_SYZ,
+	Zone_SBZ,
+	Zone_EndZ,
+	Zone_SS,
+};
+
 struct LevelHeader
 {
 	uint gfx; // high 8 bits are PLC 1

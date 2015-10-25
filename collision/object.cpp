@@ -106,7 +106,7 @@ void ReactToItem(Object* player)
 		playerHeight = 20;
 	}
 
-	for(int i = 0; i < NUM_LEVEL_OBJECTS)
+	for(int i = 0; i < NumLevelObjects)
 	{
 		auto obj = &v_lvlobjspace[i];
 

@@ -258,7 +258,7 @@ static_assert(sizeof(Object) == 64);
 
 int FindFreeObjSlot()
 {
-	for(int i = 0; i < NUM_LEVEL_OBJECTS; i++)
+	for(int i = 0; i < NumLevelObjects; i++)
 	{
 		if(v_lvlobjspace[i].id == 0)
 			return i + 32;
@@ -269,10 +269,10 @@ int FindFreeObjSlot()
 
 int FindNextFreeObjSlot(Object* addr)
 {
-	if(addr == &v_objspace[MAX_OBJECTS - 1])
-		return MAX_OBJECTS - 1;
+	if(addr == &v_objspace[MaxObjects - 1])
+		return MaxObjects - 1;
 
-	for(; addr < (v_objspace + MAX_OBJECTS); addr++)
+	for(; addr < (v_objspace + MaxObjects); addr++)
 	{
 		if(addr->id == 0)
 			return addr - v_objspace;
@@ -319,7 +319,7 @@ int Object_PointerToSlot(Object* obj)
 void ExecuteObjects()
 {
 	bool isDead = v_player->routine >= 6;
-	auto objsToUpdate = isDead ? 32 : MAX_OBJECTS;
+	auto objsToUpdate = isDead ? 32 : MaxObjects;
 
 	for(int i = 0; i < objsToUpdate; i++)
 	{
@@ -331,7 +331,7 @@ void ExecuteObjects()
 
 	if(isDead)
 	{
-		for(int i = 32; i < MAX_OBJECTS; i++)
+		for(int i = 32; i < MaxObjects; i++)
 		{
 			if(v_objspace[i].id != 0 && BTST(v_objspace[i].render, ObjRender_Visible))
 				DisplaySprite(&v_objspace[i]);

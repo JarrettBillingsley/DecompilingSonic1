@@ -3,7 +3,7 @@
 
 void Clear_Objects()
 {
-	memset(v_objspace, 0, sizeof(Object) * MAX_OBJECTS);
+	memset(v_objspace, 0, sizeof(Object) * MaxObjects);
 }
 
 void Clear_NGFX_Buffer()
