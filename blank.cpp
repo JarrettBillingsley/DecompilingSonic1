@@ -49,8 +49,7 @@ void VBlankBackupSomeThings()
 
 void VBlankDecreaseDemoLength()
 {
-	if(v_demolength > 0)
-		v_demolength--;
+	DecToZero(v_demolength);
 }
 
 void DoSomethingWithHblaHreg()

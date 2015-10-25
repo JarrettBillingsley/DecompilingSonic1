@@ -388,14 +388,9 @@ void PCycle_LZ()
 		auto frame = v_pal_buffer & 3;
 
 		if(f_conveyrev)
-			TimerNeg(frame, 2);
+			DecWrap(frame, 2);
 		else
-		{
-			frame++;
-
-			if(frame == 3)
-				frame = 0;
-		}
+			IncWrap(frame, 2);
 
 		v_pal_buffer = frame;
 		frame *= 6;

@@ -734,10 +734,8 @@ void SS_UpdateAnims()
 void SS_Load()
 {
 _retry:
-	auto ssidx = v_lastspecial++;
-
-	if(v_lastspecial == NumEmeralds)
-		v_lastspecial = 0;
+	auto ssidx = v_lastspecial;
+	IncWrap(v_lastspecial, NumEmeralds - 1);
 
 	if(v_emeralds != NumEmeralds)
 	{

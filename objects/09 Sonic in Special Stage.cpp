@@ -452,9 +452,7 @@ void SS_CheckStaticObjects(Object* self)
 				slot->id = SSAni_GlassBlock;
 				slot->tile = VAR_L(self, collidedAddrL);
 
-				*slot->tile++;
-
-				if(*slot->tile > SSObj_Glass1Hit)
+				if(IncTo(*slot->tile, SSObj_Glass1Hit + 1))
 					*slot->tile = SSObj->None
 			}
 

@@ -194,8 +194,7 @@ void React_Enemy(Object* player, Object* obj)
 		obj->colType = 0;
 
 		// Did we finish him off?
-		obj->colProp--;
-		if(obj->colProp == 0)
+		if(DecToZero(obj->colProp))
 			BSET(obj->status, ObjStatus::Dead);
 	}
 	else

@@ -59,22 +59,10 @@ void Pole(Object* self)
 				{
 					// Sonic's controls are locked to up/down on the pole
 					if(BTST(v_jpadhold1, Buttons::Up))
-					{
-						v_player->y--;
-						auto top = self->y - Top_OffsY;
-
-						if(v_player->y < top)
-							v_player->y = top;
-					}
+						DecTo(v_player->y, self->y - Top_OffsY)
 
 					if(BTST(v_jpadhold1, Buttons::Down))
-					{
-						v_player->y++;
-						auto bottom = self->y + Bottom_OffsY;
-
-						if(v_player->y > bottom)
-							v_player->y = bottom;
-					}
+						IncTo(v_player->y, self->y + Bottom_OffsY);
 
 					// Jump off
 					if(v_jpadpress2 & Buttons::ABC)

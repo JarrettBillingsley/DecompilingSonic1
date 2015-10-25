@@ -370,20 +370,10 @@ void LevSelControls()
 		if(buttonsHeld)
 		{
 			if(buttonsHeld & Buttons:Up)
-			{
-				if(v_levselitem == 0)
-					v_levselitem = 0x14;
-				else
-					v_levselitem--;
-			}
+				DecWrap(v_levselitem, 0x14);
 
 			if(buttonsHeld & Buttons::Dn)
-			{
-				if(v_levselitem == 0x14)
-					v_levselitem = 0;
-				else
-					v_levselitem++;
-			}
+				IncWrap(v_levselitem, 0x14);
 
 			LevSelDisplayText();
 			return;
@@ -397,20 +387,10 @@ void LevSelControls()
 		if(buttonsPressed)
 		{
 			if(buttonsPressed & Buttons::L)
-			{
-				if(v_levselsound == 0)
-					v_levselsound = 0x4F;
-				else
-					v_levselsound--;
-			}
+				DecWrap(v_levselsound, 0x4F);
 
 			if(buttonsPressed & Buttons::R)
-			{
-				if(v_levselsound == 0x4F)
-					v_levselsound = 0;
-				else
-					v_levselsound++;
-			}
+				IncWrap(v_levselsound, 0x4F);
 
 			LevSelDisplayText();
 		}

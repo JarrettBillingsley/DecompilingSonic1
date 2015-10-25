@@ -45,3 +45,48 @@ bool TimerNeg(T& timer, T reload)
 
 	return false;
 }
+
+template<typename T>
+bool DecToZero(T& val)
+{
+	if(val > 0)
+		val--;
+
+	return val == 0;
+}
+
+template<typename T>
+bool DecTo(T& val, T limit)
+{
+	if(val > limit)
+		val--;
+
+	return val == limit;
+}
+
+template<typename T>
+bool IncTo(T& val, T limit)
+{
+	if(val < limit)
+		val++;
+
+	return val == limit;
+}
+
+template<typename T>
+void DecWrap(T& val, T max)
+{
+	if(val == 0)
+		val = max;
+	else
+		val--;
+}
+
+template<typename T>
+void IncWrap(T& val, T max)
+{
+	if(val == max)
+		val = 0;
+	else
+		val++;
+}

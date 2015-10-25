@@ -345,12 +345,7 @@ void SynchroAnimate()
 
 	// Used for nothing
 	if(TimerZero(v_ani2_time, 7))
-	{
-		v_ani2_frame++;
-
-		if(v_ani2_frame == 6)
-			v_ani2_frame = 0;
-	}
+		IncWrap(v_ani2_frame, 5);
 
 	// Used for bouncing rings
 	if(v_ani3_time != 0)
