@@ -296,7 +296,7 @@ void DisplaySprite(Object* obj)
 
 int FindFreeObjSlot()
 {
-	for(int i = 0; i < 96; i++)
+	for(int i = 0; i < NUM_LEVEL_OBJECTS; i++)
 	{
 		if(v_lvlobjspace[i].id == 0)
 			return i + 32;
@@ -417,12 +417,12 @@ bool ChkObjectVisible(Object* self)
 {
 	auto screenX = self->x - v_screenposx;
 
-	if(screenX < 0 || screenX >= 320)
+	if(screenX < 0 || screenX >= ScreenWidth)
 		return true;
 
 	auto screenY = self->y - v_screenposy;
 
-	if(screenY < 0 || screenY >= 224)
+	if(screenY < 0 || screenY >= ScreenHeight)
 		return true;
 
 	return false;
@@ -437,12 +437,12 @@ bool ChkPartiallyVisible(Object* self)
 {
 	auto screenX = self->x - v_screenposx;
 
-	if(screenX + self->actWid < 0 || screenX - self->actWid > 320)
+	if(screenX + self->actWid < 0 || screenX - self->actWid > ScreenWidth)
 		return true;
 
 	auto screenY = self->y - v_screenposy;
 
-	if(screenY < 0 || screenY >= 224)
+	if(screenY < 0 || screenY >= ScreenHeight)
 		return true;
 
 	return false;
@@ -910,7 +910,7 @@ void SmashObject(Object* self, ID newID, int numFrags, short* velocityArray)
 	auto renderBits = self->render;
 	auto newObj = self;
 
-	while(true)
+	for(auto newObj = self; newObj != nullptr && numFrags > -1; newObj = FindFreeObj(), newMapping += 5, numFrags--)
 	{
 		newObj->routine = 4;
 		newObj->id = newID;
@@ -931,16 +931,6 @@ void SmashObject(Object* self, ID newID, int numFrags, short* velocityArray)
 			newObj->velY += newObj->x;
 			DisplaySprite(newObj);
 		}
-
-		if(TimerNeg(numFrags))
-			break;
-
-		newObj = FindFreeObj();
-
-		if(newObj == nullptr)
-			break;
-
-		newMapping += 5;
 	}
 
 	PlaySound_Special(SFX::WallSmash);
@@ -989,7 +979,7 @@ int SolidObject(Object* self, int width, int jumpHH, int walkHH, int objX)
 int SolidObject71(Object* self, int width, int objX)
 {
 	if(!self->solid)
-		return loc_FAD0(self);
+		return Solid_Common(self);
 
 	if(!BTST(v_player->status, ObjStatus::Air))
 	{
@@ -1038,17 +1028,13 @@ int SolidObject2F(Object* self, int width, int jumpHH, byte* heightArray)
 int Solid_ChkEnter(Object* self, int width, int jumpHH)
 {
 	if(BTST(self->render, ObjRender::Visible))
-		return loc_FAD0(self, width, jumpHH)
+		return Solid_Common(self, width, jumpHH)
 	else
 		return Solid_Ignore(self);
 }
 
-// in: d1, d2, a0
-// smash: d0, d3, d4, d5, a1
-// out: d4
-
-//d4                  a0        d1           d2
-int loc_FAD0(Object* self, int width, int jumpHH)
+//d4                      a0        d1           d2
+int Solid_Common(Object* self, int width, int jumpHH)
 {
 	auto distX = v_player->x - self->x + width;
 
@@ -1127,7 +1113,6 @@ int Solid_Ignore(Object* self)
 	return 0;
 }
 
-// smash: d1, d2
 //d4                          a0        d3
 void Solid_TopBottom(Object* self, int distY)
 {
