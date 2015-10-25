@@ -77,21 +77,21 @@ const byte Bubble_Wobble[] =
 
 const ubyte Ani_Drown[][] =
 {
-	{ 5, 0, 1, 2, 3, 4, 9, 13, AnimFlags::Routine },   //  0 zeroappear
-	{ 5, 0, 1, 2, 3, 4, 12, 18, AnimFlags::Routine },  //  1 oneappear
-	{ 5, 0, 1, 2, 3, 4, 12, 17, AnimFlags::Routine },  //  2 twoappear
-	{ 5, 0, 1, 2, 3, 4, 11, 16, AnimFlags::Routine },  //  3 threeappear
-	{ 5, 0, 1, 2, 3, 4, 9, 15, AnimFlags::Routine },   //  4 fourappear
-	{ 5, 0, 1, 2, 3, 4, 10, 14, AnimFlags::Routine },  //  5 fiveappear
-	{ 14, 0, 1, 2, AnimFlags::Routine },               //  6 smallbubble
-	{ 7, 22, 13, 22, 13, 22, 13, AnimFlags::Routine }, //  7 zeroflash
-	{ 7, 22, 18, 22, 18, 22, 18, AnimFlags::Routine }, //  8 oneflash
-	{ 7, 22, 17, 22, 17, 22, 17, AnimFlags::Routine }, //  9 twoflash
-	{ 7, 22, 16, 22, 16, 22, 16, AnimFlags::Routine }, // 10 threeflash
-	{ 7, 22, 15, 22, 15, 22, 15, AnimFlags::Routine }, // 11 fourflash
-	{ 7, 22, 14, 22, 14, 22, 14, AnimFlags::Routine }, // 12 fiveflash
-	{ 14, AnimFlags::Routine },                        // 13 blank
-	{ 14, 1, 2, 3, 4, AnimFlags::Routine },            // 14 mediumbubble
+	{ 5, 0, 1, 2, 3, 4, 9, 13, AnimFlags_Routine },   //  0 zeroappear
+	{ 5, 0, 1, 2, 3, 4, 12, 18, AnimFlags_Routine },  //  1 oneappear
+	{ 5, 0, 1, 2, 3, 4, 12, 17, AnimFlags_Routine },  //  2 twoappear
+	{ 5, 0, 1, 2, 3, 4, 11, 16, AnimFlags_Routine },  //  3 threeappear
+	{ 5, 0, 1, 2, 3, 4, 9, 15, AnimFlags_Routine },   //  4 fourappear
+	{ 5, 0, 1, 2, 3, 4, 10, 14, AnimFlags_Routine },  //  5 fiveappear
+	{ 14, 0, 1, 2, AnimFlags_Routine },               //  6 smallbubble
+	{ 7, 22, 13, 22, 13, 22, 13, AnimFlags_Routine }, //  7 zeroflash
+	{ 7, 22, 18, 22, 18, 22, 18, AnimFlags_Routine }, //  8 oneflash
+	{ 7, 22, 17, 22, 17, 22, 17, AnimFlags_Routine }, //  9 twoflash
+	{ 7, 22, 16, 22, 16, 22, 16, AnimFlags_Routine }, // 10 threeflash
+	{ 7, 22, 15, 22, 15, 22, 15, AnimFlags_Routine }, // 11 fourflash
+	{ 7, 22, 14, 22, 14, 22, 14, AnimFlags_Routine }, // 12 fiveflash
+	{ 14, AnimFlags_Routine },                        // 13 blank
+	{ 14, 1, 2, 3, 4, AnimFlags_Routine },            // 14 mediumbubble
 };
 
 // Is this actually used for anything? Only the master object gets it, and it never draws its sprite
@@ -152,7 +152,7 @@ void DrownCount(Object* self)
 			self->routine = Routine_BubbleExpanding;
 			self->map = Map_Bub;
 			self->gfx = GFX_Bubble;
-			self->render = ObjRender::Visible | ObjRender::Behind;
+			self->render = ObjRender_Visible | ObjRender_Behind;
 			self->actWid = 16;
 			self->priority = 1;
 
@@ -259,11 +259,11 @@ void DrownCount(Object* self)
 					VAR_B(self, spawnTimerB) = RandomNumber(2);
 
 					if(ShouldDing())
-						PlaySound_Special(SFX::Warning); // ding-ding
+						PlaySound_Special(SFX_Warning); // ding-ding
 					else if(v_air <= Drown_Air)
 					{
 						if(v_air == Drown_Air)
-							PlaySound(BGM::Drowning); // uh oh
+							PlaySound(BGM_Drowning); // uh oh
 
 						if(TimerNeg(VAR_B(self, sillyTimerB), VAR_B(self, alwaysOneB)))
 							BSET(VAR_W(self, bubbleFlagsW), BubbleFlags_SpawnNumber);
@@ -274,7 +274,7 @@ void DrownCount(Object* self)
 						// Drowning time.
 						ResumeMusic();
 						f_lockmulti = 0x81;
-						PlaySound_Special(SFX::Drown);
+						PlaySound_Special(SFX_Drown);
 						VAR_B(self, spawnTimerB) = 10;
 						VAR_W(self, bubbleFlagsW) = BubbleFlags_Enable;
 						VAR_W(self, drowningTimeW) = Drown_Length;
@@ -316,7 +316,7 @@ void DrownCount(Object* self)
 					if(auto bubble = FindFreeObj())
 					{
 						auto bubble = &v_objspace[slot];
-						bubble->id = ID::DrownCount;
+						bubble->id = ID_DrownCount;
 						bubble->x v_player->x + (PlayerFlipped() ? -Bubble_OffsX : Bubble_OffsX);
 						bubble->y = v_player->y;
 						bubble->angle = PlayerFlipped() ? Bubble_AngleFlipped : 0;
@@ -357,7 +357,7 @@ void CheckNumberBubbleConversion(Object* self)
 	if(VAR_W(self, frameTimerW) != 0 && TimerZero(VAR_W(self, frameTimerW), NumberBubble_Timer2) && self->anim < 7)
 	{
 		self->velY = 0;
-		self->render = ObjRender::Visible; // makes it screen-relative positioned
+		self->render = ObjRender_Visible; // makes it screen-relative positioned
 		self->x = self->x - v_screenposx + 128;
 		self->screenY = self->y - v_screenposy + 128;
 		self->routine = Routine_NumberTransition;

@@ -2,46 +2,40 @@
 // Palette Types and Data
 // =====================================================================================================================
 
-namespace Palette
+enum
 {
-	enum
-	{
-		SegaBG,     // 0x00
-		Title,      // 0x01
-		LevelSel,   // 0x02
-		Sonic,      // 0x03
-		GHZ,        // 0x04
-		LZ,         // 0x05
-		MZ,         // 0x06
-		SLZ,        // 0x07
-		SYZ,        // 0x08
-		SBZ1,       // 0x09
-		Special,    // 0x0A
-		LZWater,    // 0x0B
-		SBZ3,       // 0x0C
-		SBZ3Water,  // 0x0D
-		SBZ2,       // 0x0E
-		LZSonWater, // 0x0F
-		SBZ3SonWat, // 0x10
-		SSResult,   // 0x11
-		Continue,   // 0x12
-		Ending,     // 0x13
-	};
+	Palette_SegaBG,     // 0x00
+	Palette_Title,      // 0x01
+	Palette_LevelSel,   // 0x02
+	Palette_Sonic,      // 0x03
+	Palette_GHZ,        // 0x04
+	Palette_LZ,         // 0x05
+	Palette_MZ,         // 0x06
+	Palette_SLZ,        // 0x07
+	Palette_SYZ,        // 0x08
+	Palette_SBZ1,       // 0x09
+	Palette_Special,    // 0x0A
+	Palette_LZWater,    // 0x0B
+	Palette_SBZ3,       // 0x0C
+	Palette_SBZ3Water,  // 0x0D
+	Palette_SBZ2,       // 0x0E
+	Palette_LZSonWater, // 0x0F
+	Palette_SBZ3SonWat, // 0x10
+	Palette_SSResult,   // 0x11
+	Palette_Continue,   // 0x12
+	Palette_Ending,     // 0x13
 };
 
-namespace Colors
+enum
 {
-	enum
-	{
-		Black =   0x000,
-		White =   0xEEE,
-		Blue =    0xE00,
-		Green =   0x0E0,
-		Red =     0x00E,
-		Yellow =  Green + Red,
-		Aqua =    Green + Blue,
-		Magenta = Blue + Red,
-	};
+	Colors_Black =   0x000,
+	Colors_White =   0xEEE,
+	Colors_Blue =    0xE00,
+	Colors_Green =   0x0E0,
+	Colors_Red =     0x00E,
+	Colors_Yellow =  Colors_Green + Colors_Red,
+	Colors_Aqua =    Colors_Green + Colors_Blue,
+	Colors_Magenta = Colors_Blue + Colors_Red,
 };
 
 const ushort Pal_SegaBG[0x40] =
@@ -338,13 +332,13 @@ void PaletteCycle()
 {
 	switch(v_zone)
 	{
-		case Zone::GHZ:
-		case Zone::EndZ: PCycle_GHZ(); break;
-		case Zone::LZ:   PCycle_LZ();  break;
-		case Zone::MZ:   PCycle_MZ();  break;
-		case Zone::SLZ:  PCycle_SLZ(); break;
-		case Zone::SYZ:  PCycle_SYZ(); break;
-		case Zone::SBZ:  PCycle_SBZ(); break;
+		case Zone_GHZ:
+		case Zone_EndZ: PCycle_GHZ(); break;
+		case Zone_LZ:   PCycle_LZ();  break;
+		case Zone_MZ:   PCycle_MZ();  break;
+		case Zone_SLZ:  PCycle_SLZ(); break;
+		case Zone_SYZ:  PCycle_SYZ(); break;
+		case Zone_SBZ:  PCycle_SBZ(); break;
 		default: assert(false);
 	}
 }
@@ -721,7 +715,7 @@ void PalFadeIn_Alt()
 	auto palette = v_pal_dry + v_pfade_start;
 
 	for(int i = 0; i < v_pfade_size; i++)
-		palette[i] = Colors::Black;
+		palette[i] = Colors_Black;
 
 	for(int i = 0; i < 16; i++)
 	{
@@ -739,7 +733,7 @@ void FadeIn_FromBlack()
 	for(int i = 0; i < v_pfade_size; i++)
 		FadeIn_AddColour(cur++, dest++);
 
-	if(v_zone == Zone::LZ)
+	if(v_zone == Zone_LZ)
 	{
 		auto cur = v_pal_water + v_pfade_start;
 		auto dest = v_pal_water_dup + v_pfade_start;
@@ -821,7 +815,7 @@ void PaletteWhiteIn()
 	auto palette = v_pal_dry + v_pfade_start;
 
 	for(int i = 0; i < v_pfade_size; i++)
-		*palette++ = Colors::White;
+		*palette++ = Colors_White;
 
 	for(int i = 0; i < 16; i++)
 	{
@@ -839,7 +833,7 @@ void WhiteIn_FromWhite()
 	for(int i = 0; i < v_pfade_size; i++)
 		WhiteIn_DecColour(cur++, dest++);
 
-	if(v_zone == Zone::LZ)
+	if(v_zone == Zone_LZ)
 	{
 		auto cur = v_pal_water + v_pfade_start;
 		auto dest = v_pal_water_dup + v_pfade_start;
@@ -912,23 +906,23 @@ void WhiteOut_AddColour(ushort* cur)
 {
 	auto curColor = *cur;
 
-	if(curColor != Colors::White)
+	if(curColor != Colors_White)
 	{
 		auto tmpColor = curColor & 0x0E; // red
 
-		if(tmpColor != Colors::Red)
+		if(tmpColor != Colors_Red)
 			*cur += 2;
 		else
 		{
 			tmpColor = curColor & 0xE0; // green
 
-			if(tmpColor != Colors::Green)
+			if(tmpColor != Colors_Green)
 				*cur += 0x20;
 			else
 			{
 				tmpColor = curColor & 0xE00; // blue
 
-				if(tmpColor != Colors::Blue)
+				if(tmpColor != Colors_Blue)
 					*cur += 0x200;
 			}
 		}

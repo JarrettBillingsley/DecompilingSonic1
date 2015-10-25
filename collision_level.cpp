@@ -299,7 +299,7 @@ ushort* FindNearestTile(Object* self, int objBottom, int objX)
 	{
 		addr &= 0x7F;
 
-		if(BTST(self->render, ObjRender::Behind))
+		if(BTST(self->render, ObjRender_Behind))
 		{
 			addr++;
 

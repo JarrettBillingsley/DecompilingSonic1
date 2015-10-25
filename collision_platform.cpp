@@ -30,10 +30,10 @@ void Plat_NoXCheck2(Object* self, int platTop)
 	self->routine += 2;
 
 // loc_74AE: (called by monitor)
-	if(BTST(v_player->status, ObjStatus::StandingOn))
+	if(BTST(v_player->status, ObjStatus_StandingOn))
 	{
 		auto obj = &v_objspace[VAR_B(v_player, Player_StandingObjectB)];
-		BCLR(obj->status, ObjStatus::StandingOn);
+		BCLR(obj->status, ObjStatus_StandingOn);
 		obj->routine2 = 0;
 
 		if(obj->routine == 4)
@@ -48,8 +48,8 @@ void Plat_NoXCheck2(Object* self, int platTop)
 	if(PlayerInAir())
 		Sonic_ResetOnFloor(v_player);
 
-	BSET(v_player->status, ObjStatus::StandingOn);
-	BSET(self->status, ObjStatus::StandingOn);
+	BSET(v_player->status, ObjStatus_StandingOn);
+	BSET(self->status, ObjStatus_StandingOn);
 }
 
 // Returns true when player leaves platform (cs in original)
@@ -70,9 +70,9 @@ bool ExitPlatform(Object* self, int leftOffset, int halfWidth, int& diffX)
 			return false;
 	}
 
-	BCLR(v_player->status, ObjStatus::StandingOn);
+	BCLR(v_player->status, ObjStatus_StandingOn);
 	self->routine = 2;
-	BCLR(self->status, ObjStatus::StandingOn);
+	BCLR(self->status, ObjStatus_StandingOn);
 	return true;
 }
 

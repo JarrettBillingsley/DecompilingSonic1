@@ -1,6 +1,6 @@
 void GM_Sega()
 {
-	PlaySound_Special(BGM::Stop);
+	PlaySound_Special(BGM_Stop);
 	ClearPLC();
 	PaletteFadeOut();
 
@@ -29,7 +29,7 @@ void GM_Sega()
 	if(!(v_megadrive & 0x80))
 		CopyTilemap(0xFF0A40, 0xC53A, 2, 1);
 
-	PalLoad2(Palette::SegaBG);
+	PalLoad2(Palette_SegaBG);
 
 	v_pcyc_num = -10;
 	v_pcyc_time = 0;
@@ -44,14 +44,14 @@ void GM_Sega()
 		WaitForVBlank(VBlank_Sega);
 	while(PalCycle_Sega());
 
-	PlaySound_Special(SFX::Sega);
+	PlaySound_Special(SFX_Sega);
 
 	WaitForVBlank(VBlank_SegaSwitch);
 	v_demolength = 31;
 
 	do
 		WaitForVBlank(VBlank_Sega);
-	while(v_demolength > 0 && !(v_jpadpress1 & Buttons::Start));
+	while(v_demolength > 0 && !(v_jpadpress1 & Buttons_Start));
 
-	v_gamemode = GameMode::Title;
+	v_gamemode = GameMode_Title;
 }

@@ -19,10 +19,10 @@ enum : ushort
 
 const ubyte Ani_Harp[][] =
 {
-	{ 3, 1, 2, AnimFlags::Routine }, // horiz_extending
-	{ 3, 1, 0, AnimFlags::Routine }, // horiz_retracting
-	{ 3, 4, 5, AnimFlags::Routine }, // vert_extending
-	{ 3, 4, 3, AnimFlags::Routine }, // vert_retracting
+	{ 3, 1, 2, AnimFlags_Routine }, // horiz_extending
+	{ 3, 1, 0, AnimFlags_Routine }, // horiz_retracting
+	{ 3, 4, 5, AnimFlags_Routine }, // vert_extending
+	{ 3, 4, 3, AnimFlags_Routine }, // vert_retracting
 };
 
 const ubyte Map_Harp[][] =
@@ -47,7 +47,7 @@ void Harpoon(Object* self)
 			self->routine = Routine_Main;
 			self->map = Map_Harp;
 			self->gfx = GFX_Harpoon;
-			self->render = ObjRender::LayerNormal;
+			self->render = ObjRender_LayerNormal;
 			self->priority = 4;
 			self->anim = self->subtype; // vert/horiz;
 			self->actWid = 20;

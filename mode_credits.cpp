@@ -18,8 +18,8 @@ void GM_Credits()
 	Clear_Objects();
 	NemDec(Nem_CreditText, 0xB400);
 	Clear_Palette(v_pal_dry_dup);
-	PalLoad1(Palette::Sonic);
-	v_objspace[2].id = ID::CreditsText;
+	PalLoad1(Palette_Sonic);
+	v_objspace[2].id = ID_CreditsText;
 	ExecuteObjects();
 	BuildSprites();
 	EndingDemoLoad();
@@ -29,7 +29,7 @@ void GM_Credits()
 	if(plc)
 		AddPLC(plc);
 
-	AddPLC(PLC::Main2);
+	AddPLC(PLC_Main2);
 	v_demolength = 120;
 	PaletteFadeIn();
 
@@ -57,11 +57,11 @@ void GM_Credits()
 		f_wtr_state = false;
 		ClearScreen();
 		Clear_Objects();
-		QuickPLC(PLC::TryAgain);
+		QuickPLC(PLC_TryAgain);
 		Clear_Palette(v_pal_dry_dup);
-		PalLoad1(Palette::Ending);
+		PalLoad1(Palette_Ending);
 		v_pal_dry_dup[32] = 0;
-		v_objspace[2].id = ID::EndEggman;
+		v_objspace[2].id = ID_EndEggman;
 		ExecuteObjects();
 		BuildSprites();
 		v_demolength = 1800;
@@ -74,11 +74,11 @@ void GM_Credits()
 			ExecuteObjects();
 			BuildSprites();
 
-			if(v_jpadpress1 & Buttons::Start || v_demolength == 0)
+			if(v_jpadpress1 & Buttons_Start || v_demolength == 0)
 				break;
-		} while(v_gamemode == GameMode::Credits);
+		} while(v_gamemode == GameMode_Credits);
 
-		v_gamemode = GameMode::Sega;
+		v_gamemode = GameMode_Sega;
 		return;
 	}
 }
@@ -93,8 +93,8 @@ void EndingDemoLoad()
 
 	if(v_creditsnum < 9)
 	{
-		f_demo = DemoMode::On || DemoMode::Credits;
-		v_gamemode = GameMode::Demo;
+		f_demo = DemoMode_On || DemoMode_Credits;
+		v_gamemode = GameMode_Demo;
 		v_lives = 3;
 		v_rings = 0;
 		v_time = 0;

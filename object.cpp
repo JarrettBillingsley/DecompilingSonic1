@@ -2,200 +2,188 @@
 // Enums and structs
 // =====================================================================================================================
 
-namespace ObjStatus
+enum : ubyte
 {
-	enum : ubyte
-	{
-		Flip = 0x01,       // 0
-		Air = 0x02,        // 1
-		Rolling = 0x04,    // 2
-		StandingOn = 0x08, // 3
-		Jumping = 0x10,    // 4
-		Pushing = 0x20,    // 5
-		Underwater = 0x40, // 6
-		Dead = 0x80        // 7
-	};
-}
-
-namespace ObjRender
-{
-	enum : ubyte
-	{
-		HorizFlip =     0x01, // 0
-		VertFlip =      0x02, // 1
-
-		LayerNormal =   0x04, // 2
-		LayerBG1 =      0x00, // 2
-		LayerBG2 =      0x04, // 2
-		LayerBG =       0x08, // 3
-		Layer =         0x0C, // 2 + 3; 0 = screen-relative; 1 = normal; 2 = BG1-relative; 3 = BG2-relative
-
-		Something =     0x10, // 4; changes Y positioning somehow?
-		SmashFragment = 0x20, // 5
-		Behind =        0x40, // 6
-		Visible =       0x80, // 7
-	};
-}
-
-namespace AnimFlags
-{
-	enum
-	{
-		Command =  0x80, // Top bit set means it's a command
-		End =      0xFF, // return to beginning of animation
-		Back =     0xFE, // go back (specified number) bytes
-		Change =   0xFD, // run specified animation
-		Routine =  0xFC, // increment routine counter
-		Reset =    0xFB, // reset animation and 2nd object routine counter
-		Routine2 = 0xFA, // increment 2nd routine counter
-	};
+	ObjStatus_Flip = 0x01,       // 0
+	ObjStatus_Air = 0x02,        // 1
+	ObjStatus_Rolling = 0x04,    // 2
+	ObjStatus_StandingOn = 0x08, // 3
+	ObjStatus_Jumping = 0x10,    // 4
+	ObjStatus_Pushing = 0x20,    // 5
+	ObjStatus_Underwater = 0x40, // 6
+	ObjStatus_Dead = 0x80        // 7
 };
 
-namespace ID
+enum : ubyte
 {
-	enum : ubyte
-	{
-		SonicPlayer = 1, // 0x01
-		Obj02,
-		Obj03,
-		Obj04,
-		Obj05,
-		Obj06,
-		Obj07,
-		Splash,		    // 0x08
-		SonicSpecial,
-		DrownCount,
-		Pole,
-		FlapDoor,
-		Signpost,
-		TitleSonic,
-		PSBTM,
-		Obj10,		    // 0x10
-		Bridge,
-		SpinningLight,
-		LavaMaker,
-		LavaBall,
-		SwingingPlatform,
-		Harpoon,
-		Helix,
-		BasicPlatform,	// 0x18
-		Obj19,
-		CollapseLedge,
-		WaterSurface,
-		Scenery,
-		MagicSwitch,
-		BallHog,
-		Crabmeat,
-		Cannonball,		// 0x20
-		HUD,
-		BuzzBomber,
-		Missile,
-		MissileDissolve,
-		Rings,
-		Monitor,
-		ExplosionItem,
-		Animals,		// 0x28
-		Points,
-		AutoDoor,
-		Chopper,
-		Jaws,
-		Burrobot,
-		PowerUp,
-		LargeGrass,
-		GlassBlock,		// 0x30
-		ChainStomp,
-		Button,
-		PushBlock,
-		TitleCard,
-		GrassFire,
-		Spikes,
-		RingLoss,
-		ShieldItem,		// 0x38
-		GameOverCard,
-		GotThroughCard,
-		PurpleRock,
-		SmashWall,
-		BossGreenHill,
-		Prison,
-		ExplosionBomb,
-		MotoBug,		// 0x40
-		Springs,
-		Newtron,
-		Roller,
-		EdgeWalls,
-		SideStomp,
-		MarbleBrick,
-		Bumper,
-		BossBall,		// 0x48
-		WaterSound,
-		VanishSonic,
-		GiantRing,
-		GeyserMaker,
-		LavaGeyser,
-		LavaWall,
-		Obj4F,
-		Yadrin,		    // 0x50
-		SmashBlock,
-		MovingBlock,
-		CollapseFloor,
-		LavaTag,
-		Basaran,
-		FloatingBlock,
-		SpikeBall,
-		BigSpikeBall,	// 0x58
-		Elevator,
-		CirclingPlatform,
-		Staircase,
-		Pylon,
-		Fan,
-		Seesaw,
-		Bomb,
-		Orbinaut,		// 0x60
-		LabyrinthBlock,
-		Gargoyle,
-		LabyrinthConvey,
-		Bubble,
-		Waterfall,
-		Junction,
-		RunningDisc,
-		Conveyor,		// 0x68
-		SpinPlatform,
-		Saws,
-		ScrapStomp,
-		VanishPlatform,
-		Flamethrower,
-		Electro,
-		SpinConvey,
-		Girder,		    // 0x70
-		Invisibarrier,
-		Teleport,
-		BossMarble,
-		BossFire,
-		BossSpringYard,
-		BossBlock,
-		BossLabyrinth,
-		Caterkiller,	// 0x78
-		Lamppost,
-		BossStarLight,
-		BossSpikeball,
-		RingFlash,
-		HiddenBonus,
-		SSResult,
-		SSRChaos,
-		ContScrItem,	// 0x80
-		ContSonic,
-		ScrapEggman,
-		FalseFloor,
-		EggmanCylinder,
-		BossFinal,
-		BossPlasma,
-		EndSonic,
-		EndChaos,		// 0x88
-		EndSTH,
-		CreditsText,
-		EndEggman,
-		TryChaos
-	};
+	ObjRender_HorizFlip =     0x01, // 0
+	ObjRender_VertFlip =      0x02, // 1
+
+	ObjRender_LayerNormal =   0x04, // 2
+	ObjRender_LayerBG1 =      0x00, // 2
+	ObjRender_LayerBG2 =      0x04, // 2
+	ObjRender_LayerBG =       0x08, // 3
+	ObjRender_Layer =         0x0C, // 2 + 3; 0 = screen-relative; 1 = normal; 2 = BG1-relative; 3 = BG2-relative
+
+	ObjRender_Something =     0x10, // 4; changes Y positioning somehow?
+	ObjRender_SmashFragment = 0x20, // 5
+	ObjRender_Behind =        0x40, // 6
+	ObjRender_Visible =       0x80, // 7
+};
+
+enum
+{
+	AnimFlags_Command =  0x80, // Top bit set means it's a command
+	AnimFlags_End =      0xFF, // return to beginning of animation
+	AnimFlags_Back =     0xFE, // go back (specified number) bytes
+	AnimFlags_Change =   0xFD, // run specified animation
+	AnimFlags_Routine =  0xFC, // increment routine counter
+	AnimFlags_Reset =    0xFB, // reset animation and 2nd object routine counter
+	AnimFlags_Routine2 = 0xFA, // increment 2nd routine counter
+};
+
+enum : ubyte
+{
+	ID_SonicPlayer = 1, // 0x01
+	ID_Obj02,
+	ID_Obj03,
+	ID_Obj04,
+	ID_Obj05,
+	ID_Obj06,
+	ID_Obj07,
+	ID_Splash,          // 0x08
+	ID_SonicSpecial,
+	ID_DrownCount,
+	ID_Pole,
+	ID_FlapDoor,
+	ID_Signpost,
+	ID_TitleSonic,
+	ID_PSBTM,
+	ID_Obj10,           // 0x10
+	ID_Bridge,
+	ID_SpinningLight,
+	ID_LavaMaker,
+	ID_LavaBall,
+	ID_SwingingPlatform,
+	ID_Harpoon,
+	ID_Helix,
+	ID_BasicPlatform,   // 0x18
+	ID_Obj19,
+	ID_CollapseLedge,
+	ID_WaterSurface,
+	ID_Scenery,
+	ID_MagicSwitch,
+	ID_BallHog,
+	ID_Crabmeat,
+	ID_Cannonball,      // 0x20
+	ID_HUD,
+	ID_BuzzBomber,
+	ID_Missile,
+	ID_MissileDissolve,
+	ID_Rings,
+	ID_Monitor,
+	ID_ExplosionItem,
+	ID_Animals,         // 0x28
+	ID_Points,
+	ID_AutoDoor,
+	ID_Chopper,
+	ID_Jaws,
+	ID_Burrobot,
+	ID_PowerUp,
+	ID_LargeGrass,
+	ID_GlassBlock,      // 0x30
+	ID_ChainStomp,
+	ID_Button,
+	ID_PushBlock,
+	ID_TitleCard,
+	ID_GrassFire,
+	ID_Spikes,
+	ID_RingLoss,
+	ID_ShieldItem,      // 0x38
+	ID_GameOverCard,
+	ID_GotThroughCard,
+	ID_PurpleRock,
+	ID_SmashWall,
+	ID_BossGreenHill,
+	ID_Prison,
+	ID_ExplosionBomb,
+	ID_MotoBug,         // 0x40
+	ID_Springs,
+	ID_Newtron,
+	ID_Roller,
+	ID_EdgeWalls,
+	ID_SideStomp,
+	ID_MarbleBrick,
+	ID_Bumper,
+	ID_BossBall,        // 0x48
+	ID_WaterSound,
+	ID_VanishSonic,
+	ID_GiantRing,
+	ID_GeyserMaker,
+	ID_LavaGeyser,
+	ID_LavaWall,
+	ID_Obj4F,
+	ID_Yadrin,          // 0x50
+	ID_SmashBlock,
+	ID_MovingBlock,
+	ID_CollapseFloor,
+	ID_LavaTag,
+	ID_Basaran,
+	ID_FloatingBlock,
+	ID_SpikeBall,
+	ID_BigSpikeBall,    // 0x58
+	ID_Elevator,
+	ID_CirclingPlatform,
+	ID_Staircase,
+	ID_Pylon,
+	ID_Fan,
+	ID_Seesaw,
+	ID_Bomb,
+	ID_Orbinaut,        // 0x60
+	ID_LabyrinthBlock,
+	ID_Gargoyle,
+	ID_LabyrinthConvey,
+	ID_Bubble,
+	ID_Waterfall,
+	ID_Junction,
+	ID_RunningDisc,
+	ID_Conveyor,        // 0x68
+	ID_SpinPlatform,
+	ID_Saws,
+	ID_ScrapStomp,
+	ID_VanishPlatform,
+	ID_Flamethrower,
+	ID_Electro,
+	ID_SpinConvey,
+	ID_Girder,          // 0x70
+	ID_Invisibarrier,
+	ID_Teleport,
+	ID_BossMarble,
+	ID_BossFire,
+	ID_BossSpringYard,
+	ID_BossBlock,
+	ID_BossLabyrinth,
+	ID_Caterkiller,     // 0x78
+	ID_Lamppost,
+	ID_BossStarLight,
+	ID_BossSpikeball,
+	ID_RingFlash,
+	ID_HiddenBonus,
+	ID_SSResult,
+	ID_SSRChaos,
+	ID_ContScrItem,     // 0x80
+	ID_ContSonic,
+	ID_ScrapEggman,
+	ID_FalseFloor,
+	ID_EggmanCylinder,
+	ID_BossFinal,
+	ID_BossPlasma,
+	ID_EndSonic,
+	ID_EndChaos,        // 0x88
+	ID_EndSTH,
+	ID_CreditsText,
+	ID_EndEggman,
+	ID_TryChaos
 };
 
 struct Object
@@ -345,7 +333,7 @@ void ExecuteObjects()
 	{
 		for(int i = 32; i < MAX_OBJECTS; i++)
 		{
-			if(v_objspace[i].id != 0 && BTST(v_objspace[i].render, ObjRender::Visible))
+			if(v_objspace[i].id != 0 && BTST(v_objspace[i].render, ObjRender_Visible))
 				DisplaySprite(&v_objspace[i]);
 		}
 	}
@@ -391,36 +379,36 @@ void AnimateSprite(Object* self, ushort* animScripts)
 
 	switch(command)
 	{
-		case AnimFlags::Routine2:
+		case AnimFlags_Routine2:
 			self->routine2 += 2;
 			break;
 
-		case AnimFlags::Reset:
+		case AnimFlags_Reset:
 			self->aniFrame = 0;
 			self->routine2 = 0;
 			break;
 
-		case AnimFlags::Routine:
+		case AnimFlags_Routine:
 			self->routine += 2;
 			break;
 
-		case AnimFlags::Change:
+		case AnimFlags_Change:
 			self->anim = script[frame + 2];
 			break;
 
-		case AnimFlags::Back:
+		case AnimFlags_Back:
 			self->aniFrame -= script[frame + 2];
 			frame -= script[frame + 2];
 			command = script[frame + 1];
 			goto Anim_Next;
 
-		case AnimFlags::End:
+		case AnimFlags_End:
 			self->aniFrame = 0;
 			command = script[1];
 			goto Anim_Next;
 
 		default:
-			if(command & AnimFlags::Command) // ignore invalid commands
+			if(command & AnimFlags_Command) // ignore invalid commands
 				break;
 		Anim_Next:
 			self->frame = command & 0x1F;
@@ -474,12 +462,12 @@ bool ChkPartiallyVisible(Object* self)
 
 bool Object_IsVisible(Object* self)
 {
-	return BTST(self->render, ObjRender::Visible);
+	return BTST(self->render, ObjRender_Visible);
 }
 
 bool Object_IsFlipped(Object* self)
 {
-	return BTST(self->status, ObjStatus::Flip);
+	return BTST(self->status, ObjStatus_Flip);
 }
 
 bool Object_OutOfRange(Object* self)
@@ -603,7 +591,7 @@ const short Smash_FragSpd2[] =
 void SmashObject(Object* self, ID newID, int numFrags, short* velocityArray)
 {
 	auto newMapping = self->map + self->frame + 1
-	BSET(self->render, ObjRender::SmashFragment);
+	BSET(self->render, ObjRender_SmashFragment);
 	self->id = newID;
 	auto renderBits = self->render;
 	auto newObj = self;
@@ -631,7 +619,7 @@ void SmashObject(Object* self, ID newID, int numFrags, short* velocityArray)
 		}
 	}
 
-	PlaySound_Special(SFX::WallSmash);
+	PlaySound_Special(SFX_WallSmash);
 }
 
 // out: a2 = v_objstate

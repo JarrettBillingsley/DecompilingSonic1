@@ -26,7 +26,7 @@ enum : ushort
 
 const ubyte Ani_PSBTM[][] =
 {
-	{ 31, 0, 1, AnimFlags::End }, // flash
+	{ 31, 0, 1, AnimFlags_End }, // flash
 };
 
 const ubyte Map_PSB[][] =

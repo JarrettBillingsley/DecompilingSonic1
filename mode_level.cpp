@@ -1,16 +1,16 @@
 void GM_Level()
 {
 _restart:
-	v_gamemode |= GameMode::PreLevel; // flag that we're in pre-level sequence
+	v_gamemode |= GameMode_PreLevel; // flag that we're in pre-level sequence
 
-	if(f_demo != DemoMode::Credits)
-		PlaySound_Special(BGM::Fade);
+	if(f_demo != DemoMode_Credits)
+		PlaySound_Special(BGM_Fade);
 
 	ClearPLC();
 	PaletteFadeOut();
 
 	// If we're not doing an ending sequence demo...
-	if(f_demo != DemoMode::Credits)
+	if(f_demo != DemoMode_Credits)
 	{
 		DISABLE_INTERRUPTS();
 			NemDec(Nem_TitleCard, 0xB000);
@@ -21,7 +21,7 @@ _restart:
 		if(plc1 != 0)
 			AddPLC(plc1); // load level patterns
 
-		AddPLC(PLC::Main2); // load standard patterns
+		AddPLC(PLC_Main2); // load standard patterns
 	}
 
 	// Clear shit out
@@ -45,7 +45,7 @@ _restart:
 		// Set up h-interrupts for Labyrinth's water
 		v_hbla_hreg = 0x8A00 + 223; // water palette change pos
 
-		if(v_zone == Zone::LZ)
+		if(v_zone == Zone_LZ)
 		{
 			ENABLE_H_INT();
 
@@ -59,27 +59,27 @@ _restart:
 	ENABLE_INTERRUPTS();
 
 	// Setup palettes
-	PalLoad2(Palette::Sonic);
+	PalLoad2(Palette_Sonic);
 
-	if(v_zone == Zone::LZ)
+	if(v_zone == Zone_LZ)
 	{
-		PalLoad3_Water(v_act == 3 ? Palette::SBZ3SonWat : Palette::LZSonWater);
+		PalLoad3_Water(v_act == 3 ? Palette_SBZ3SonWat : Palette_LZSonWater);
 
 		if(v_lastLamp)
 			f_wtr_state = v_lamp_wtrstat;
 	}
 
 	// Start the music and do the title card
-	if(f_demo != DemoMode::Credits)
+	if(f_demo != DemoMode_Credits)
 	{
-		if(v_zone == Zone::LZ && v_act == 3)
-			PlaySound(BGM::SBZ);
-		else if(v_zone == Zone::SBZ && v_act == 2)
-			PlaySound(BGM::FZ);
+		if(v_zone == Zone_LZ && v_act == 3)
+			PlaySound(BGM_SBZ);
+		else if(v_zone == Zone_SBZ && v_act == 2)
+			PlaySound(BGM_FZ);
 		else
 			PlaySound(MusicList[v_zone]);
 
-		v_objspace[2].id = ID::TitleCard;
+		v_objspace[2].id = ID_TitleCard;
 
 		// Wait for title card to finish
 		do
@@ -95,7 +95,7 @@ _restart:
 	}
 
 	// Load a bunch of crap
-	PalLoad1(Palette::Sonic);
+	PalLoad1(Palette_Sonic);
 	LevelSizeLoad();
 	DeformLayers();
 	v_bgscroll1 |= (1 << 2);
@@ -106,24 +106,24 @@ _restart:
 	LZWaterFeatures();
 
 	// Sonic and the HUD
-	v_player->id = ID::SonicPlayer;
+	v_player->id = ID_SonicPlayer;
 
-	if(f_demo != DemoMode::Credits)
-		v_objspace[1].id = ID::HUD;
+	if(f_demo != DemoMode_Credits)
+		v_objspace[1].id = ID_HUD;
 
 	// Check for debug mode
-	if(f_debugcheat && (v_jpadhold1 & Buttons::A))
+	if(f_debugcheat && (v_jpadhold1 & Buttons_A))
 		f_debugmode = true;
 
 	v_jpadhold2 = 0;
 	v_jpadhold1 = 0;
 
 	// Set up water surface objects
-	if(v_zone == Zone::LZ)
+	if(v_zone == Zone_LZ)
 	{
-		v_objspace[30].id = ID::WaterSurface;
+		v_objspace[30].id = ID_WaterSurface;
 		v_objspace[30].x = 96;
-		v_objspace[31].id = ID::WaterSurface;
+		v_objspace[31].id = ID_WaterSurface;
 		v_objspace[31].x = 288;
 	}
 
@@ -159,18 +159,18 @@ _restart:
 	// Demo stuff
 	v_btnpushtime1 = 0;
 
-	auto demoData = (f_demo == DemoMode::Credits) ? DemoEndDataPtr[v_creditsnum - 1] : DemoDataPtr[v_zone];
+	auto demoData = (f_demo == DemoMode_Credits) ? DemoEndDataPtr[v_creditsnum - 1] : DemoDataPtr[v_zone];
 
 	v_btnpushtime2 = demoData[1] - 1;
 
-	if(f_demo == DemoMode::Credits)
+	if(f_demo == DemoMode_Credits)
 		v_demolength = v_creditsnum == 4 ? 510 : 540;
 	else
 		v_demoLength = 1800;
 
 	// Water palette
-	if(v_zone == Zone::LZ)
-		PalLoad4_Water(v_act == 3 ? Palette::SBZ3Water : Palette::LZWater);
+	if(v_zone == Zone_LZ)
+		PalLoad4_Water(v_act == 3 ? Palette_SBZ3Water : Palette_LZWater);
 
 	// Delay a few frames
 	for(int i = 0; i < 4; i++)
@@ -179,10 +179,10 @@ _restart:
 	v_pfade_start = 0x202F; // fade in 2nd, 3rd & 4th palette lines
 	PalFadeIn_Alt();
 
-	if(f_demo == DemoMode::Credits)
+	if(f_demo == DemoMode_Credits)
 	{
-		AddPLC(PLC::Explode);
-		AddPLC(v_zone + PLC::GHZAnimals);
+		AddPLC(PLC_Explode);
+		AddPLC(v_zone + PLC_GHZAnimals);
 	}
 	else
 	{
@@ -193,7 +193,7 @@ _restart:
 		v_objspace[5].routine += 4;
 	}
 
-	v_gamemode &= ~GameMode::PreLevel; // Clear top bit to indicate we're done with pre-level stuff
+	v_gamemode &= ~GameMode_PreLevel; // Clear top bit to indicate we're done with pre-level stuff
 
 	// ===========================================================================
 	// Main level loop (when all title card and loading sequences are finished)
@@ -224,12 +224,12 @@ Level_MainLoop:
 		SynchroAnimate();
 		SignpostArtLoad();
 
-		if(v_gamemode == GameMode::Demo)
+		if(v_gamemode == GameMode_Demo)
 		{
 			if(f_restart || v_demolength == 0)
 			{
-				if(v_gamemode == GameMode::Demo)
-					v_gamemode = (f_demo == DemoMode::Credits) ? GameMode::Credits : GameMode::Sega
+				if(v_gamemode == GameMode_Demo)
+					v_gamemode = (f_demo == DemoMode_Credits) ? GameMode_Credits : GameMode_Sega
 
 				v_demoLength = 60;
 				v_pfade_start = 63;
@@ -256,20 +256,20 @@ Level_MainLoop:
 						return;
 				}
 			}
-			else if(v_gamemode != GameMode::Demo)
+			else if(v_gamemode != GameMode_Demo)
 			{
-				v_gamemode = GameMode::Sega;
+				v_gamemode = GameMode_Sega;
 				return;
 			}
 		}
-		else if(v_gamemode != GameMode::Level)
+		else if(v_gamemode != GameMode_Level)
 			return;
 	}
 }
 
 void PauseGame()
 {
-	if(v_lives > 0 && f_pause == false && v_jpadpress1 & Buttons::Start)
+	if(v_lives > 0 && f_pause == false && v_jpadpress1 & Buttons_Start)
 	{
 		f_pause = true;
 		f_stopmusic = true;
@@ -280,20 +280,20 @@ void PauseGame()
 
 			if(f_slomocheat)
 			{
-				if(v_jpadpress1 & Buttons::A)
+				if(v_jpadpress1 & Buttons_A)
 				{
-					v_gamemode = GameMode::Title;
+					v_gamemode = GameMode_Title;
 					break;
 				}
 
-				if(v_jpadhold1 & Buttons::B || v_jpadpress1 & Buttons::C)
+				if(v_jpadhold1 & Buttons_B || v_jpadpress1 & Buttons_C)
 				{
 					f_pause = true;
 					f_stopmusic = 0x80;
 					return;
 				}
 			}
-		} while(!(v_jpadpress1 & Buttons::Start));
+		} while(!(v_jpadpress1 & Buttons_Start));
 
 		f_stopmusic = 0x80;
 	}
@@ -309,7 +309,7 @@ void SignpostArtLoad()
 	if(v_screenposx >= v_limitright2 - 256 && f_timecount && v_limitleft2 > 0)
 	{
 		v_limitleft2 = v_screenposx;
-		NewPLC(PLC::Signpost);
+		NewPLC(PLC_Signpost);
 	}
 }
 

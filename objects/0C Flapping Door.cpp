@@ -20,8 +20,8 @@ enum : ushort
 
 const ubyte Ani_Flap[][] =
 {
-	{ 3, 0, 1, 2, AnimFlags::Back, 1 }, // opening
-	{ 3, 2, 1, 0, AnimFlags::Back, 1 }, // closing
+	{ 3, 0, 1, 2, AnimFlags_Back, 1 }, // opening
+	{ 3, 2, 1, 0, AnimFlags_Back, 1 }, // closing
 };
 
 const ubyte Map_Flap[][] =
@@ -42,7 +42,7 @@ void FlapDoor(Object* self)
 			self->routine = Routine_Main;
 			self->map = Map_Flap;
 			self->gfx = GFX_FlapDoor;
-			self->render |= ObjRender::LayerNormal;
+			self->render |= ObjRender_LayerNormal;
 			self->actWid = 40;
 			VAR_W(self, flapTimeW) = self->subtype * 60;
 			// fall through
@@ -52,7 +52,7 @@ void FlapDoor(Object* self)
 				self->anim ^= 1;
 
 				if(Object_IsVisible(self))
-					PlaySound_Special(SFX::Door);
+					PlaySound_Special(SFX_Door);
 			}
 
 			AnimateSprite(self, Ani_Flap);

@@ -41,10 +41,10 @@ const ubyte Map_Sign[][] =
 
 const ubyte Ani_Sign[][] =
 {
-	{ 15, 0, AnimFlags::End },         // eggman
-	{ 1, 0, 1, 2, 3, AnimFlags::End }, // spin1
-	{ 1, 4, 1, 2, 3, AnimFlags::End }, // spin2
-	{ 15, 4, AnimFlags::End },         // sonic
+	{ 15, 0, AnimFlags_End },         // eggman
+	{ 1, 0, 1, 2, 3, AnimFlags_End }, // spin1
+	{ 1, 4, 1, 2, 3, AnimFlags_End }, // spin2
+	{ 15, 4, AnimFlags_End },         // sonic
 };
 
 const byte Sign_SparkPos[][] =
@@ -67,14 +67,14 @@ void Signpost(Object* self)
 			self->routine = Routine_Touch;
 			self->map = Map_Sign;
 			self->gfx = GFX_Signpost;
-			self->render = ObjRender::LayerNormal;
+			self->render = ObjRender_LayerNormal;
 			self->actWid = 24;
 			self->priority = 4;
 			// fall through
 		case Routine_Touch:
 			if(v_player->x >= self->x && v_player->x < self->x + 32)
 			{
-				PlaySound(SFX::Signpost);
+				PlaySound(SFX_Signpost);
 				f_timecount = false;
 				v_limitleft2 = v_limitright2;
 				self->routine = Routine_Spin;
@@ -92,13 +92,13 @@ void Signpost(Object* self)
 
 				if(auto sparkle = FindFreeObj())
 				{
-					sparkle->id = ID::Rings;
+					sparkle->id = ID_Rings;
 					sparkle->routine = RingRoutine_Sparkle;
 					sparkle->x = self->x + Sign_SparkPos[idx][0];
 					sparkle->y = self->y + Sign_SparkPos[idx][1];
 					sparkle->map = Map_Ring;
 					sparkle->gfx = GFX_Ring;
-					sparkle->render = ObjRender::LayerNormal;
+					sparkle->render = ObjRender_LayerNormal;
 					sparkle->priority = 2;
 					sparkle->actWid = 8;
 				}
@@ -111,7 +111,7 @@ void Signpost(Object* self)
 				if(!PlayerInAir())
 				{
 					f_lockctrl = true;
-					v_jpadhold2 = Buttons::R;
+					v_jpadhold2 = Buttons_R;
 				}
 
 				// WEIRD: Wonder why it checks for the player ID being 0..
@@ -149,11 +149,11 @@ void GotThroughAct()
 		v_invinc = 0;
 		f_timecount = false;
 
-		v_objspace[23].id = ID::GotThroughCard;
-		NewPLC(PLC::TitleCard);
+		v_objspace[23].id = ID_GotThroughCard;
+		NewPLC(PLC_TitleCard);
 		f_endactbonus = true;
 		v_timebonus = TimeBonuses[min(((v_timemin * 60) + v_timesec) / 15, 20)];
 		v_ringbonus = v_rings * 10;
-		PlaySound_Special(BGM::GotThrough);
+		PlaySound_Special(BGM_GotThrough);
 	}
 }

@@ -28,7 +28,7 @@ void LavaMaker(Object* self)
 				{
 					if(auto lavaBall = FindFreeObj())
 					{
-						lavaBall->id = ID::LavaBall;
+						lavaBall->id = ID_LavaBall;
 						lavaBall->x = self->x;
 						lavaBall->y = self->y;
 						lavaBall->subtype = self->subtype;

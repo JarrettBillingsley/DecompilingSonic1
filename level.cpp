@@ -13,13 +13,13 @@ static_assert(sizeof(LevelHeader) == 16);
 
 const LevelHeader LevelHeaders[] =
 {
-	{ (PLC::GHZ << 24) + Nem_GHZ_2nd, (PLC::GHZ2 << 24) + Blk16_GHZ, Blk256_GHZ, BGM::GHZ, Palette::GHZ    }, // Green Hill
-	{ (PLC::LZ << 24)  + Nem_LZ,      (PLC::LZ2 << 24)  + Blk16_LZ,  Blk256_LZ,  BGM::LZ,  Palette::LZ     }, // Labyrinth
-	{ (PLC::MZ << 24)  + Nem_MZ,      (PLC::MZ2 << 24)  + Blk16_MZ,  Blk256_MZ,  BGM::MZ,  Palette::MZ     }, // Marble
-	{ (PLC::SLZ << 24) + Nem_SLZ,     (PLC::SLZ2 << 24) + Blk16_SLZ, Blk256_SLZ, BGM::SLZ, Palette::SLZ    }, // Star Light
-	{ (PLC::SYZ << 24) + Nem_SYZ,     (PLC::SYZ2 << 24) + Blk16_SYZ, Blk256_SYZ, BGM::SYZ, Palette::SYZ    }, // Spring Yard
-	{ (PLC::SBZ << 24) + Nem_SBZ,     (PLC::SBZ2 << 24) + Blk16_SBZ, Blk256_SBZ, BGM::SBZ, Palette::SBZ1   }, // Scrap Brain
-	{                    Nem_GHZ_2nd,                     Blk16_GHZ, Blk256_GHZ, BGM::SBZ, Palette::Ending }, // Ending
+	{ (PLC_GHZ << 24) + Nem_GHZ_2nd, (PLC_GHZ2 << 24) + Blk16_GHZ, Blk256_GHZ, BGM_GHZ, Palette_GHZ    }, // Green Hill
+	{ (PLC_LZ << 24)  + Nem_LZ,      (PLC_LZ2 << 24)  + Blk16_LZ,  Blk256_LZ,  BGM_LZ,  Palette_LZ     }, // Labyrinth
+	{ (PLC_MZ << 24)  + Nem_MZ,      (PLC_MZ2 << 24)  + Blk16_MZ,  Blk256_MZ,  BGM_MZ,  Palette_MZ     }, // Marble
+	{ (PLC_SLZ << 24) + Nem_SLZ,     (PLC_SLZ2 << 24) + Blk16_SLZ, Blk256_SLZ, BGM_SLZ, Palette_SLZ    }, // Star Light
+	{ (PLC_SYZ << 24) + Nem_SYZ,     (PLC_SYZ2 << 24) + Blk16_SYZ, Blk256_SYZ, BGM_SYZ, Palette_SYZ    }, // Spring Yard
+	{ (PLC_SBZ << 24) + Nem_SBZ,     (PLC_SBZ2 << 24) + Blk16_SBZ, Blk256_SBZ, BGM_SBZ, Palette_SBZ1   }, // Scrap Brain
+	{                    Nem_GHZ_2nd,                     Blk16_GHZ, Blk256_GHZ, BGM_SBZ, Palette_Ending }, // Ending
 };
 
 void LevelDataLoad()
@@ -30,10 +30,10 @@ void LevelDataLoad()
 	KosDec(header.map256, v_256x256);
 	LevelLayoutLoad();
 
-	if(v_zone == Zone::LZ && v_act == 3)
-		PalLoad1(Palette::SBZ3);
-	else if(v_zone == Zone::SBZ && (v_act == 1 || v_act == 2))
-		PalLoad1(Palette::SBZ2);
+	if(v_zone == Zone_LZ && v_act == 3)
+		PalLoad1(Palette_SBZ3);
+	else if(v_zone == Zone_SBZ && (v_act == 1 || v_act == 2))
+		PalLoad1(Palette_SBZ2);
 	else
 		PalLoad1(header.palette_dup);
 
@@ -241,7 +241,7 @@ bool Make_Object(ushort*& objData, ubyte stateSlot) // cc if succeeded, cs if fa
 		if(flags & 0x8000)
 			newObj->respawnNo = (flags >> 8) & 0x7F;
 
-		newObj->id = ID::Zero;
+		newObj->id = ID_Zero;
 		newObj->subtype = flags & 0xFF;
 		return false;
 	}

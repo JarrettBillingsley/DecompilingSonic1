@@ -30,18 +30,18 @@ const ubyte* DemoEndDataPtr[] =
 
 void MoveSonicInDemo()
 {
-	if(f_demo == DemoMode::Off)
+	if(f_demo == DemoMode_Off)
 		return;
 
-	if(v_jpadhold1 & Buttons::Start && f_demo != DemoMode::Credits)
-		v_gamemode = GameMode::Title;
+	if(v_jpadhold1 & Buttons_Start && f_demo != DemoMode_Credits)
+		v_gamemode = GameMode_Title;
 
 	ubyte* demoData;
 
-	if(f_demo == DemoMode::Credits)
+	if(f_demo == DemoMode_Credits)
 		demoData = DemoEndDataPtr[v_creditsnum - 1];
 	else
-		demoData = DemoDataPtr[(v_gamemode == GameMode::Special) ? 6 : v_zone];
+		demoData = DemoDataPtr[(v_gamemode == GameMode_Special) ? 6 : v_zone];
 
 	auto newButton = demoData[v_btnpushtime1];
 

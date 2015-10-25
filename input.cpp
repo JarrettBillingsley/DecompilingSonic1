@@ -1,18 +1,15 @@
-namespace Buttons
+enum
 {
-	enum
-	{
-		Start = 0x80,            // Start button
-		A =     0x40,            // A
-		C =     0x20,            // C
-		B =     0x10,            // B
-		R =     0x08,            // Right
-		L =     0x04,            // Left
-		Dn =    0x02,            // Down
-		Up =    0x01,            // Up
-		Dir =   L | R | Dn | Up, // Any direction
-		ABC =   A | B | C,       // A, B or C
-	};
+	Buttons_Start = 0x80,            // Start button
+	Buttons_A =     0x40,            // A
+	Buttons_C =     0x20,            // C
+	Buttons_B =     0x10,            // B
+	Buttons_R =     0x08,            // Right
+	Buttons_L =     0x04,            // Left
+	Buttons_Dn =    0x02,            // Down
+	Buttons_Up =    0x01,            // Up
+	Buttons_Dir =   Buttons_L | Buttons_R | Buttons_Dn | Buttons_ Up, // Any direction
+	Buttons_ABC =   Buttons_A | Buttons_B | Buttons_C,                // Any button
 };
 
 void ReadJoypads()

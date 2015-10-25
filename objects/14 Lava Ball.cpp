@@ -40,10 +40,10 @@ const short Speeds[] = { -0x400, -0x500, -0x600, -0x700, -0x200, 0x200, -0x200, 
 
 const ubyte Ani_Fire[][] =
 {
-	{ 5, 0, 0x20, 1, 0x21, AnimFlags::End }, // vertical
-	{ 5, 2, AnimFlags::Routine },            // vertcollide
-	{ 5, 3, 0x43, 4, 0x44, AnimFlags::End }, // horizontal
-	{ 5, 5, AnimFlags::Routine },            // horicollide
+	{ 5, 0, 0x20, 1, 0x21, AnimFlags_End }, // vertical
+	{ 5, 2, AnimFlags_Routine },            // vertcollide
+	{ 5, 3, 0x43, 4, 0x44, AnimFlags_End }, // horizontal
+	{ 5, 5, AnimFlags_Routine },            // horicollide
 };
 
 const ubyte Map_Fire[][] =
@@ -65,8 +65,8 @@ void LavaBall(Object* self)
 			self->height = 8;
 			self->width = 8;
 			self->map = Map_Fire;
-			self->gfx = (v_zone == Zone::SLZ) ? GFX_LavaBall_SLZ : GFX_LavaBall_MZ;
-			self->render = ObjRender::LayerNormal;
+			self->gfx = (v_zone == Zone_SLZ) ? GFX_LavaBall_SLZ : GFX_LavaBall_MZ;
+			self->render = ObjRender_LayerNormal;
 			self->priority = 3;
 			self->colType = ColClass_Hurt | ColSize_8x8_A;
 
@@ -86,7 +86,7 @@ void LavaBall(Object* self)
 				self->velY = 0;
 			}
 
-			PlaySound_Special(SFX::Fireball);
+			PlaySound_Special(SFX_Fireball);
 			// fall through
 		case Routine_Main:
 			switch(self->subtype)
@@ -102,14 +102,14 @@ void LavaBall(Object* self)
 						self->routine = Routine_Delete;
 
 					if(self->velY < 0)
-						BSET(self->status, ObjStatus::Air);
+						BSET(self->status, ObjStatus_Air);
 					else
-						BCLR(self->status, ObjStatus::Air);
+						BCLR(self->status, ObjStatus_Air);
 					break;
 
 				case Subtype_Up:
 					// moves up until it hits the ceiling
-					BSET(self->status, ObjStatus::Air);
+					BSET(self->status, ObjStatus_Air);
 
 					if(ObjHitCeiling(self) < 0)
 					{
@@ -121,7 +121,7 @@ void LavaBall(Object* self)
 
 				case Subtype_Down:
 					// moves down until it hits the floor
-					BCLR(self->status, ObjStatus::Air);
+					BCLR(self->status, ObjStatus_Air);
 
 					if(ObjFloorDist(self, &dist, nullptr) < 0)
 					{
@@ -133,7 +133,7 @@ void LavaBall(Object* self)
 
 				case Subtype_Left:
 					// moves left until it hits a wall
-					BSET(self->status, ObjStatus::Flip);
+					BSET(self->status, ObjStatus_Flip);
 
 					if(ObjHitWallLeft(self, -8) < 0)
 					{
@@ -145,7 +145,7 @@ void LavaBall(Object* self)
 
 				case Subtype_Right:
 					// moves right until it hits a wall
-					BCLR(self->status, ObjStatus::Flip);
+					BCLR(self->status, ObjStatus_Flip);
 
 					if(ObjHitWallRight(self, 8) < 0)
 					{

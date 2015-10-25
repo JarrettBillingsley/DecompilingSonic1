@@ -98,13 +98,13 @@ void SwingingPlatform(Object* self)
 	{
 		case Routine_Init:
 			self->routine = Routine_Main;
-			self->render = ObjRender::LayerNormal;
+			self->render = ObjRender_LayerNormal;
 			self->priority = 3;
 			VAR_W(self, baseYW) = self->y;
 			VAR_W(self, baseXW) = self->x;
 
 			// Set up graphics and collision data.
-			if(v_zone == Zone::SLZ)
+			if(v_zone == Zone_SLZ)
 			{
 				// Set up SLZ spikey swinging platform
 				self->map = Map_Swing_SLZ;
@@ -113,7 +113,7 @@ void SwingingPlatform(Object* self)
 				self->height = 16;
 				self->colType = ColClass_Hurt | ColSize_32x8;
 			}
-			else if(v_zone == Zone::SBZ)
+			else if(v_zone == Zone_SBZ)
 			{
 				// Set up SBZ spike ball
 				self->map = Map_BBall;
@@ -161,7 +161,7 @@ void SwingingPlatform(Object* self)
 				chain->map = self->map;
 				chain->gfx = self->gfx;
 				BCLR(chain->gfx, 1 << 6);
-				chain->render = ObjRender::LayerNormal;
+				chain->render = ObjRender_LayerNormal;
 				chain->priority = 4;
 				chain->actWid = 8;
 				chain->frame = 1;
@@ -193,7 +193,7 @@ void SwingingPlatform(Object* self)
 				self->colType = ColClass_Hurt | ColSize_20x20; // 20x20, hurty
 			}
 
-			if(v_zone == Zone::SBZ)
+			if(v_zone == Zone_SBZ)
 				goto _main;
 			// fall through
 		case Routine_Main:
@@ -254,7 +254,7 @@ void Swing_Move(Object* self)
 	// They swing on a global timer.
 	auto angle = v_oscillate[26];
 
-	if(BTST(self->status, ObjStatus::Flip))
+	if(BTST(self->status, ObjStatus_Flip))
 		angle = -angle + 0x80;
 
 	Swing_PositionLinks(self, angle);

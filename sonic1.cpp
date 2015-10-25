@@ -19,46 +19,37 @@ enum
 	MaxSprites = 0x50,
 };
 
-namespace GameMode
+enum
 {
-	enum
-	{
-		Sega =     0x00,
-		Title =    0x04,
-		Demo =     0x08,
-		Level =    0x0C,
-		Special =  0x10,
-		Continue = 0x14,
-		Ending =   0x18,
-		Credits =  0x1C,
+	GameMode_Sega =     0x00,
+	GameMode_Title =    0x04,
+	GameMode_Demo =     0x08,
+	GameMode_Level =    0x0C,
+	GameMode_Special =  0x10,
+	GameMode_Continue = 0x14,
+	GameMode_Ending =   0x18,
+	GameMode_Credits =  0x1C,
 
-		PreLevel = 0x80,
-	};
+	GameMode_PreLevel = 0x80,
 };
 
-namespace DemoMode
+enum
 {
-	enum
-	{
-		Off = 0,
-		On = 1,
-		Credits = 0x8001,
-	};
+	DemoMode_Off = 0,
+	DemoMode_On = 1,
+	DemoMode_Credits = 0x8001,
 };
 
-namespace Zone
+enum
 {
-	enum
-	{
-		GHZ,
-		LZ,
-		MZ,
-		SLZ,
-		SYZ,
-		SBZ,
-		EndZ,
-		SS,
-	};
+	Zone_GHZ,
+	Zone_LZ,
+	Zone_MZ,
+	Zone_SLZ,
+	Zone_SYZ,
+	Zone_SBZ,
+	Zone_EndZ,
+	Zone_SS,
 };
 
 void GameInit()
@@ -67,20 +58,20 @@ void GameInit()
 	// VDPSetupGame();
 	// SoundDriverLoad();
 	// JoypadInit();
-	v_gamemode = GameMode::Sega;
+	v_gamemode = GameMode_Sega;
 
 	while(true)
 	{
 		switch(v_gamemode & 0x1C)
 		{
-			case GameMode::Sega:     GM_Sega();     break;
-			case GameMode::Title:    GM_Title();    break;
-			case GameMode::Demo:
-			case GameMode::Level:    GM_Level();    break;
-			case GameMode::Special:  GM_Special();  break;
-			case GameMode::Continue: GM_Continue(); break;
-			case GameMode::Ending:   GM_Ending();   break;
-			case GameMode::Credits:  GM_Credits();  break;
+			case GameMode_Sega:     GM_Sega();     break;
+			case GameMode_Title:    GM_Title();    break;
+			case GameMode_Demo:
+			case GameMode_Level:    GM_Level();    break;
+			case GameMode_Special:  GM_Special();  break;
+			case GameMode_Continue: GM_Continue(); break;
+			case GameMode_Ending:   GM_Ending();   break;
+			case GameMode_Credits:  GM_Credits();  break;
 		}
 	}
 }

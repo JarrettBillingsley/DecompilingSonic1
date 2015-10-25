@@ -50,7 +50,7 @@ void Bridge(Object* self)
 			self->routine = Routine_Main;
 			self->map = Map_Bridge;
 			self->gfx = GFX_Bridge;
-			self->render = ObjRender::LayerNormal;
+			self->render = ObjRender_LayerNormal;
 			self->priority = 3;
 			self->actWid = 128;
 
@@ -89,7 +89,7 @@ void Bridge(Object* self)
 				log->x = x;
 				log->map = Map_Bridge;
 				log->gfx = GFX_Bridge;
-				log->render = ObjRender::LayerNormal;
+				log->render = ObjRender_LayerNormal;
 				log->priority = 3;
 				log->actWid = Log_HalfWidth;
 				x += Log_Width;

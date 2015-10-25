@@ -19,18 +19,18 @@ void GM_Continue()
 	NemDec(Nem_MiniSonic, 0xAA20);
 
 	ContScrCounter(10);
-	PalLoad1(Palette::Continue);
-	PlaySound(BGM::Continue);
+	PalLoad1(Palette_Continue);
+	PlaySound(BGM_Continue);
 	v_demolength = 659;
 	v_screenposx = 0;
 	v_screenposy = 0x1000000;
 
-	v_objspace[0].id = ID::ContSonic;
-	v_objspace[1].id = ID::ContScrItem;
-	v_objspace[2].id = ID::ContScrItem;
+	v_objspace[0].id = ID_ContSonic;
+	v_objspace[1].id = ID_ContScrItem;
+	v_objspace[2].id = ID_ContScrItem;
 	v_objspace[2].priority = 3;
 	v_objspace[2].frame = 4;
-	v_objspace[3].id = ID::ContScrItem;
+	v_objspace[3].id = ID_ContScrItem;
 	v_objspace[3].obRoutine = 4;
 
 	ExecuteObjects();
@@ -59,7 +59,7 @@ void GM_Continue()
 		// Has Sonic run off screen?
 		if(v_objspace[0].x) >= 384)
 		{
-			v_gamemode = GameMode::Level;
+			v_gamemode = GameMode_Level;
 			v_lives = 3;
 			v_rings = 0;
 			v_time = 0;
@@ -70,7 +70,7 @@ void GM_Continue()
 		}
 	} while(v_objspace[0].routine >= 6 || v_demolength > 0)
 
-	v_gamemode = GameMode::Sega;
+	v_gamemode = GameMode_Sega;
 }
 
 void ContScrCounter(int d1)

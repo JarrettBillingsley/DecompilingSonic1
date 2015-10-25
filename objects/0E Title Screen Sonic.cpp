@@ -21,7 +21,7 @@ enum : ushort
 
 const ubyte Ani_TitleSonic[][] =
 {
-	{ 7, 0, 1, 2, 3, 4, 5, 6, 7, AnimFlags::Back, 2 },
+	{ 7, 0, 1, 2, 3, 4, 5, 6, 7, AnimFlags_Back, 2 },
 };
 
 const ubyte Map_TitleSonic[][] =

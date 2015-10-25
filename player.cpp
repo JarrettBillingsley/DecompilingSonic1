@@ -24,17 +24,17 @@ enum : ubyte
 
 bool PlayerFlipped()
 {
-	return BTST(v_player->status, ObjStatus::Flip);
+	return BTST(v_player->status, ObjStatus_Flip);
 }
 
 bool PlayerInAir()
 {
-	return BTST(v_player->status, ObjStatus::Air);
+	return BTST(v_player->status, ObjStatus_Air);
 }
 
 bool PlayerUnderwater()
 {
-	return BTST(v_player->status, ObjStatus::Underwater);
+	return BTST(v_player->status, ObjStatus_Underwater);
 }
 
 bool PlayerDead()
@@ -59,7 +59,7 @@ void SetPlayerDead()
 
 void SetPlayerAir()
 {
-	BSET(v_player->status, ObjStatus::Air);
+	BSET(v_player->status, ObjStatus_Air);
 }
 
 void SetPlayerAnim_Drowning()
@@ -78,7 +78,7 @@ void HurtSonic(Object* player, Object* obj)
 		{
 			if(auto ringLoss = FindFreeObj())
 			{
-				ringLoss->id = ID::RingLoss;
+				ringLoss->id = ID_RingLoss;
 				ringLoss->x = player->x;
 				ringLoss->y = player->y;
 			}
@@ -117,10 +117,10 @@ void HurtSonic(Object* player, Object* obj)
 	VAR_W(player, Player_InvincibilityW) = 120; // 2 seconds of invincibility;
 
 	// Bwah
-	if(obj->id == ID::Spikes || obj->id == ID::Harpoon)
-		PlaySound_Special(SFX::HitSpikes);
+	if(obj->id == ID_Spikes || obj->id == ID_Harpoon)
+		PlaySound_Special(SFX_HitSpikes);
 	else
-		PlaySound_Special(SFX::Death);
+		PlaySound_Special(SFX_Death);
 }
 
 //                       a0             a2
@@ -142,8 +142,8 @@ void KillSonic(Object* player, Object* killer)
 	BSET(player->gfx, 0x80);
 
 	// Bwah
-	if(killer->id == ID::Spikes)
-		PlaySound_Special(SFX::HitSpikes);
+	if(killer->id == ID_Spikes)
+		PlaySound_Special(SFX_HitSpikes);
 	else
-		PlaySound_Special(SFX::Death);
+		PlaySound_Special(SFX_Death);
 }

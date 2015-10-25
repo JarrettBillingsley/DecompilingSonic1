@@ -283,7 +283,7 @@ const ushort SS_WaRiVramSet[] =
 
 void GM_Special()
 {
-	PlaySound_Special(SFX::EnterSS);
+	PlaySound_Special(SFX_EnterSS);
 	PaletteWhiteOut();
 	DISABLE_INTERRUPTS();
 
@@ -308,7 +308,7 @@ void GM_Special()
 
 	// move.w	#0x8F02,(a5)	; set VDP increment to 2 bytes
 	SS_BGLoad()
-	QuickPLC(PLC::SpecialStage);
+	QuickPLC(PLC_SpecialStage);
 
 	Clear_Objects();
 	Clear_F700_F800()
@@ -316,15 +316,15 @@ void GM_Special()
 	Clear_NGFX_Buffer();
 	f_wtr_state = false;
 	f_restart = 0;
-	PalLoad1(Palette::Special);
+	PalLoad1(Palette_Special);
 	SS_Load();
 	v_screenposx = 0;
 	v_screenposy = 0;
-	v_player->id = ID::SonicSpecial;
+	v_player->id = ID_SonicSpecial;
 	PalCycle_SS();
 	v_ssangle = 0;
 	v_ssrotate = SS_InitialRotate;
-	PlaySound(BGM::SS);
+	PlaySound(BGM_SS);
 	v_btnpushtime1 = 0;
 	v_btnpushtime2 = DemoDataPtr[6][1] - 1;
 	v_rings = 0;
@@ -332,7 +332,7 @@ void GM_Special()
 	v_debuguse = 0;
 	v_demolength = 30 * OneSecond;
 
-	if(f_debugcheat && v_jpadhold1 & Buttons::A)
+	if(f_debugcheat && v_jpadhold1 & Buttons_A)
 		f_debugmode = true;
 
 	// TODO:
@@ -357,22 +357,22 @@ void GM_Special()
 
 		if(f_demo && v_demolength == 0)
 		{
-			v_gamemode = GameMode::Sega;
+			v_gamemode = GameMode_Sega;
 			return;
 		}
-	} while(v_gamemode == GameMode::Special);
+	} while(v_gamemode == GameMode_Special);
 
 	if(f_demo)
 	{
-		if(v_gamemode == GameMode::Level)
-			v_gamemode = GameMode::Sega;
+		if(v_gamemode == GameMode_Level)
+			v_gamemode = GameMode_Sega;
 
 		return;
 	}
 
-	v_gamemode = GameMode::Level;
+	v_gamemode = GameMode_Level;
 
-	if(v_zone >= Zone::SBZ)
+	if(v_zone >= Zone_SBZ)
 	{
 		v_zone = 0;
 		v_act = 0;
@@ -405,16 +405,16 @@ void GM_Special()
 	NemDec(Nem_TitleCard, 0xB000);
 	Hud_Base();
 	ENABLE_INTERRUPTS();
-	PalLoad2(Palette::SSResult);
-	NewPLC(PLC::Main);
-	AddPLC(PLC::SSResult);
+	PalLoad2(Palette_SSResult);
+	NewPLC(PLC_Main);
+	AddPLC(PLC_SSResult);
 	f_scorecount = 1;
 	f_endactbonus = 1;
 	v_ringbonus = v_rings * 10;
-	PlaySound_Special(BGM::GotThrough);
+	PlaySound_Special(BGM_GotThrough);
 
 	Clear_Objects();
-	v_objspace[23].id = ID::SSResult;
+	v_objspace[23].id = ID_SSResult;
 
 	do
 	{
@@ -425,7 +425,7 @@ void GM_Special()
 		RunPLC();
 	} while(!f_restart && v_plc_buffer != 0);
 
-	PlaySound_Special(SFX::EnterSS);
+	PlaySound_Special(SFX_EnterSS);
 	PaletteWhiteOut();
 }
 
@@ -722,7 +722,7 @@ void SS_UpdateAnims()
 				if(SS_UpdateAnim(&v_ssanimations[i], 5, SSAni_EmerData))
 				{
 					v_player->routine = Routine_ExitStage;
-					PlaySound_Special(SFX::SSGoal);
+					PlaySound_Special(SFX_SSGoal);
 				}
 				break;
 

@@ -1,6 +1,6 @@
 void GM_Ending()
 {
-	PlaySound_Special(BGM::Stop);
+	PlaySound_Special(BGM_Stop);
 	PaletteFadeOut();
 	Clear_Objects();
 	Clear_F628_F680();
@@ -24,10 +24,10 @@ void GM_Ending()
 		// move.w	(v_hbla_hreg).w,(vdp_control_port)
 
 		v_air = 30;
-		v_zone = Zone::EndZ;
+		v_zone = Zone_EndZ;
 		v_act = (v_emeralds == 6) ? 0 : 1;
 
-		QuickPLC(PLC::Ending);
+		QuickPLC(PLC_Ending);
 		Hud_Base();
 		LevelSizeLoad();
 		DeformLayers();
@@ -37,18 +37,18 @@ void GM_Ending()
 		v_collindex = Col::GHZ;
 	ENABLE_INTERRUPTS();
 	KosDec(Kos_EndFlowers, 0xFFFF9400);
-	PalLoad1(Palette::Sonic);
-	PlaySound(BGM::Ending);
+	PalLoad1(Palette_Sonic);
+	PlaySound(BGM_Ending);
 
-	if(v_jpadhold1 & Buttons::A)
+	if(v_jpadhold1 & Buttons_A)
 		f_debugmode = true;
 
-	v_player->id = ID::SonicPlayer;
+	v_player->id = ID_SonicPlayer;
 	v_player->status |= 1; // face left
 	f_lockctrl = true;
-	v_jpadhold2 |= Buttons::L;
+	v_jpadhold2 |= Buttons_L;
 	v_player->inertia = 0xF800;
-	v_objspace[1].id = ID::HUD;
+	v_objspace[1].id = ID_HUD;
 	ObjPosLoad();
 	ExecuteObjects();
 	BuildSprites();
@@ -91,10 +91,10 @@ void GM_Ending()
 		OscillateNumDo();
 		SynchroAnimate();
 
-		if(v_gamemode != GameMode::Ending)
+		if(v_gamemode != GameMode_Ending)
 		{
-			v_gamemode = GameMode::Credits;
-			PlaySound_Special(BGM::Credits);
+			v_gamemode = GameMode_Credits;
+			PlaySound_Special(BGM_Credits);
 			v_creditsnum = 0;
 			return;
 		}
@@ -133,7 +133,7 @@ void GM_Ending()
 			// lea	(v_lvllayout).w,a4
 			// move.w	#0x4000,d2
 			// jsr	DrawChunks
-			PalLoad1(Palette::Ending);
+			PalLoad1(Palette_Ending);
 			PaletteWhiteIn();
 		}
 	}
@@ -150,7 +150,7 @@ void End_MoveSonic()
 			{
 				v_sonicend += 2;
 				f_lockctrl = true;
-				v_jpadhold2 = Buttons::R;
+				v_jpadhold2 = Buttons_R;
 			}
 			break;
 
@@ -171,7 +171,7 @@ void End_MoveSonic()
 		case 4:
 			v_sonicend += 2;
 			v_player->x = 160;
-			v_player->id = ID::EndSonic;
+			v_player->id = ID_EndSonic;
 			v_player->routine = 0;
 			break;
 

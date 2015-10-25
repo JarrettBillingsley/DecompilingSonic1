@@ -40,7 +40,7 @@ void Pole(Object* self)
 			self->routine = Routine_Action;
 			self->map = Map_Pole;
 			self->gfx = GFX_Pole;
-			self->render = ObjRender::LayerNormal;
+			self->render = ObjRender_LayerNormal;
 			self->actWid = 8;
 			self->priority = 4;
 			self->colType = ColClass_Special | ColSize_4x32;
@@ -58,14 +58,14 @@ void Pole(Object* self)
 				else
 				{
 					// Sonic's controls are locked to up/down on the pole
-					if(BTST(v_jpadhold1, Buttons::Up))
+					if(BTST(v_jpadhold1, Buttons_Up))
 						DecTo(v_player->y, self->y - Top_OffsY)
 
-					if(BTST(v_jpadhold1, Buttons::Down))
+					if(BTST(v_jpadhold1, Buttons_Down))
 						IncTo(v_player->y, self->y + Bottom_OffsY);
 
 					// Jump off
-					if(v_jpadpress2 & Buttons::ABC)
+					if(v_jpadpress2 & Buttons_ABC)
 						ReleaseGrip();
 				}
 			}

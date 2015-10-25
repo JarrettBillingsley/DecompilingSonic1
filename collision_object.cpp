@@ -195,11 +195,11 @@ void React_Enemy(Object* player, Object* obj)
 
 		// Did we finish him off?
 		if(DecToZero(obj->colProp))
-			BSET(obj->status, ObjStatus::Dead);
+			BSET(obj->status, ObjStatus_Dead);
 	}
 	else
 	{
-		BSET(obj->status, ObjStatus::Dead);
+		BSET(obj->status, ObjStatus_Dead);
 
 		// Hopping on successive things increases point bonus
 		auto pointsIdx = v_itembonus > 6 ? 6 : v_itembonus;
@@ -208,7 +208,7 @@ void React_Enemy(Object* player, Object* obj)
 		AddPoints((v_itembonus >= 32) ? 1000 : Points[pointsIdx / 2]);
 
 		// Change object to explosion
-		obj->id = ID::ExplosionItem;
+		obj->id = ID_ExplosionItem;
 		obj->routine = 0;
 
 		// Bounce player
@@ -255,7 +255,7 @@ void React_Special(Object* player, Object* obj, int ydiff, int playerLeft)
 
 void React_Caterkiller(Object* player, Object* obj)
 {
-	BSET(obj->status, ObjStatus::Dead);
+	BSET(obj->status, ObjStatus_Dead);
 	React_ChkHurt(player, obj);
 }
 

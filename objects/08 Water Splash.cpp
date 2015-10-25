@@ -26,7 +26,7 @@ const ubyte Map_Splash[][] =
 
 const ubyte Ani_Splash[][] =
 {
-	{ 4, 0, 1, 2, AnimFlags::Routine },
+	{ 4, 0, 1, 2, AnimFlags_Routine },
 };
 
 void Splash(Object* self)
@@ -36,7 +36,7 @@ void Splash(Object* self)
 		case Routine_Init:
 			self->routine = Routine_Main;
 			self->map = Map_Splash;
-			BSET(self->render, ObjRender::Something);
+			BSET(self->render, ObjRender_Something);
 			self->priority = 1;
 			self->obActWid = 16;
 			self->gfx = GFX_Splash;

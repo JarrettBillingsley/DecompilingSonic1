@@ -58,18 +58,18 @@ void SonicSpecial(Object* self)
 			self->width = 7;
 			self->map = Map_Sonic;
 			self->gfx = GFX_SS_Sonic;
-			self->render = ObjRender::LayerNormal;
+			self->render = ObjRender_LayerNormal;
 			self->priority = 0;
 			self->anim = PlayerAnim_Roll;
-			self->status = ObjStatus::Air | ObjStatus::Rolling;
+			self->status = ObjStatus_Air | ObjStatus_Rolling;
 			// fall through
 		case Routine_Main:
-			if(f_debugmode && (v_jpadpress1 & Buttons::B))
+			if(f_debugmode && (v_jpadpress1 & Buttons_B))
 				v_debuguse = true;
 
 			VAR_B(self, collidedTypeB) = SSObj_None;
 
-			if(!(self->status & ObjStatus::Air))
+			if(!(self->status & ObjStatus_Air))
 				SS_Jump(self);
 
 			SS_Move(self);
@@ -88,7 +88,7 @@ void SonicSpecial(Object* self)
 			v_ssrotate += SS_ExitRotateAccel;
 
 			if(v_ssrotate == 0x1800) // ?? doesn't the gamemode get set in Routine_ExitStage2?
-				v_gamemode = GameMode::Level;
+				v_gamemode = GameMode_Level;
 
 			if(v_ssrotate > SS_ExitRotateMax)
 			{
@@ -108,7 +108,7 @@ void SonicSpecial(Object* self)
 
 		case Routine_ExitStage2:
 			if(TimerZero(VAR_W(self, exitTimerW)))
-				v_gamemode = GameMode::Level;
+				v_gamemode = GameMode_Level;
 
 			Sonic_Animate(self);
 			Sonic_LoadGfx(self);
@@ -120,12 +120,12 @@ void SonicSpecial(Object* self)
 
 void SS_Move(Object* self)
 {
-	if(v_jpadhold2 & Buttons::L)
+	if(v_jpadhold2 & Buttons_L)
 		SS_MoveLeft(self);
-	else if(v_jpadhold2 & Buttons::R)
+	else if(v_jpadhold2 & Buttons_R)
 		SS_MoveRight(self);
 
-	if(!(v_jpadhold2 & (Buttons::L | Buttons::R)) && self->inertia != 0)
+	if(!(v_jpadhold2 & (Buttons_L | Buttons_R)) && self->inertia != 0)
 	{
 		if(self->inertia > 0)
 		{
@@ -160,7 +160,7 @@ void SS_Move(Object* self)
 
 void SS_MoveLeft(Object* self)
 {
-	BSET(self->status, ObjStatus::Flip);
+	BSET(self->status, ObjStatus_Flip);
 
 	if(self->inertia > 0)
 		self->inertia -= SS_MoveAccelFast;
@@ -175,7 +175,7 @@ void SS_MoveLeft(Object* self)
 
 void SS_MoveRight(Object* self)
 {
-	BCLR(self->status, ObjStatus::Flip);
+	BCLR(self->status, ObjStatus_Flip);
 
 	if(self->inertia < 0)
 		self->inertia += SS_MoveAccelFast;
@@ -190,22 +190,22 @@ void SS_MoveRight(Object* self)
 
 void SS_Jump(Object* self)
 {
-	if(v_jpadpress2 & Buttons::ABC)
+	if(v_jpadpress2 & Buttons_ABC)
 	{
 		int cosine;
 		auto sine = CalcSine(-(v_ssangle & 0xFC) - 0x40)
 
 		self->velX = (cosine * SS_JumpVel) >> 8;
 		self->velY = (sine * SS_JumpVel) >> 8;
-		BSET(self->status, ObjStatus::Air);
-		PlaySound_Special(SFX::Jump);
+		BSET(self->status, ObjStatus_Air);
+		PlaySound_Special(SFX_Jump);
 	}
 }
 
 // unused subroutine to limit Sonic's upward vertical speed
 void Unused_SS_LimitVelY(Object* self)
 {
-	if(self->velY < 0x400 && !(v_jpadhold2 & Buttons::ABC))
+	if(self->velY < 0x400 && !(v_jpadhold2 & Buttons_ABC))
 		self->velY = 0x400;
 }
 
@@ -228,7 +228,7 @@ void SS_Fall(Object* self)
 	if(SS_CheckCollision(self, self->x + velX, self->y))
 	{
 		velX = 0;
-		BCLR(self->status, ObjStatus::Air);
+		BCLR(self->status, ObjStatus_Air);
 
 		if(SS_CheckCollision(self, self->x, self->y + velY))
 			velY = 0;
@@ -236,10 +236,10 @@ void SS_Fall(Object* self)
 	else if(SS_CheckCollision(self, self->x + velX, self->y + velY))
 	{
 		velY = 0;
-		BCLR(self->status, ObjStatus::Air);
+		BCLR(self->status, ObjStatus_Air);
 	}
 	else
-		BSET(self->status, ObjStatus::Air);
+		BSET(self->status, ObjStatus_Air);
 
 	self->velX = velX >> 8;
 	self->velY = velY >> 8;
@@ -313,7 +313,7 @@ bool SS_CheckCollectibleObjects(Object* self)
 				{
 					BSET(v_lifecount, 1);
 					v_continues++;
-					PlaySound(SFX::Continue);
+					PlaySound(SFX_Continue);
 				}
 			}
 			return false;
@@ -327,7 +327,7 @@ bool SS_CheckCollectibleObjects(Object* self)
 
 			v_lives++;
 			f_lifecount = true;
-			PlaySound_Special(BGM::ExtraLife)
+			PlaySound_Special(BGM_ExtraLife)
 			return false;
 
 		case SSObj_GhostBlock:
@@ -351,7 +351,7 @@ bool SS_CheckCollectibleObjects(Object* self)
 				if(v_emeralds != NumEmeralds)
 					v_emldlist[v_emeralds++] = objType - SSObj_Emerald1;
 
-				PlaySound_Special(BGM::Emerald);
+				PlaySound_Special(BGM_Emerald);
 				return false;
 			}
 	}
@@ -381,7 +381,7 @@ void SS_CheckStaticObjects(Object* self)
 			sine = CalcSine(CalcAngle(xdiff, ydiff), &cosine);
 			self->velX = (cosine * -SS_BumperVel) >> 8;
 			self->velY = (sine * -SS_BumperVel) >> 8;
-			BSET(self->status, ObjStatus::Air);
+			BSET(self->status, ObjStatus_Air);
 
 			if(auto slot = SS_FindAnimSlot())
 			{
@@ -389,12 +389,12 @@ void SS_CheckStaticObjects(Object* self)
 				slot->tile = VAR_L(self, collidedAddrL);
 			}
 
-			PlaySound_Special(SFX::Bumper);
+			PlaySound_Special(SFX_Bumper);
 			break;
 
 		case SSObj_Goal:
 			self->routine = Routine_ExitStage;
-			PlaySound_Special(SFX::SSGoal);
+			PlaySound_Special(SFX_SSGoal);
 			break;
 
 		case SSObj_Up:
@@ -408,7 +408,7 @@ void SS_CheckStaticObjects(Object* self)
 					*VAR_L(self, collidedAddrL) = SSObj_Down;
 				}
 
-				PlaySound_Special(SFX::SSItem);
+				PlaySound_Special(SFX_SSItem);
 			}
 			break;
 
@@ -423,7 +423,7 @@ void SS_CheckStaticObjects(Object* self)
 					*VAR_L(self, collidedAddrL) = SSObj_Up;
 				}
 
-				PlaySound_Special(SFX::SSItem);
+				PlaySound_Special(SFX_SSItem);
 			}
 			break;
 
@@ -439,7 +439,7 @@ void SS_CheckStaticObjects(Object* self)
 				}
 
 				v_ssrotate = -v_ssrotate;
-				PlaySound_Special(SFX::SSItem);
+				PlaySound_Special(SFX_SSItem);
 			}
 			break;
 
@@ -456,7 +456,7 @@ void SS_CheckStaticObjects(Object* self)
 					*slot->tile = SSObj->None
 			}
 
-			PlaySound_Special(SFX::SSGlass);
+			PlaySound_Special(SFX_SSGlass);
 			break;
 
 		default: break;

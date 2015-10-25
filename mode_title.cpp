@@ -6,35 +6,35 @@ struct LevSel_Ptr
 
 const LevSel_Ptr LevSel_Ptrs[] =
 {
-	{ Zone::GHZ, 0 },
-	{ Zone::GHZ, 1 },
-	{ Zone::GHZ, 2 },
-	{ Zone::MZ,  0 },
-	{ Zone::MZ,  1 },
-	{ Zone::MZ,  2 },
-	{ Zone::SYZ, 0 },
-	{ Zone::SYZ, 1 },
-	{ Zone::SYZ, 2 },
-	{ Zone::LZ,  0 },
-	{ Zone::LZ,  1 },
-	{ Zone::LZ,  2 },
-	{ Zone::SLZ, 0 },
-	{ Zone::SLZ, 1 },
-	{ Zone::SLZ, 2 },
-	{ Zone::SBZ, 0 },
-	{ Zone::SBZ, 1 },
-	{ Zone::LZ,  3 },
-	{ Zone::SBZ, 2 },
-	{ Zone::SS,  0 }, // Special Stage
+	{ Zone_GHZ, 0 },
+	{ Zone_GHZ, 1 },
+	{ Zone_GHZ, 2 },
+	{ Zone_MZ,  0 },
+	{ Zone_MZ,  1 },
+	{ Zone_MZ,  2 },
+	{ Zone_SYZ, 0 },
+	{ Zone_SYZ, 1 },
+	{ Zone_SYZ, 2 },
+	{ Zone_LZ,  0 },
+	{ Zone_LZ,  1 },
+	{ Zone_LZ,  2 },
+	{ Zone_SLZ, 0 },
+	{ Zone_SLZ, 1 },
+	{ Zone_SLZ, 2 },
+	{ Zone_SBZ, 0 },
+	{ Zone_SBZ, 1 },
+	{ Zone_LZ,  3 },
+	{ Zone_SBZ, 2 },
+	{ Zone_SS,  0 }, // Special Stage
 	{ 0x80,      0 }, // Sound Test
 };
 
-const ubyte LevSelCode_J[] =  { Buttons::Up, Buttons::Dn, Buttons::Dn, Buttons::Dn, Buttons::L, Buttons::R, 0, 0xFF };
-const ubyte LevSelCode_US[] = { Buttons::Up, Buttons::Dn, Buttons::L, Buttons::R, 0, 0xFF };
+const ubyte LevSelCode_J[] =  { Buttons_Up, Buttons_Dn, Buttons_Dn, Buttons_Dn, Buttons_L, Buttons_R, 0, 0xFF };
+const ubyte LevSelCode_US[] = { Buttons_Up, Buttons_Dn, Buttons_L, Buttons_R, 0, 0xFF };
 
 void GM_Title()
 {
-	PlaySound_Special(BGM::Stop);
+	PlaySound_Special(BGM_Stop);
 	ClearPLC();
 	PaletteFadeOut();
 	DISABLE_INTERRUPTS();
@@ -59,9 +59,9 @@ void GM_Title()
 	EniDec(Eni_JapNames, 0xFF0000, 0);
 	CopyTilemap(0xFF0000, 0xC000, 0x27, 0x1B);
 	Clear_Palette(v_pal_dry_dup);
-	PalLoad1(Palette::Sonic);
+	PalLoad1(Palette_Sonic);
 
-	v_objspace[2].id = ID::CreditsText;
+	v_objspace[2].id = ID_CreditsText;
 	ExecuteObjects();
 	BuildSprites();
 	PaletteFadeIn();
@@ -101,30 +101,30 @@ void GM_Title()
 	EniDec(Eni_Title, 0xFF0000, 0);
 	CopyTilemap(0xFF0000, 0xC206, 0x21, 0x15);
 	NemDec(Nem_GHZ_1st, 0);
-	PalLoad1(Palette::Title);
-	PlaySound_Special(BGM::Title);
+	PalLoad1(Palette_Title);
+	PlaySound_Special(BGM_Title);
 
 	f_debugmode = 0;
 	v_demolength = 0x178;
 
 	memset(&v_objspace[2], 0, 32);
-	v_objspace[1].id = ID::TitleSonic;
-	v_objspace[2].id = ID::PSBTM; // "PRESS START BUTTON"
+	v_objspace[1].id = ID_TitleSonic;
+	v_objspace[2].id = ID_PSBTM; // "PRESS START BUTTON"
 
 	if(v_megadrive & 0x80)
 	{
 		// Outside Japan, load the TM object
-		v_objspace[3].id = ID::PSBTM;
+		v_objspace[3].id = ID_PSBTM;
 		v_objspace[3].frame = 3;
 	}
 
-	v_objspace[4].id = ID::PSBTM;
+	v_objspace[4].id = ID_PSBTM;
 	v_objspace[4].frame = 2; // sprite line limiter..?
 
 	ExecuteObjects();
 	DeformLayers();
 	BuildSprites();
-	NewPLC(PLC::Main);
+	NewPLC(PLC_Main);
 	v_title_dcount = 0;
 	v_title_ccount = 0;
 
@@ -148,12 +148,12 @@ void GM_Title()
 
 		if(v_objspace[0].x >= 7168)
 		{
-			v_gamemode = GameMode::Sega;
+			v_gamemode = GameMode_Sega;
 			return;
 		}
 
 		auto levSelCode = (v_megadrive & 0x80) ? LevSelCode_US : LevSelCode_J;
-		auto buttons = v_jpadpress1 & Buttons::Dir;
+		auto buttons = v_jpadpress1 & Buttons_Dir;
 
 		if(buttons == levSelCode[v_title_dcount])
 		{
@@ -182,13 +182,13 @@ void GM_Title()
 						f_creditscheat = true;
 				}
 
-				PlaySound_Special(SFX::Ring);
+				PlaySound_Special(SFX_Ring);
 			}
 		}
 		else if(buttons != 0 && v_title_dcount != 9) // seems a little arbitrary...
 			v_title_dcount = 0;
 
-		if(v_jpadpress1 & Buttons::C)
+		if(v_jpadpress1 & Buttons_C)
 			v_title_ccount++;
 
 		if(v_demolength == 0)
@@ -198,11 +198,11 @@ void GM_Title()
 
 			return;
 		}
-	} while(!(v_jpadpress1 & Buttons::Start));
+	} while(!(v_jpadpress1 & Buttons_Start));
 
-	if(f_levselcheat && v_jpadhold1 & Buttons::A)
+	if(f_levselcheat && v_jpadhold1 & Buttons_A)
 	{
-		PalLoad2(Palette::LevelSel);
+		PalLoad2(Palette_LevelSel);
 
 		// TODO:
 		// This clears the scrolling data (presumably to make all the shit show up in the right place)
@@ -232,7 +232,7 @@ void GM_Title()
 			LevSelControls();
 			RunPLC();
 
-			if(v_plc_buffer == 0 && v_jpadpress1 & (Buttons::ABC | Buttons::Start))
+			if(v_plc_buffer == 0 && v_jpadpress1 & (Buttons_ABC | Buttons_Start))
 			{
 				if(v_levselitem == 0x14) // sound test
 				{
@@ -242,15 +242,15 @@ void GM_Title()
 					{
 						if(sound == 0x9F)
 						{
-							v_gamemode = GameMode::Ending;
-							v_zone = Zone::EndZ;
+							v_gamemode = GameMode_Ending;
+							v_zone = Zone_EndZ;
 							v_act = 0;
 							return;
 						}
 						else if(sound == 0x9E)
 						{
-							v_gamemode = GameMode::Credits;
-							PlaySound_Special(BGM::Credits);
+							v_gamemode = GameMode_Credits;
+							PlaySound_Special(BGM_Credits);
 							v_creditsnum = 0;
 							return;
 						}
@@ -265,9 +265,9 @@ void GM_Title()
 
 					if(ptr.zone != -1) // not on the sound test?
 					{
-						if(ptr.zone == Zone::SS) // special stage?
+						if(ptr.zone == Zone_SS) // special stage?
 						{
-							v_gamemode = GameMode::Special;
+							v_gamemode = GameMode_Special;
 							v_zone = 0;
 							v_lives = 3;
 							v_rings = 0;
@@ -290,7 +290,7 @@ void GM_Title()
 		}
 	}
 
-	v_gamemode = GameMode::Level;
+	v_gamemode = GameMode_Level;
 	v_lives = 3;
 	v_rings = 0;
 	v_time = 0;
@@ -302,15 +302,15 @@ void GM_Title()
 
 	// rev 1 only
 	v_scorelife = 5000;
-	PlaySound_Special(BGM::Fade);
+	PlaySound_Special(BGM_Fade);
 }
 
 LevSel_Ptr Demo_Levels[] =
 {
-	{ Zone::GHZ,  0 },
-	{ Zone::MZ,   0 },
-	{ Zone::SYZ,  0 },
-	{ Zone::SS,   0 },
+	{ Zone_GHZ,  0 },
+	{ Zone_MZ,   0 },
+	{ Zone_SYZ,  0 },
+	{ Zone_SS,   0 },
 };
 
 bool GotoDemo()
@@ -328,24 +328,24 @@ bool GotoDemo()
 
 		if(v_objspace[0].x >= 7168)
 		{
-			v_gamemode = GameMode::Sega;
+			v_gamemode = GameMode_Sega;
 			return false;
 		}
 
-		if(v_jpadpress1 & Buttons::Start)
+		if(v_jpadpress1 & Buttons_Start)
 			return true;
 	} while(v_demolength > 0);
 
-	PlaySound_Special(BGM::Fade);
+	PlaySound_Special(BGM_Fade);
 	auto level = Demo_Levels[v_demonum & 3];
 	v_zone = level.zone;
 	v_demonum = (v_demonum + 1) & 3;
 	f_demo = true;
-	v_gamemode = GameMode::Demo;
+	v_gamemode = GameMode_Demo;
 
-	if(level.zone == Zone::SS)
+	if(level.zone == Zone_SS)
 	{
-		v_gamemode = GameMode::Special;
+		v_gamemode = GameMode_Special;
 		v_zone = 0;
 		v_lastspecial = 0;
 	}
@@ -361,18 +361,18 @@ bool GotoDemo()
 
 void LevSelControls()
 {
-	auto buttonsPressed = v_jpadpress1 & (Buttons::Up | Buttons::Dn);
+	auto buttonsPressed = v_jpadpress1 & (Buttons_Up | Buttons_Dn);
 
 	if(buttonsPressed || TimerZero(v_levseldelay, 11))
 	{
-		auto buttonsHeld = v_jpadhold1 & (Buttons::Up | Buttons::Dn);
+		auto buttonsHeld = v_jpadhold1 & (Buttons_Up | Buttons_Dn);
 
 		if(buttonsHeld)
 		{
 			if(buttonsHeld & Buttons:Up)
 				DecWrap(v_levselitem, 0x14);
 
-			if(buttonsHeld & Buttons::Dn)
+			if(buttonsHeld & Buttons_Dn)
 				IncWrap(v_levselitem, 0x14);
 
 			LevSelDisplayText();
@@ -382,14 +382,14 @@ void LevSelControls()
 
 	if(v_levselitem == 0x14) // on sound test?
 	{
-		buttonsPressed = v_jpadpress1 & (Buttons::L | Buttons::R);
+		buttonsPressed = v_jpadpress1 & (Buttons_L | Buttons_R);
 
 		if(buttonsPressed)
 		{
-			if(buttonsPressed & Buttons::L)
+			if(buttonsPressed & Buttons_L)
 				DecWrap(v_levselsound, 0x4F);
 
-			if(buttonsPressed & Buttons::R)
+			if(buttonsPressed & Buttons_R)
 				IncWrap(v_levselsound, 0x4F);
 
 			LevSelDisplayText();

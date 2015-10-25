@@ -124,7 +124,7 @@ void VBlank()
 	switch(routine)
 	{
 		case VBlank_00:
-			if(v_gamemode & GameMode::Level && v_zone == Zone::LZ)
+			if(v_gamemode & GameMode_Level && v_zone == Zone_LZ)
 			{
 				// VBlankWaitPAL();
 				f_hbla_pal = true;
@@ -171,7 +171,7 @@ void VBlank()
 
 		// Game paused
 		case VBlank_Paused:
-			if(v_gamemode == GameMode::Special)
+			if(v_gamemode == GameMode_Special)
 				goto _vblank0A;
 			// fall through
 		// Level main loop
