@@ -262,7 +262,7 @@ static_assert(sizeof(Object) == 64);
 
 void ExecuteObjects()
 {
-	bool isDead = v_player.routine >= 6;
+	bool isDead = v_player->routine >= 6;
 	auto objsToUpdate = isDead ? 32 : MAX_OBJECTS;
 
 	for(int i = 0; i < objsToUpdate; i++)

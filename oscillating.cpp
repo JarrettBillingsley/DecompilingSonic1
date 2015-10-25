@@ -36,7 +36,7 @@ void OscillateNumInit()
 
 void OscillateNumDo()
 {
-	if(v_player.routine >= 6)
+	if(v_player->routine >= 6)
 		return;
 
 	auto oscDirs = v_oscillate[0];

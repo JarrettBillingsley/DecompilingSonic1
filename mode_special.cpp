@@ -320,7 +320,7 @@ void GM_Special()
 	SS_Load();
 	v_screenposx = 0;
 	v_screenposy = 0;
-	v_player.id = ID::SonicSpecial;
+	v_player->id = ID::SonicSpecial;
 	PalCycle_SS();
 	v_ssangle = 0;
 	v_ssrotate = SS_InitialRotate;

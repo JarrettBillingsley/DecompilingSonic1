@@ -106,7 +106,7 @@ _restart:
 	LZWaterFeatures();
 
 	// Sonic and the HUD
-	v_player.id = ID::SonicPlayer;
+	v_player->id = ID::SonicPlayer;
 
 	if(f_demo != DemoMode::Credits)
 		v_objspace[1].id = ID::HUD;
@@ -213,7 +213,7 @@ Level_MainLoop:
 		if(f_restart)
 			goto _restart;
 
-		if(v_debuguse || (v_player.routine < 6))
+		if(v_debuguse || (v_player->routine < 6))
 			DeformLayers();
 
 		BuildSprites();

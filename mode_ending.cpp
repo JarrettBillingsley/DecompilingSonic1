@@ -43,11 +43,11 @@ void GM_Ending()
 	if(v_jpadhold1 & Buttons::A)
 		f_debugmode = true;
 
-	v_player.id = ID::SonicPlayer;
-	v_player.status |= 1; // face left
+	v_player->id = ID::SonicPlayer;
+	v_player->status |= 1; // face left
 	f_lockctrl = true;
 	v_jpadhold2 |= Buttons::L;
-	v_player.inertia = 0xF800;
+	v_player->inertia = 0xF800;
 	v_objspace[1].id = ID::HUD;
 	ObjPosLoad();
 	ExecuteObjects();
@@ -149,7 +149,7 @@ void End_MoveSonic()
 	switch(v_sonicEnd)
 	{
 		case 0:
-			if(v_player.x < 144)
+			if(v_player->x < 144)
 			{
 				v_sonicend += 2;
 				f_lockctrl = true;
@@ -158,24 +158,24 @@ void End_MoveSonic()
 			break;
 
 		case 2:
-			if(v_player.x >= 160)
+			if(v_player->x >= 160)
 			{
 				v_sonicend += 2;
 				f_lockctrl = false;
 				v_jpadhold2 = 0;
-				v_player.inertia = 0;
+				v_player->inertia = 0;
 				f_lockmulti = 0x81;
-				v_player.frame = 3;
-				v_player.anim = (Anim::Wait << 8) | Anim::Wait;
-				v_player.timeFrame = 3;
+				v_player->frame = 3;
+				v_player->anim = (Anim::Wait << 8) | Anim::Wait;
+				v_player->timeFrame = 3;
 			}
 			break;
 
 		case 4:
 			v_sonicend += 2;
-			v_player.x = 160;
-			v_player.id = ID::EndSonic;
-			v_player.routine = 0;
+			v_player->x = 160;
+			v_player->id = ID::EndSonic;
+			v_player->routine = 0;
 			break;
 
 		default:
