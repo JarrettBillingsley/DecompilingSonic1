@@ -1,3 +1,7 @@
+// =====================================================================================================================
+// Enums and structs
+// =====================================================================================================================
+
 namespace ObjStatus
 {
 	enum : ubyte
@@ -260,39 +264,9 @@ struct Object
 
 static_assert(sizeof(Object) == 64);
 
-void ExecuteObjects()
-{
-	bool isDead = v_player->routine >= 6;
-	auto objsToUpdate = isDead ? 32 : MAX_OBJECTS;
-
-	for(int i = 0; i < objsToUpdate; i++)
-	{
-		auto id = v_objspace[i].id;
-
-		if(id != 0)
-			Obj_Index[id - 1](&v_objspace[i]);
-	}
-
-	if(isDead)
-	{
-		for(int i = 32; i < MAX_OBJECTS; i++)
-		{
-			if(v_objspace[i].id != 0 && BTST(v_objspace[i].render, ObjRender::Visible))
-				DisplaySprite(&v_objspace[i]);
-		}
-	}
-}
-
-void DisplaySprite(Object* obj)
-{
-	auto queue = v_spritequeue[obj->priority];
-
-	if((int)queue[0] < 63)
-	{
-		queue[0] = (Object*)((int)queue[0] + 1);
-		queue[(int)queue[0]] = obj;
-	}
-}
+// =====================================================================================================================
+// Slot management
+// =====================================================================================================================
 
 int FindFreeObjSlot()
 {
@@ -340,9 +314,56 @@ Object* FindNextFreeObj(Object* addr)
 		return &v_objspace[slot];
 }
 
+void DeleteObject(Object* self)
+{
+	memset(self, 0, sizeof(Object));
+}
+
 int Object_PointerToSlot(Object* obj)
 {
 	return obj - v_objspace;
+}
+
+// =====================================================================================================================
+// Scripts
+// =====================================================================================================================
+
+void ExecuteObjects()
+{
+	bool isDead = v_player->routine >= 6;
+	auto objsToUpdate = isDead ? 32 : MAX_OBJECTS;
+
+	for(int i = 0; i < objsToUpdate; i++)
+	{
+		auto id = v_objspace[i].id;
+
+		if(id != 0)
+			Obj_Index[id - 1](&v_objspace[i]);
+	}
+
+	if(isDead)
+	{
+		for(int i = 32; i < MAX_OBJECTS; i++)
+		{
+			if(v_objspace[i].id != 0 && BTST(v_objspace[i].render, ObjRender::Visible))
+				DisplaySprite(&v_objspace[i]);
+		}
+	}
+}
+
+// =====================================================================================================================
+// Sprites
+// =====================================================================================================================
+
+void DisplaySprite(Object* obj)
+{
+	auto queue = v_spritequeue[obj->priority];
+
+	if((int)queue[0] < 63)
+	{
+		queue[0] = (Object*)((int)queue[0] + 1);
+		queue[(int)queue[0]] = obj;
+	}
 }
 
 //                          a0              a1
@@ -410,9 +431,12 @@ void AnimateSprite(Object* self, ushort* animScripts)
 	}
 }
 
-// output:
-// d0 = flag set if object is off screen
+// =====================================================================================================================
+// Queries
+// =====================================================================================================================
 
+// output:
+//d0 = flag set if object is off screen
 bool ChkObjectVisible(Object* self)
 {
 	auto screenX = self->x - v_screenposx;
@@ -448,342 +472,29 @@ bool ChkPartiallyVisible(Object* self)
 	return false;
 }
 
-void DeleteObject(Object* self)
+bool Object_IsVisible(Object* self)
 {
-	memset(self, 0, sizeof(Object));
+	return BTST(self->render, ObjRender::Visible);
 }
 
-// input:
-//	a0 = object to find floor of
-//	a3 = direction/distance to look (abusing address regs much?)
-//	d2 = y-position of object's bottom edge
-//	d3 = x-position of object
-//	d5 = bit to test for solidness
-//  d6 = 0 if floor, 0x1000 if wall/ceiling?
-// output:
-//	d1 = distance to the floor
-//	a1 = address within 256x256 mappings where object is standing
-//	     (refers to a 16x16 tile number)
-//	(a4) = floor angle
-
-// a1                      a0           d2          d3          d5              d6             a3               d1                 a4
-ushort* FindFloor(Object* self, int objBottom, int objX, int solidityBit, int wallFlag, int direction, int* outDistance, ubyte* outFloorAngle)
+bool Object_IsFlipped(Object* self)
 {
-	auto tileAddr = FindNearestTile(self, objBottom, objX);
-	auto tile = *tileAddr;
-	auto tileFlags = tile;
-	tile &= 0x7FF;
-
-	if(tile == 0 || !BTST(tileFlags, 1 << solidityBit))
-	{
-	_isBlank:
-		int dist;
-		tileAddr = FindFloor2(self, objBottom + direction, objX, solidityBit, wallFlag, &dist, outFloorAngle);
-
-		if(outDistance)
-			*outDistance = dist + 16;
-
-		return tileAddr;
-	}
-
-	auto collIndex = v_collindex[tile] & 0xFF;
-
-	if(collIndex == 0)
-		goto _isBlank;
-
-	*outFloorAngle = AngleMap[collIndex];
-
-	auto xpos = objX;
-
-	if(BTST(tileFlags, 0x800))
-	{
-		xpos = ~xpos;
-		*outFloorAngle = -*outFloorAngle;
-	}
-
-	if(BTST(tileFlags, 0x1000))
-		*outFloorAngle = -(*outFloorAngle + 0x40) - 0x40;
-
-	short height = CollArray1[(xpos & 0xF) + (collIndex << 4)];
-
-	tileFlags ^= wallFlag;
-
-	if(BTST(tileFlags, 0x1000))
-		height = -height;
-
-	if(height == 0)
-		goto _isBlank;
-	else if(height < 0)
-	{
-		height += objBottom & 0xF;
-
-		if(height >= 0)
-			goto _isBlank;
-	}
-	else if(height != 16)
-	{
-		if(outDistance)
-			*outDistance = 15 - (height + (objBottom & 0xF));
-
-		return tileAddr;
-	}
-
-	int dist;
-	tileAddr = FindFloor2(self, objBottom - direction, objX, solidityBit, wallFlag, &dist, outFloorAngle);
-
-	if(outDistance)
-		*outDistance = dist - 16;
-
-	return tileAddr;
+	return BTST(self->status, ObjStatus::Flip);
 }
 
-// a1                       a0         d2             d3         d5                d6              d1                 a4
-ushort* FindFloor2(Object* self, int objBottom, int objX, int solidityBit, int wallFlag, int* outDistance, ubyte* outFloorAngle)
+bool Object_OutOfRange(Object* self)
 {
-	auto tileAddr = FindNearestTile(self, objBottom, objX);
-	auto tile = *tileAddr;
-	auto tileFlags = tile;
-
-	if(tile == 0 || !(tileFlags & (1 << solidityBit)))
-	{
-	_isBlank:
-		if(outDistance)
-			*outDistance = 15 - (objBottom & 0xF);
-
-		return tileAddr;
-	}
-
-	auto collIndex = v_collindex[tile] & 0xFF;
-
-	if(collIndex == 0)
-		goto _isBlank;
-
-	*outFloorAngle = AngleMap[collIndex];
-
-	auto xpos = objX;
-
-	if(BTST(tileFlags, 0x800))
-	{
-		xpos = ~xpos
-		*outFloorAngle = -*outFloorAngle;
-	}
-
-	if(BTST(tileFlags, 0x1000))
-		*outFloorAngle = -(*outFloorAngle + 0x40) - 0x40;
-
-	short height = CollArray1[(xpos & 0xF) + (collIndex << 4)];
-
-	tileFlags ^= wallFlag;
-
-	if(BTST(tileFlags, 0x1000))
-		height = -height;
-
-	if(height == 0)
-		goto _isBlank;
-
-	if(outDistance)
-	{
-		if(height >= 0)
-			*outDistance = 0xF - (height + (objBottom & 0xF))
-		else
-		{
-			*outDistance = objBottom & 0xF;
-			height += *outDistance;
-
-			if(height >= 0)
-				goto _isBlank;
-
-			*outDistance = ~*outDistance;
-		}
-	}
-
-	return tileAddr;
+	return Object_OutOfRange(self, self->x);
 }
 
-//a1                      a0         d2             d3         d5                d6            a3             d1                 a4
-ushort* FindWall(Object* self, int objBottom, int objX, int solidityBit, int wallFlag, int direction, int* outDistance, ubyte* outFloorAngle)
+bool Object_OutOfRange(Object* self, int xpos)
 {
-	auto tileAddr = FindNearestTile(self, objBottom, objX);
-	auto tile = *tileAddr;
-	auto tileFlags = tile;
-	tile &= 0x7FF;
-
-	if(tile == 0 || !BTST(tileFlags, 1 << solidityBit))
-	{
-	_isBlank:
-		int dist;
-		tileAddr = FindWall2(self, objBottom, objX + direction, solidityBit, wallFlag, &dist, outFloorAngle);
-
-		if(outDistance)
-			*outDistance = dist + 16;
-
-		return tileAddr;
-	}
-
-	auto collIndex = v_collindex[tile] & 0xFF;
-
-	if(collIndex == 0)
-		goto _isBlank;
-
-	*outFloorAngle = AngleMap[collIndex];
-
-	auto ypos = objBottom;
-
-	if(BTST(tileFlags, 0x1000))
-	{
-		ypos = ~ypos
-		*outFloorAngle = -(*outFloorAngle + 0x40) - 0x40;
-	}
-
-	if(BTST(tileFlags, 0x800))
-		*outFloorAngle = -*outFloorAngle;
-
-	short height = CollArray2[(ypos & 0xF) + (collIndex << 4)]
-
-	tileFlags ^= wallFlag;
-
-	if(BTST(tileFlags, 0x800))
-		height = -height
-
-	if(height == 0)
-		goto _isBlank;
-	else if(height < 0)
-	{
-		height += objX & 0xF;
-
-		if(height >= 0)
-			goto _isBlank;
-	}
-	else if(height != 16)
-	{
-		if(outDistance)
-			*outDistance = 15 - (height + (objX & 0xF));
-
-		return tileAddr;
-	}
-
-	int dist;
-	tileAddr = FindWall2(self, objBottom, objX - direction, solidityBit, wallFlag, &dist, outFloorAngle);
-
-	if(outDistance)
-		*outDistance = dist - 16;
-
-	return tileAddr;
-
+	return ((xpos & 0xFF80) - ((v_screenposx - 128) & 0xFF80)) > (128 + 320 + 192);
 }
 
-// a1                     a0         d2             d3         d5                d6              d1                 a4
-ushort* FindWall2(Object* self, int objBottom, int objX, int solidityBit, int wallFlag, int* outDistance, ubyte* outFloorAngle)
-{
-	auto tileAddr = FindNearestTile(self, objBottom, objX);
-	auto tile = *tileAddr;
-	auto tileFlags = tile;
-
-	if(tile == 0 || !(tileFlags & (1 << solidityBit)))
-	{
-	_isBlank:
-		if(outDistance)
-			*outDistance = 0xF - (objX & 0xF);
-
-		return tileAddr;
-	}
-
-	auto collIndex = v_collindex[tile] & 0xFF;
-
-	if(collIndex == 0)
-		goto _isBlank;
-
-	*outFloorAngle = AngleMap[collIndex];
-
-	auto ypos = objBottom;
-
-	if(BTST(tileFlags, 0x1000))
-	{
-		ypos = ~ypos
-		*outFloorAngle = -(*outFloorAngle + 0x40) - 0x40;
-	}
-
-	if(BTST(tileFlags, 0x800))
-		*outFloorAngle = -*outFloorAngle;
-
-	short height = CollArray2[ypos & 0xF + collIndex << 4];
-
-	tileFlags ^= wallFlag;
-
-	if(BTST(tileFlags, 0x800))
-		height = -height;
-
-	if(height == 0)
-		goto _isBlank;
-
-	if(outDistance)
-	{
-		if(height >= 0)
-			*outDistance = 0xF - (height + (objX & 0xF))
-		else
-		{
-			*outDistance = objX & 0xF;
-			height += *outDistance;
-
-			if(height >= 0)
-				goto _isBlank;
-
-			*outDistance = ~*outDistance;
-		}
-	}
-
-	return tileAddr;
-}
-
-// Subroutine to find which tile the object is standing on
-// input:
-//	d2 = y-position of object's bottom edge
-//	d3 = x-position of object
-// output:
-//	a1 = address within 256x256 mappings where object is standing
-//	     (refers to a 16x16 tile number)
-
-ushort* FindNearestTile(Object* self, int objBottom, int objX)
-{
-	auto addr = v_lvllayout[(objBottom >> 1) & 0x380 + (objX >> 8) & 0x7F];
-
-	if(addr == 0)
-		return 0xFFFFFF00 | addr;
-
-	if(addr & 0x80) // special tile?
-	{
-		addr &= 0x7F;
-
-		if(BTST(self->render, ObjRender::Behind))
-		{
-			addr++;
-
-			if(addr == 0x29)
-				addr = 0x51;
-		}
-
-		addr--;
-	}
-	else
-	{
-		addr--;
-
-		// sign ext lower byte
-		if(addr & 0x80)
-			addr |= 0xFF00;
-	}
-
-	addr = ((addr >> 7) & 0x1FF) | ((addr << 9) & 0xFE00); // ror 7
-	addr += ((objBottom * 2) & 0x1E0) + ((objX >> 3) & 0x1E);
-	return 0xFFFF0000 | addr;
-}
-
-void ObjectFall(Object* self)
-{
-	self->x += self->velX << 8;
-	self->y += self->velY << 8;
-	self->velY += 0x28;
-}
+// =====================================================================================================================
+// Collision
+// =====================================================================================================================
 
 // Subroutine to find the distance of an object to the floor
 // input:
@@ -860,22 +571,9 @@ int ObjHitWallLeft(Object* self, int xdir)
 	// 	d3 = 0x40;
 }
 
-// out: a2 = v_objstate
-void RememberState(Object* self)
-{
-	auto approxDist = (self->x & 0xFF80) - ((v_screenposx - 128) & 0xFF80);
-
-	if(approxDist > 128 + 320 + 192)
-	{
-		if(self->respawnNo != 0)
-			BCLR(v_objstate[self->respawnNo + 2], 0x80);
-
-		DeleteObject(self);
-	}
-	else
-		DisplaySprite(self);
-}
-
+// =====================================================================================================================
+// Misc
+// =====================================================================================================================
 
 const short Smash_FragSpd1[] =
 {
@@ -936,359 +634,31 @@ void SmashObject(Object* self, ID newID, int numFrags, short* velocityArray)
 	PlaySound_Special(SFX::WallSmash);
 }
 
+// out: a2 = v_objstate
+void RememberState(Object* self)
+{
+	auto approxDist = (self->x & 0xFF80) - ((v_screenposx - 128) & 0xFF80);
+
+	if(approxDist > 128 + 320 + 192)
+	{
+		if(self->respawnNo != 0)
+			BCLR(v_objstate[self->respawnNo + 2], 0x80);
+
+		DeleteObject(self);
+	}
+	else
+		DisplaySprite(self);
+}
+
 void SpeedToPos(Object* self)
 {
 	self->x += self->velX << 8;
 	self->y += self->velY << 8;
 }
 
-// Solid	object subroutine (includes spikes, blocks, rocks etc)
-// input:
-//	d1 = width
-//	d2 = height / 2 (when jumping)
-//	d3 = height / 2 (when walking) (is this used???? call sites set it to something but it's smashed immediately)
-//	d4 = x-axis position
-// output:
-//	d4 = 0 for no collision, 1 for side collision, -1 for top/bottom collision
-
-//d4                     a0         d1         d2          d3         d4
-int SolidObject(Object* self, int width, int jumpHH, int walkHH, int objX)
+void ObjectFall(Object* self)
 {
-	if(!self->solid)
-		return Solid_ChkEnter(self, width, jumpHH, walkHH, objX);
-
-	if(!BTST(v_player->status, ObjStatus::Air))
-	{
-		auto dist = v_player->x - self->x + width;
-
-		if(dist >= 0 && dist < width * 2)
-		{
-			MvSonicOnPtfm(objX);
-			return 0;
-		}
-	}
-
-	// clear standing flags
-	BCLR(v_player->status, ObjStatus::StandingOn);
-	BCLR(self->status, ObjStatus::StandingOn);
-	self->solid = 0;
-	return 0;
-}
-
-//d4                       a0         d1        d4
-int SolidObject71(Object* self, int width, int objX)
-{
-	if(!self->solid)
-		return Solid_Common(self);
-
-	if(!BTST(v_player->status, ObjStatus::Air))
-	{
-		auto dist = v_player->x - self->x + width;
-
-		if(dist >= 0 && dist < width * 2)
-		{
-			MvSonicOnPtfm(objX);
-			return 0;
-		}
-	}
-
-	// clear standing flags
-	BCLR(v_player->status, ObjStatus::StandingOn);
-	BCLR(self->status, ObjStatus::StandingOn);
-	self->solid = 0;
-	return 0;
-}
-
-//d4                       a0         d1          d2            a2
-int SolidObject2F(Object* self, int width, int jumpHH, byte* heightArray)
-{
-	if(!self->render)
-		return Solid_Ignore();
-
-	auto dist = v_player->x - self->x + width
-
-	if(dist < 0 || dist > width * 2)
-		return Solid_Ignore();
-
-	// flipped horiz?
-	if(BTST(self->render, ObjRender::HorizFlip))
-		dist = ~dist + width * 2;
-
-	auto diff = self->y - heightArray[dist >> 1] - heightArray[0]
-	jumpHH += v_player->height;
-	auto distY = v_player->y - diff + 4 + jumpHH
-
-	if(distY < 0 || distY >= jumpHH * 2)
-		return Solid_Ignore();
-	else
-		return Solid_ChkEnter();
-}
-
-//d4                        a0         d1          d2
-int Solid_ChkEnter(Object* self, int width, int jumpHH)
-{
-	if(BTST(self->render, ObjRender::Visible))
-		return Solid_Common(self, width, jumpHH)
-	else
-		return Solid_Ignore(self);
-}
-
-//d4                      a0        d1           d2
-int Solid_Common(Object* self, int width, int jumpHH)
-{
-	auto distX = v_player->x - self->x + width;
-
-	if(distX < 0 || distX > width * 2)
-		return Solid_Ignore(self);
-
-	jumpHH += v_player->height;
-	auto distY = v_player->y - self->y + 4 + jumpHH;
-
-	if(distY < 0 || distY >= jumpHH * 2 || f_lockmulti & 0x80)
-		return Solid_Ignore(self);
-
-	if(v_player->routine >= 6 || v_debuguse)
-		return 0;
-
-	auto realDistX = distX
-
-	if(distX > width) // left of center?
-	{
-		distX -= width * 2;
-		realDistX = -distX;
-	}
-
-	auto realDistY = distY
-
-	if(distY > jumpHH) // below center?
-	{
-		distY = distY - 4 - jumpHH * 2;
-		realDistY = -distY;
-	}
-
-	if(realDistX > realDistY)
-		return Solid_TopBottom(self, distY);
-
-	if(realDistY >= 4)
-	{
-		// Bonking against the object?
-		if(distX != 0 && ((distX > 0 && v_player->velX >= 0) || (distX < 0 && v->player->velX < 0)))
-		{
-			v_player->inertia = 0;
-			v_player->velX = 0;
-		}
-
-		v_player->x -= distX; // push out of object
-
-		if(BTST(v_player->status, ObjStatus::Air)) // in air?
-		{
-			BCLR(self->status, ObjStatus::Pushing);
-			BCLR(v_player->status, ObjStatus::Pushing);
-		}
-		else
-		{
-			BSET(v_player->status, ObjStatus::Pushing);
-			BSET(self->status, ObjStatus::Pushing);
-		}
-	}
-	else
-	{
-		BCLR(self->status, ObjStatus::Pushing);
-		BCLR(v_player->status, ObjStatus::Pushing);
-	}
-
-	return 1;
-}
-
-//d4                      a0
-int Solid_Ignore(Object* self)
-{
-	if(self->status & ObjStatus::Pushing) // being pushed?
-	{
-		v_player->anim = SonicAnim::Run;
-		BCLR(self->status, ObjStatus::Pushing);
-		BCLR(v_player->status, ObjStatus::Pushing);
-	}
-
-	return 0;
-}
-
-//d4                          a0        d3
-void Solid_TopBottom(Object* self, int distY)
-{
-	if(distY < 0)
-	{
-		if(v_player->velY == 0 && !BTST(v_player->status, ObjStatus::Air))
-			KillSonic(v_player); // squisho
-		else if(v_player->velY < 0 && distY <= 0) // moving down and sonic is above?
-		{
-			v_player->y -= distY; // push out of object
-			v_player->velY = 0;
-		}
-
-		return -1; // top/bottom
-	}
-	else if(distY < 16)
-	{
-		distY -= 4;
-
-		d1 = self->actWid
-		d2 = d1 * 2
-		d1 = d1 + v_player->x - self->x
-
-		if(d1 >= 0 && d1 < d2 && v_player->velY >= 0)
-		{
-			v_player->y -= (distY + 1); // push out of object
-			Solid_ResetFloor(self);
-			self->solid = 2;
-			BSET(self->status, ObjStatus::StandingOn); // stand on it!
-			return -1; // top/bottom
-		}
-
-		return 0;
-	}
-	else
-		return Solid_Ignore(self);
-}
-
-//                             a0
-void Solid_ResetFloor(Object* self)
-{
-	if(BTST(v_player->status, ObjStatus::StandingOn)) // sonic standing on something?
-	{
-		auto stoodOn = v_objspace[VAR_B(v_player, 0x3D)];
-		BCLR(stoodOn->status, ObjStatus::StandingOn);
-		stoodOn->solid = 0;
-	}
-
-	VAR_B(v_player, 0x3D) = self - v_objspace;
-	v_player->angle = 0;
-	v_player->velY = 0;
-	v_player->inertia = v_player->velX;
-
-	if(BTST(v_player->status, ObjStatus::Air)) // in air?
-		Sonic_ResetOnFloor(v_player);
-
-	BSET(v_player->status, ObjStatus::StandingOn);
-	BSET(self->status, ObjStatus::StandingOn);
-}
-
-bool Object_IsVisible(Object* self)
-{
-	return BTST(self->render, ObjRender::Visible);
-}
-
-bool Object_IsFlipped(Object* self)
-{
-	return BTST(self->status, ObjStatus::Flip);
-}
-
-bool Object_OutOfRange(Object* self)
-{
-	return Object_OutOfRange(self, self->x);
-}
-
-bool Object_OutOfRange(Object* self, int xpos)
-{
-	return ((xpos & 0xFF80) - ((v_screenposx - 128) & 0xFF80)) > (128 + 320 + 192);
-}
-
-//                           a0           d1
-void PlatformObject(Object* self, int halfWidth)
-{
-	if(v_player->velY < 0) // moving up? don't curr
-		return;
-
-	// perform x-axis range check
-	auto diffX = v_player->x - (self->x - halfWidth);
-
-	if(diffX >= 0 && diffX < (2 * halfWidth));
-		Plat_NoXCheck(self);
-}
-
-void Plat_NoXCheck(Object* self)
-{
-	Plat_NoXCheck2(self, self->y - 8);
-}
-
-// aka Platform3
-//                           a0         d0
-void Plat_NoXCheck2(Object* self, int platTop)
-{
-	// perform y-axis range check
-	auto diffY = platTop - v_player->height + 4;
-
-	if(diffY > 0 || diffY < -16 || f_lockmulti & 0x80 || Player_IsDead())
-		return;
-
-	v_player->y = v_player->y + v_player->height + diffY + 3;
-	self->routine += 2;
-
-// loc_74AE: (called by monitor)
-	if(BTST(v_player->status, ObjStatus::StandingOn))
-	{
-		auto obj = &v_objspace[VAR_B(v_player, Player_StandingObjectB)];
-		BCLR(obj->status, ObjStatus::StandingOn);
-		obj->routine2 = 0;
-
-		if(obj->routine == 4)
-			obj->routine = 2;
-	}
-
-	VAR_B(v_player, Player_StandingObjectB) = Object_PointerToSlot(self);
-	v_player->angle = 0;
-	v_player->velY = 0;
-	v_player->inertia = v_player->velX;
-
-	if(PlayerInAir())
-		Sonic_ResetOnFloor(v_player);
-
-	BSET(v_player->status, ObjStatus::StandingOn);
-	BSET(self->status, ObjStatus::StandingOn);
-}
-
-// Returns true when player leaves platform (cs in original)
-//c                        a0             d1            d0
-bool ExitPlatform(Object* self, int centerOffset, int& diffX)
-{
-	return ExitPlatform(self, centerOffset, centerOffset, diffX);
-}
-
-//c                        a0            d1              d2             d0
-bool ExitPlatform(Object* self, int leftOffset, int halfWidth, int& diffX)
-{
-	if(!PlayerInAir())
-	{
-		auto diffX = v_player->x - (self->x - leftOffset);
-
-		if(diffX >= 0 && diffX < (halfWidth * 2))
-			return false;
-	}
-
-	BCLR(v_player->status, ObjStatus::StandingOn);
-	self->routine = 2;
-	BCLR(self->status, ObjStatus::StandingOn);
-	return true;
-}
-
-//                          a0        d2          d3
-void MvSonicOnPtfm(Object* self, int prevX, int height)
-{
-	MvSonic2(self, self->y - height, prevX);
-}
-
-//                           a0         d2
-void MvSonicOnPtfm2(Object* self, int prevX)
-{
-	MvSonic2(self, self->y - 9, prevX);
-}
-
-//                     a0        d0       d2
-void MvSonic2(Object* self, int top, int prevX)
-{
-	if(!f_lockmulti && !PlayerDead() && !v_debuguse)
-	{
-		v_player->y = top - v_player->height;
-		v_player->x -= prevX - self->x;
-	}
+	self->x += self->velX << 8;
+	self->y += self->velY << 8;
+	self->velY += 0x28;
 }
