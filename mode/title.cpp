@@ -1,37 +1,3 @@
-struct LevSel_Ptr
-{
-	int zone;
-	int act;
-};
-
-const LevSel_Ptr LevSel_Ptrs[] =
-{
-	{ Zone_GHZ, 0 },
-	{ Zone_GHZ, 1 },
-	{ Zone_GHZ, 2 },
-	{ Zone_MZ,  0 },
-	{ Zone_MZ,  1 },
-	{ Zone_MZ,  2 },
-	{ Zone_SYZ, 0 },
-	{ Zone_SYZ, 1 },
-	{ Zone_SYZ, 2 },
-	{ Zone_LZ,  0 },
-	{ Zone_LZ,  1 },
-	{ Zone_LZ,  2 },
-	{ Zone_SLZ, 0 },
-	{ Zone_SLZ, 1 },
-	{ Zone_SLZ, 2 },
-	{ Zone_SBZ, 0 },
-	{ Zone_SBZ, 1 },
-	{ Zone_LZ,  3 },
-	{ Zone_SBZ, 2 },
-	{ Zone_SS,  0 }, // Special Stage
-	{ 0x80,      0 }, // Sound Test
-};
-
-const ubyte LevSelCode_J[] =  { Buttons_Up, Buttons_Dn, Buttons_Dn, Buttons_Dn, Buttons_L, Buttons_R, 0, 0xFF };
-const ubyte LevSelCode_US[] = { Buttons_Up, Buttons_Dn, Buttons_L, Buttons_R, 0, 0xFF };
-
 void GM_Title()
 {
 	PlaySound_Special(BGM_Stop);
@@ -304,14 +270,6 @@ void GM_Title()
 	v_scorelife = 5000;
 	PlaySound_Special(BGM_Fade);
 }
-
-LevSel_Ptr Demo_Levels[] =
-{
-	{ Zone_GHZ,  0 },
-	{ Zone_MZ,   0 },
-	{ Zone_SYZ,  0 },
-	{ Zone_SS,   0 },
-};
 
 bool GotoDemo()
 {

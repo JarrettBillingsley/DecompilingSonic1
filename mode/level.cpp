@@ -1,10 +1,3 @@
-enum
-{
-	DemoMode_Off = 0,
-	DemoMode_On = 1,
-	DemoMode_Credits = 0x8001,
-};
-
 void GM_Level()
 {
 _restart:
@@ -319,17 +312,6 @@ void SignpostArtLoad()
 		NewPLC(PLC_Signpost);
 	}
 }
-
-const ubyte* ColPointers[] =
-{
-	Col_GHZ,
-	Col_LZ,
-	Col_MZ,
-	Col_SLZ,
-	Col_SYZ,
-	Col_SBZ,
-//	Col_GHZ // Pointer for Ending is missing by default.
-};
 
 void ColIndexLoad()
 {

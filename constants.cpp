@@ -1,4 +1,3 @@
-
 enum
 {
 	ScreenWidth = 320,
@@ -12,7 +11,4 @@ enum
 	NumEmeralds = 6,
 
 	MaxSprites = 80,
-
-	MaxObjects = 128,
-	NumLevelObjects = 96,
 };

@@ -86,26 +86,6 @@ void VBlankWriteSonic()
 	}
 }
 
-enum
-{
-	VBlank_00 = 0x00,
-	VBlank_Sega = 0x02,        // Seeeeegaaaaaa!
-	VBlank_Title = 0x04,       // Title screen
-	VBlank_Credits = 0x04,     // Credits screen
-	VBlank_06 = 0x06,
-	VBlank_Level = 0x08,       // Level main loop
-	VBlank_Special = 0x0A,     // Special stage
-	VBlank_TitleCard = 0x0C,   // Waiting for level title card
-	VBlank_SSResults = 0x0C,   // Special stage results screen
-	VBlank_0E = 0x0E,
-	VBlank_Paused = 0x10,      // Game paused
-	VBlank_PaletteFade = 0x12, // Palette fading
-	VBlank_SegaSwitch = 0x14,  // One frame between SEGA palette cycle and SEEEGAAAA
-	VBlank_Continue = 0x16,    // Continue screen
-	VBlank_SSFade = 0x16,      // Special stage spin-and-fade-to-white
-	VBlank_Ending = 0x18,      // Ending screen
-};
-
 void VBlank()
 {
 	auto routine = v_vbla_routine;
