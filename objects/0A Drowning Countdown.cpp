@@ -253,9 +253,8 @@ void DrownCount(Object* self)
 					return;
 
 				// Count down frames until the next second
-				if(TimerNeg(VAR_W(self, frameTimerW)))
+				if(TimerNeg(VAR_W(self, frameTimerW), 59))
 				{
-					VAR_W(self, frameTimerW) = 59;
 					VAR_W(self, bubbleFlagsW) = BubbleFlags_Enable;
 					VAR_B(self, spawnTimerB) = RandomNumber(2);
 
@@ -266,11 +265,8 @@ void DrownCount(Object* self)
 						if(v_air == Drown_Air)
 							PlaySound(BGM::Drowning); // uh oh
 
-						if(TimerNeg(VAR_B(self, sillyTimerB)))
-						{
-							VAR_B(self, sillyTimerB) = VAR_B(self, alwaysOneB);
+						if(TimerNeg(VAR_B(self, sillyTimerB), VAR_B(self, alwaysOneB)))
 							BSET(VAR_W(self, bubbleFlagsW), BubbleFlags_SpawnNumber);
-						}
 					}
 
 					if(TimerNeg(v_air))
@@ -358,9 +354,8 @@ void DrownCount(Object* self)
 void CheckNumberBubbleConversion(Object* self)
 {
 	// Are we actually a number-bubble?
-	if(VAR_W(self, frameTimerW) != 0 && TimerZero(VAR_W(self, frameTimerW)) && self->anim < 7)
+	if(VAR_W(self, frameTimerW) != 0 && TimerZero(VAR_W(self, frameTimerW), NumberBubble_Timer2) && self->anim < 7)
 	{
-		VAR_W(self, frameTimerW) = NumberBubble_Timer2;
 		self->velY = 0;
 		self->render = ObjRender::Visible; // makes it screen-relative positioned
 		self->x = self->x - v_screenposx + 128;

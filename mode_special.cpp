@@ -391,11 +391,8 @@ void GM_Special()
 		SS_ShowLayout(BuildSprites());
 		SS_BGAnimate();
 
-		if(TimerZero(v_palchgspeed)))
-		{
-			v_palchgspeed = 2;
+		if(TimerZero(v_palchgspeed, 2)))
 			WhiteOut_ToWhite();
-		}
 	} while(v_demolength);
 
 	DISABLE_INTERRUPTS();

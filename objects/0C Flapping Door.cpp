@@ -47,9 +47,8 @@ void FlapDoor(Object* self)
 			VAR_W(self, flapTimeW) = self->subtype * 60;
 			// fall through
 		case Routine_Main:
-			if(TimerNeg(VAR_W(self, flapWaitW)))
+			if(TimerNeg(VAR_W(self, flapWaitW), VAR_W(self, flapTimeW)))
 			{
-				VAR_W(self, flapWaitW) = VAR_W(self, flapTimeW);
 				self->anim ^= 1;
 
 				if(Object_IsVisible(self))

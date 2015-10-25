@@ -22,10 +22,8 @@ void LavaMaker(Object* self)
 			self->subtype &= 0xF;
 			// fall through
 		case Routine_Main:
-			if(TimerZero(self->timeFrame))
+			if(TimerZero(self->timeFrame, self->delayAni))
 			{
-				self->timeFrame = self->delayAni;
-
 				if(!ChkObjectVisible(self))
 				{
 					if(auto lavaBall = FindFreeObj())

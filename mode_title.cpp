@@ -363,9 +363,8 @@ void LevSelControls()
 {
 	auto buttonsPressed = v_jpadpress1 & (Buttons::Up | Buttons::Dn);
 
-	if(buttonsPressed || TimerZero(v_levseldelay))
+	if(buttonsPressed || TimerZero(v_levseldelay, 11))
 	{
-		v_levseldelay = 11;
 		auto buttonsHeld = v_jpadhold1 & (Buttons::Up | Buttons::Dn);
 
 		if(buttonsHeld)

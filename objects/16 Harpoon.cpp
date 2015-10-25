@@ -59,9 +59,8 @@ void Harpoon(Object* self)
 			break;
 
 		case Routine_Wait:
-			if(TimerNeg(VAR_W(self, harpTimeW)))
+			if(TimerNeg(VAR_W(self, harpTimeW), 60))
 			{
-				VAR_W(self, harpTimeW) = 60;
 				self->routine = Routine_Main;
 				self->anim ^= 1;
 			}

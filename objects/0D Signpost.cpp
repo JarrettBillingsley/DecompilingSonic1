@@ -82,18 +82,16 @@ void Signpost(Object* self)
 			break;
 
 		case Routine_Spin:
-			if(TimerNeg(VAR_W(self, spinTimeW)))
+			if(TimerNeg(VAR_W(self, spinTimeW), Signpost_SpinTime))
 			{
-				VAR_W(self, spinTimeW) = Signpost_SpinTime;
 				self->anim++;
 
 				if(self->anim == 3)
 					self->routine = Routine_SonicRun;
 			}
 
-			if(TimerNeg(VAR_W(self, sparkleTimeW)))
+			if(TimerNeg(VAR_W(self, sparkleTimeW), Signpost_SparkleTime))
 			{
-				VAR_W(self, sparkleTimeW) = Signpost_SparkleTime;
 				auto idx = VAR_B(self, sparkleIdxB);
 				VAR_B(self, sparkleIdxB) = (VAR_B(self, sparkleIdxB) + 1) & 7;
 

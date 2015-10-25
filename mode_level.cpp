@@ -336,23 +336,16 @@ void ColIndexLoad()
 void SynchroAnimate()
 {
 	// Used for GHZ spiked log
-	if(TimerZero(v_ani0_time))
-	{
-		v_ani0_time = 11;
+	if(TimerZero(v_ani0_time, 11))
 		v_ani0_frame = (v_ani0_frame - 1) & 7;
-	}
 
 	// Used for rings and giant rings
-	if(TimerZero(v_ani1_time))
-	{
-		v_ani1_time = 7;
+	if(TimerZero(v_ani1_time, 7))
 		v_ani1_frame = (v_ani1_frame + 1) & 3;
-	}
 
 	// Used for nothing
-	if(TimerZero(v_ani2_time))
+	if(TimerZero(v_ani2_time, 7))
 	{
-		v_ani2_time = 7;
 		v_ani2_frame++;
 
 		if(v_ani2_frame == 6)

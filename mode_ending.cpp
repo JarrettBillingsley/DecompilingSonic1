@@ -118,11 +118,8 @@ void GM_Ending()
 				OscillateNumDo();
 				SynchroAnimate();
 
-				if(TimerZero(v_palchgspeed))
-				{
-					v_palchgspeed = 3;
+				if(TimerZero(v_palchgspeed, 3))
 					WhiteOut_ToWhite();
-				}
 			} while(!f_restart);
 
 

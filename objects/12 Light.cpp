@@ -43,11 +43,8 @@ void SpinningLight(Object* self)
 			self->priority = 6;
 			// fall through
 		case Routine_Main:
-			if(TimerNeg(self->timeFrame))
-			{
-				self->timeFrame = 7;
+			if(TimerNeg(self->timeFrame, 7))
 				self->frame = (self->frame == 5) ? 0 : self->frame + 1;
-			}
 
 			if(Object_OutOfRange(self))
 				DeleteObject(self);

@@ -361,9 +361,8 @@ void PCycle_GHZ()
 
 void PCycle_GHZ_Common(uint* palette)
 {
-	if(TimerZero(v_pcyc_time))
+	if(TimerZero(v_pcyc_time, 5))
 	{
-		v_pcyc_time = 5;
 		auto cycle = v_pcyc_num;
 		v_pcyc_num = (v_pcyc_num + 1) & 3;
 		memcpy(v_pal_dry + 0x50, palette + (cycle * 8), 8);
@@ -374,9 +373,8 @@ const ubyte PCycLZ_Seq[8] = { 1, 0, 0, 1, 0, 0, 1, 0 };
 
 void PCycle_LZ()
 {
-	if(TimerZero(v_pcyc_time))
+	if(TimerZero(v_pcyc_time, 2))
 	{
-		v_pcyc_time = 2;
 		auto cycle = (v_pcyc_num++) & 3;
 		cycle *= 8;
 		uint* palette = (v_act == 3) ? Pal_SBZ3Cyc1 : Pal_LZCyc1;
@@ -390,10 +388,7 @@ void PCycle_LZ()
 		auto frame = v_pal_buffer & 3;
 
 		if(f_conveyrev)
-		{
-			if(TimerNeg(frame))
-				frame = 2;
-		}
+			TimerNeg(frame, 2);
 		else
 		{
 			frame++;
@@ -415,9 +410,8 @@ void PCycle_MZ()
 
 void PalCycle_SLZ()
 {
-	if(TimerZero(v_pcyc_time))
+	if(TimerZero(v_pcyc_time, 7))
 	{
-		v_pcyc_time = 7;
 		auto cycle = v_pcyc_num + 1;
 
 		if(cycle >= 6)
@@ -431,9 +425,8 @@ void PalCycle_SLZ()
 
 void PalCycle_SYZ()
 {
-	if(TimerZero(v_pcyc_time))
+	if(TimerZero(v_pcyc_time, 5))
 	{
-		v_pcyc_time = 5;
 		auto cycle = ((v_pcyc_num++) & 3) * 4;
 		memcpy(v_pal_dry + 0x6E, Pal_SYZCyc1 + (cycle * 2), 8);
 		memcpy(v_pal_dry + 0x76, Pal_SYZCyc2 + cycle, 2);
