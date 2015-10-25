@@ -46,7 +46,7 @@ void Plat_NoXCheck2(Object* self, int platTop)
 	v_player->inertia = v_player->velX;
 
 	if(Player_IsInAir())
-		Sonic_ResetOnFloor(v_player);
+		Player_ResetOnFloor(v_player);
 
 	BSET(v_player->status, ObjStatus_StandingOn);
 	BSET(self->status, ObjStatus_StandingOn);

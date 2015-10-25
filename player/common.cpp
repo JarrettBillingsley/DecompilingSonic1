@@ -69,7 +69,7 @@ void Player_Hurt(Object* player, Object* obj)
 	// Hurt sonic
 	v_shield = 0;
 	Player_SetHurt();
-	Sonic_ResetOnFloor(player);
+	Player_ResetOnFloor(player);
 	Player_SetInAir();
 
 	// Bounce him away
@@ -108,7 +108,7 @@ void Player_Kill(Object* player, Object* killer)
 	// Set him up to do the death bounce
 	v_invinc = 0;
 	Player_SetDead();
-	Sonic_ResetOnFloor(player);
+	Player_ResetOnFloor(player);
 	Player_SetInAir();
 	player->velY = -0x700;
 	player->velX = 0;

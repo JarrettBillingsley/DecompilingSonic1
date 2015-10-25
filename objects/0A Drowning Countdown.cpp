@@ -278,7 +278,7 @@ void DrownCount(Object* self)
 						VAR_B(self, spawnTimerB) = 10;
 						VAR_W(self, bubbleFlagsW) = BubbleFlags_Enable;
 						VAR_W(self, drowningTimeW) = Drown_Length;
-						Sonic_ResetOnFloor(v_player);
+						Player_ResetOnFloor(v_player);
 						Player_SetAnimDrowning();
 						Player_SetInAir();
 						v_player->gfx |= 0x80;

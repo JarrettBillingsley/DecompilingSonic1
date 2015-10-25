@@ -79,8 +79,8 @@ void SonicSpecial(Object* self)
 			SpeedToPos(self);
 			SS_FixCamera(self);
 			v_ssangle += v_ssrotate;
-			Sonic_Animate(self);
-			Sonic_LoadGfx(self);
+			Player_Animate(self);
+			Player_LoadGfx(self);
 			DisplaySprite(self);
 			break;
 
@@ -100,8 +100,8 @@ void SonicSpecial(Object* self)
 
 			v_ssangle += v_ssrotate;
 
-			Sonic_Animate(self);
-			Sonic_LoadGfx(self);
+			Player_Animate(self);
+			Player_LoadGfx(self);
 			SS_FixCamera(self);
 			DisplaySprite(self);
 			break;
@@ -110,8 +110,8 @@ void SonicSpecial(Object* self)
 			if(TimerZero(VAR_W(self, exitTimerW)))
 				v_gamemode = GameMode_Level;
 
-			Sonic_Animate(self);
-			Sonic_LoadGfx(self);
+			Player_Animate(self);
+			Player_LoadGfx(self);
 			SS_FixCamera(self);
 			DisplaySprite(self);
 			break;
