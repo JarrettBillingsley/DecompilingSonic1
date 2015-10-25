@@ -196,52 +196,52 @@ namespace ID
 
 struct Object
 {
-	ID id;     // object id
-	ubyte render; // bitfield for x/y flip, display mode
-	ushort gfx;   // palette line & VRAM setting (2 bytes)
-	uint map;     // mappings address (4 bytes)
+	ID id;        // 00 object id
+	ubyte render; // 01 bitfield for x/y flip, display mode
+	ushort gfx;   // 02 palette line & VRAM setting (2 bytes)
+	uint map;     // 04 mappings address (4 bytes)
 
 	union
 	{
 		struct
 		{
-			ushort x16;     // 16-bit x-axis position
-			ushort screenY; // y-axis position for screen-fixed items (2 bytes)
+			ushort x16;     // 08 16-bit x-axis position
+			ushort screenY; // 0A y-axis position for screen-fixed items (2 bytes)
 		};
 
-		uint x; // 32-bit x-axis position
+		uint x; // 08 32-bit x-axis position
 	};
 
-	uint y;          // y-axis position
-	ushort velX;     // x-axis velocity
-	ushort velY;     // y-axis velocity (2 bytes)
-	ushort inertia;  // potential speed (2 bytes)
-	ubyte height;    // height/2
-	ubyte width;     // width/2
-	ubyte priority;  // sprite stack priority -- 0 is front
-	ubyte actWid;    // action width
-	ubyte frame;     // current frame displayed
-	ubyte aniFrame;  // current frame in animation script
-	ubyte anim;      // current animation
-	ubyte nextAni;   // next animation
-	ubyte timeFrame; // time to next frame
-	ubyte delayAni;  // time to delay animation
-	ubyte colType;   // collision response type
-	ubyte colProp;   // collision extra property
-	ubyte status;    // orientation or mode
-	ubyte respawnNo; // respawn list index number
-	ubyte routine;   // routine number
+	uint y;          // 0C y-axis position
+	ushort velX;     // 10 x-axis velocity
+	ushort velY;     // 12 y-axis velocity (2 bytes)
+	ushort inertia;  // 14 potential speed (2 bytes)
+	ubyte height;    // 16 height/2
+	ubyte width;     // 17 width/2
+	ubyte priority;  // 18 sprite stack priority -- 0 is front
+	ubyte actWid;    // 19 action width
+	ubyte frame;     // 1A current frame displayed
+	ubyte aniFrame;  // 1B current frame in animation script
+	ubyte anim;      // 1C current animation
+	ubyte nextAni;   // 1D next animation
+	ubyte timeFrame; // 1E time to next frame
+	ubyte delayAni;  // 1F time to delay animation
+	ubyte colType;   // 20 collision response type
+	ubyte colProp;   // 21 collision extra property
+	ubyte status;    // 22 orientation or mode
+	ubyte respawnNo; // 23 respawn list index number
+	ubyte routine;   // 24 routine number
 
 	union
 	{
-		ubyte routine2; // secondary routine number
-		ubyte solid;    // solid status flag
+		ubyte routine2; // 25 secondary routine number
+		ubyte solid;    // 25 solid status flag
 	};
 
-	ushort angle;  // angle
-	ubyte subtype; // object subtype
+	ushort angle;  // 26 angle
+	ubyte subtype; // 28 object subtype
 
-	ubyte variables[23]; // per-object variables (start at 0x29)
+	ubyte variables[23]; // 29 per-object variables
 
 	inline byte&   var_b (int offset) { return *(byte*)  &variables[offset - 0x29]; }
 	inline ubyte&  var_ub(int offset) { return *(ubyte*) &variables[offset - 0x29]; }

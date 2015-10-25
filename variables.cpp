@@ -2,15 +2,13 @@
 #define MAX_OBJECTS 128
 #define NUM_LEVEL_OBJECTS 96
 
-/*
-Special stage variables:
-0xFFFF0000: graphics decompression buffer (0x1000 bytes)
-0xFFFF1000: layout data (0x3000 bytes?)
-0xFFFF4000: v_sstileinfo tile info (78 * 8 bytes)
-0xFFFF4400: collected flags for rings and stuff (0x100 bytes)
-0xFFFF8000: calculated screen positions of SS tiles based on rotation (0x400 bytes)
-*/
+// Special stage variables:
+ubyte v_sslayout[SS_LayoutRows][SS_LayoutColumns];         // 0xFFFF0000* ; tile layout data (0x4000 bytes)
+SSTileInfo v_sstileinfo[SSObj_COUNT + 1];                  // 0xFFFF4000* ; tile info (78 tile types, plus empty slot 0)
+SS_Animation v_ssanimations[SS_NumAnimations];             // 0xFFFF4400* ; animations in progress
+Point16 v_ssposbuffer[SS_PosBufferSize][SS_PosBufferSize]; // 0xFFFF8000* ; calculated screen positions of tiles based on rotation
 
+// Regular variables:
 ubyte v_256x256[0xA400];                 // 0xFFFF0000	; 256x256 tile mappings (0xA400 bytes)
 ubyte v_lvllayout[1024];                 // 0xFFFFA400	; level and background 256tile layouts (0x400 bytes) (indices are interleaved FG, BG, FG, BG...)
                                          // 0xFFFFA800

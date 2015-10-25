@@ -1,3 +1,24 @@
+struct Point16
+{
+	short x, y;
+};
+
+enum
+{
+	ScreenWidth = 320,
+	ScreenHeight = 224,
+
+	HalfScreenWidth = 160,
+	HalfScreenHeight = 112,
+
+	OneSecond = 60,
+	HalfSecond = 30,
+
+	NumEmeralds = 6,
+
+	MaxSprites = 0x50,
+};
+
 namespace GameMode
 {
 	enum
@@ -63,3 +84,4 @@ void GameInit()
 		}
 	}
 }
+

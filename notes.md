@@ -148,7 +148,10 @@ that. This way animation scripts can delete the object by using the right animat
 number.
 
 Platform routines are usually numbered so that routine 2 is the "idle" routine and routine 4 is the "being stood on"
-routine. This convention is used in some platform helper functions too.
+routine. This convention is used in some platform helper functions too. Platforms also usually seem to have TWO delete
+routines, typically 6 and 8, which do the same thing. Presumably this is so that if the platform helper functions
+increment the routine from 6 to 8, it will still get deleted instead of doing something completely different or crashing
+the game.
 
 Pattern Load Cues
 ------------------------------------------------------------
@@ -179,3 +182,14 @@ the background are composed the same way.
 Loading a level is a matter of loading the "tile mappings" (the descriptions of the 16x16-pixel tiles), the "block
 mappings" (the arrangements of 16x16 tiles into blocks), and then the "layout" (the actual list of blocks that make up
 the level, which is quite small as a result -- usually only a hundred bytes or less).
+
+How the heck does the special stage rotate?
+------------------------------------------------------------
+
+If you're like me, you know that the MD doesn't have any way to rotate background layers like the SNES has, so it's
+confusing that the special stage rotates. Well there are two things that hint at what's really going on: one, it rotates
+in discrete steps instead of smoothly; and two, the trippy background has TWO layers instead of one.
+
+The way this works is that the special stage is actually drawn ENTIRELY of sprites. The two background layers are both
+used for the stage background, and all the tiles, bumpers, emeralds etc. are just sprites. There are 16 pre- rotated
+versions of the rotating tile graphics, and the game just switches between them as the stage rotates.

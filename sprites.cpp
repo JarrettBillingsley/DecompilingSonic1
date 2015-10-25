@@ -80,7 +80,7 @@ ushort* BuildSprites()
 	v_spritecount = spriteCount;
 
 	// Terminate sprite link list
-	if(spriteCount != 0x50)
+	if(spriteCount != MaxSprites)
 		spriteBuffer[0] = 0;
 	else
 		spriteBuffer[-5] = 0;
@@ -99,7 +99,7 @@ void EnqueueSprite(ushort gfx, byte* mapping, int numPieces, int spriteX, int sp
 			// Flipped vertically and horizontally
 			for(int i = 0; i <= numPieces; i++, spriteBuffer += 4, mapping += 5)
 			{
-				if(spriteCount == 0x50)
+				if(spriteCount == MaxSprites)
 					break;
 
 				spriteCount++;
@@ -118,7 +118,7 @@ void EnqueueSprite(ushort gfx, byte* mapping, int numPieces, int spriteX, int sp
 			// Flipped horizontally
 			for(int i = 0; i <= numPieces; i++, spriteBuffer += 4, mapping += 5)
 			{
-				if(spriteCount == 0x50)
+				if(spriteCount == MaxSprites)
 					break;
 
 				spriteCount++;
@@ -138,7 +138,7 @@ void EnqueueSprite(ushort gfx, byte* mapping, int numPieces, int spriteX, int sp
 		// Flipped vertically
 		for(int i = 0; i <= numPieces; i++, spriteBuffer += 4, mapping += 5)
 		{
-			if(spriteCount == 0x50)
+			if(spriteCount == MaxSprites)
 				break;
 
 			spriteCount++;
@@ -162,7 +162,7 @@ void EnqueueSpriteUnflipped(ushort gfx, byte* mapping, int numPieces, int sprite
 {
 	for(int i = 0; i <= numPieces; i++, spriteBuffer += 4, mapping += 5)
 	{
-		if(spriteCount == 0x50)
+		if(spriteCount == MaxSprites)
 			break;
 
 		spriteCount++;
