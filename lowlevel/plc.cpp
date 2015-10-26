@@ -79,8 +79,7 @@ void PLC_Decode3Tiles()
 
 void PLC_DecodeSomeTiles(ushort vramAddr)
 {
-	// Convert vramAddr into a VDP address command
-	VDP_COMMAND(WSWAP(((vramAddr << 2) | ((vramAddr & 0xFFFF) >> 2)) | 0x4000));
+	VDP_SetVRAMAddr(vramAddr);
 
 	for(; nem_tileDecodeCount > 0; nem_tileDecodeCount--)
 	{

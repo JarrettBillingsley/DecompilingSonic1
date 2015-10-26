@@ -81,10 +81,10 @@ void Nem_Process_Compressed_Data(NemDec_State& s, ubyte*& src, int pixelsLeft, i
 				if(s.isXor)
 				{
 					s.prevRow ^= pixelData;
-					*vdp_data_port = s.prevRow;
+					VDP_Data(s.prevRow);
 				}
 				else
-					*vdp_data_port = pixelData;
+					VDP_Data(pixelData);
 
 				rowsLeft--;
 

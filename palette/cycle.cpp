@@ -336,11 +336,11 @@ void PalCycle_SS()
 
 	// Handle animating the background tiles (bird/fish transformation)
 	auto planeAOffset = SSPlaneAOffsets[cycleData.planeAIdx];
-	VDP_COMMAND(planeAOffset[0]);
+	VDP_Control(planeAOffset[0]);
 	v_scrposy_dup = planeAOffset[1];
-	VDP_COMMAND(cycleData.planeBOffs);
-	VDP_COMMAND(0x40000010);
-	VDP_DATA(v_scrposy_dup);
+	VDP_Control(cycleData.planeBOffs);
+	VDP_Control(0x40000010);
+	VDP_Data(v_scrposy_dup);
 
 	// Handle animating the palette.... somehow
 	auto something = cycleData.something;
