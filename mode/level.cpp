@@ -31,16 +31,13 @@ _restart:
 	Clear_FE60_FF80();
 	DISABLE_INTERRUPTS();
 		ClearScreen();
-
-		// TODO:
-		// lea	(vdp_control_port).l,a6
-		// move.w	#$8B03,(a6)	; line scroll mode
-		// move.w	#$8200+(vram_fg>>10),(a6) ; set foreground nametable address
-		// move.w	#$8400+(vram_bg>>13),(a6) ; set background nametable address
-		// move.w	#$8500+(vram_sprites>>9),(a6) ; set sprite table address
-		// move.w	#$9001,(a6)		; 64-cell hscroll size
-		// move.w	#$8004,(a6)		; 8-colour mode
-		// move.w	#$8720,(a6)		; set background colour (line 3; colour 0)
+		VDP_RegWrite(0x0B, 3);                 // line scroll mode
+		VDP_RegWrite(0x02, vram_fg >> 10);     // set foreground nametable address
+		VDP_RegWrite(0x04, vram_bg >> 13);     // set background nametable address
+		VDP_RegWrite(0x05, vram_sprites >> 9); // set sprite table address
+		VDP_RegWrite(0x10, 1);                 // 64-cell hscroll size
+		VDP_RegWrite(0x00, 4);                 // 8-colour mode
+		VDP_RegWrite(0x07, 0x20);              // set background colour (line 3; colour 0)
 
 		// Set up h-interrupts for Labyrinth's water
 		v_hbla_hreg = 0x8A00 + 223; // water palette change pos

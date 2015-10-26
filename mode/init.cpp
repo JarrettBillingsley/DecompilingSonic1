@@ -1,13 +1,15 @@
+
+// This zeroes the Z80 RAM and registers, and then makes it sit in an infinite loop.
 const ubyte Z80_Program[37] =
 {
-	0xAF,             // xor  a
+	0xAF,             // xor  a          ; clear RAM (starting after this program)
 	0x01, 0xD9, 0x1F, // ld   bc,1fd9h
 	0x11, 0x27, 0x00, // ld   de,0027h
 	0x21, 0x26, 0x00, // ld   hl,0026h
 	0xF9,             // ld   sp,hl
 	0x77,             // ld   (hl),a
 	0xED, 0xB0,       // ldir
-	0xDD, 0xE1,       // pop  ix
+	0xDD, 0xE1,       // pop  ix         ; clear all regs
 	0xFD, 0xE1,       // pop  iy
 	0xED, 0x47,       // ld   i,a
 	0xED, 0x4F,       // ld   r,a
@@ -22,8 +24,8 @@ const ubyte Z80_Program[37] =
 	0xF1,             // pop  af
 	0xF9,             // ld   sp,hl
 	0xF3,             // di
-	0xED, 0x56,       // im1
-	0x36, 0xE9,       // ld   (hl),e9h
+	0xED, 0x56,       // im1              ; interrupt mode 1
+	0x36, 0xE9,       // ld   (hl),e9h    ; set up an infinite loop at address 0
 	0xE9              // jp   (hl)
 };
 
@@ -81,7 +83,7 @@ void EntryPoint()
 
 	if(!BTST(z80_expansion_control, 1 << 6) || v_init != FOURCC("init"))
 	{
-		// checksum here, which is not important
+		// checksum would go here, which is not important or implementable in HLL
 		memset(0xFFFFFE00, 0, 0x200);
 		v_megadrive = z80_version & 0xC0;
 		v_init = FOURCC("init");

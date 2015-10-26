@@ -10,26 +10,18 @@ void GM_Special()
 	PaletteWhiteOut();
 	DISABLE_INTERRUPTS();
 
-	// TODO:
-	// lea	(vdp_control_port).l,a6
-	// move.w	#0x8B03,(a6)	; line scroll mode
-	// move.w	#0x8004,(a6)	; 8-colour mode
-	// move.w	#0x8A00+175,(v_hbla_hreg).w
-	// move.w	#0x9011,(a6)	; 128-cell hscroll size
-	// move.w	(v_vdp_buffer1).w,d0
-	// andi.b	#0xBF,d0
-	// move.w	d0,(vdp_control_port).l
+	VDP_RegWrite(0x0B, 3);    // line scroll mode
+	VDP_RegWrite(0x00, 4);    // 8-colour mode
+	VDP_RegWrite(0x10, 0x11); // 128-cell hscroll size
+	v_hbla_hreg = 0x8A00 + 175;
+	VDP_Control(v_vdp_buffer1 & 0xFFBF);
 
 	ClearScreen();
 	ENABLE_INTERRUPTS();
 	FillVRAM(0, 0x6FFF, 0x5000);
+	VDP_WaitForDMA();
 
-// SS_WaitForDMA:
-// 	move.w	(a5),d1		; read control port (0xC00004)
-// 	btst	#1,d1		; is DMA running?
-// 	bne.s	SS_WaitForDMA	; if yes, branch
-
-	// move.w	#0x8F02,(a5)	; set VDP increment to 2 bytes
+	VDP_RegWrite(0x0F, 2); // increment to 2 bytes
 	SS_BGLoad()
 	QuickPLC(PLC_SpecialStage);
 
@@ -58,10 +50,7 @@ void GM_Special()
 	if(f_debugcheat && v_jpadhold1 & Buttons_A)
 		f_debugmode = true;
 
-	// TODO:
-	// move.w	(v_vdp_buffer1).w,d0
-	// ori.b	#0x40,d0
-	// move.w	d0,(vdp_control_port).l
+	VDP_Control(v_vdp_buffer1 | 0x40);
 	PaletteWhiteIn();
 
 	// ===========================================================================
@@ -119,11 +108,9 @@ void GM_Special()
 	} while(v_demolength);
 
 	DISABLE_INTERRUPTS();
-	// TODO:
-	// lea	(vdp_control_port).l,a6
-	// move.w	#0x8200+(vram_fg>>10),(a6) ; set foreground nametable address
-	// move.w	#0x8400+(vram_bg>>13),(a6) ; set background nametable address
-	// move.w	#0x9001,(a6)		; 64-cell hscroll size
+	VDP_RegWrite(0x02, vram_fg >> 10); // set foreground nametable address
+	VDP_RegWrite(0x04, vram_bg >> 13); // set background nametable address
+	VDP_RegWrite(0x10, 1);             // 64-cell hscroll size
 	ClearScreen();
 	NemDec(Nem_TitleCard, 0xB000);
 	Hud_Base();

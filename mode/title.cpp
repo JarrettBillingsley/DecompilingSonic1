@@ -5,16 +5,13 @@ void GM_Title()
 	PaletteFadeOut();
 	DISABLE_INTERRUPTS();
 	SoundDriverLoad();
-
-	// TODO:
-	// lea	(vdp_control_port).l,a6
-	// move.w	#0x8004,(a6)	; 8-colour mode
-	// move.w	#0x8200+(vram_fg>>10),(a6) ; set foreground nametable address
-	// move.w	#0x8400+(vram_bg>>13),(a6) ; set background nametable address
-	// move.w	#0x9001,(a6)	; 64-cell hscroll size
-	// move.w	#0x9200,(a6)	; window vertical position
-	// move.w	#0x8B03,(a6)
-	// move.w	#0x8720,(a6)	; set background colour (palette line 2, entry 0)
+	VDP_RegWrite(0x00, 4);             // 8-colour mode
+	VDP_RegWrite(0x02, vram_fg >> 10); // set foreground nametable address
+	VDP_RegWrite(0x04, vram_bg >> 13); // set background nametable address
+	VDP_RegWrite(0x10, 1);             // 64-cell hscroll size
+	VDP_RegWrite(0x12, 0);             // window vertical position
+	VDP_RegWrite(0x0B, 3);
+	VDP_RegWrite(0x07, 0x20);          // set background colour (palette line 2, entry 0)
 
 	f_wtr_state = 0;
 	ClearScreen();
@@ -93,12 +90,7 @@ void GM_Title()
 	NewPLC(PLC_Main);
 	v_title_dcount = 0;
 	v_title_ccount = 0;
-
-	// TODO:
-	// move.w	(v_vdp_buffer1).w,d0
-	// ori.b	#0x40,d0
-	// move.w	d0,(vdp_control_port).l
-
+	VDP_Control(v_vdp_buffer1 | 0x40);
 	PaletteFadeIn();
 
 	do
@@ -170,25 +162,15 @@ void GM_Title()
 	{
 		PalLoad2(Palette_LevelSel);
 
-		// TODO:
 		// This clears the scrolling data (presumably to make all the shit show up in the right place)
-	// 	lea	(v_hscrolltablebuffer).w,a1
-	// 	moveq	#0,d0
-	// 	move.w	#0xDF,d1
+		memset(v_hscrolltablebuffer, 0, 0xE0 * sizeof(int));
+		v_scrposy_dup = 0;
 
-	// Tit_ClrScroll1:
-	// 	move.l	d0,(a1)+
-	// 	dbf	d1,Tit_ClrScroll1 ; clear scroll data (in RAM)
+		DISABLE_INTERRUPTS();
+		VDP_SetAddr(0xE000, VDP_VRAM_Write);
 
-	// 	move.l	d0,(v_scrposy_dup).w
-	// 	DISABLE_INTERRUPTS();
-	// 	lea	(vdp_data_port).l,a6
-	// 	locVRAM	0xE000
-	// 	move.w	#0x3FF,d1
-
-	// Tit_ClrScroll2:
-	// 	move.l	d0,(a6)
-	// 	dbf	d1,Tit_ClrScroll2 ; clear scroll data (in VRAM)
+		for(int i = 0; i < 0x400; i++)
+			VDP_Data(0); //longword
 
 		LevSelDisplayText();
 
@@ -358,44 +340,21 @@ void LevSelControls()
 
 void LevSelDisplayText()
 {
-	lea	(LevelMenuText).l,text
-
-	// TODO:
-// textpos:	= (0x40000000+((0xE210&0x3FFF)<<16)+((0xE210&0xC000)>>14))
-// 				; 0xE210 is a VRAM address
-
-	for(int i = 0, textpos = 0; i < 0x15; i++, textpos += 0x8000000)
+	for(int i = 0, textpos = 0xE210; i < 0x15; i++, textpos += 0x80)
 	{
-		// move.l textpos,4(vdp_data_port)
-		LevSel_ChgLine(text, 0xE680);
+		VDP_SetAddr(textpos, VDP_VRAM_Write);
+		LevSel_ChgLine(LevelMenuText[i], 0xE680);
 	}
 
 	// Then recolor selected line (v_levselitem) by changing palette for that line
-
-	// move.l	#textpos,d4
-	// lsl.w	#7,d0
-	// swap	d0
-	// add.l	d0,d4
-	// lea	(LevelMenuText).l,text
-	// lsl.w	#3,d1
-	// move.w	d1,d0
-	// add.w	d1,d1
-	// add.w	d0,d1
-	// adda.w	d1,text
-	// move.w	#0xC680,d3	; VRAM setting (3rd palette, 0x680th tile)
-	// move.l	d4,4(vdp_data_port)
-	// bsr.w	LevSel_ChgLine	; recolour selected line
-	// move.w	#0xE680,d3
-	// cmpi.w	#0x14,(v_levselitem).w
-	// bne.s	LevSel_DrawSnd
-	// move.w	#0xC680,d3
-
-// LevSel_DrawSnd:
+	VDP_SetAddr(0xE210 + (0x80 * v_levselitem), VDP_VRAM_Write);
+	LevSel_ChgLine(LevelMenuText[v_levselitem], 0xC680);
 
 	// Then draw the sound test line
+	VDP_SetAddr(0xEC30, VDP_VRAM_Write);
 	auto sfx = v_levselsound + 0x80;
-	LevSel_DrawDigit(sfx >> 4, 0xEC30);
-	LevSel_DrawDigit(sfx, 0xEC30);
+	LevSel_DrawDigit(sfx >> 4, v_levselitem == 0x14 ? 0xC680 : 0xE680);
+	LevSel_DrawDigit(sfx, v_levselitem == 0x14 ? 0xC680 : 0xE680);
 }
 
 void LevSel_DrawDigit(ushort digit, ushort vram)
@@ -405,30 +364,21 @@ void LevSel_DrawDigit(ushort digit, ushort vram)
 	if(digit >= 10)
 		digit += 7; // use alpha characters
 
-	// TODO:
-	// add.w	vram,digit
-	// move.w	digit,(vdp_data_port)
+	VDP_Data(vram + digit);
 }
 
-void LevSel_ChgLine(const char*& text, ushort vram)
+void LevSel_ChgLine(const char* text, ushort vram)
 {
 	for(int i = 0; i < 0x18; i++)
 	{
-		auto ch = *text++;
-
-		// TODO:
-		if(ch == 0)
-		{
-			// move.w	#0,(vdp_data_port)		; use blank character
-		}
+		if(auto ch = *text++)
+			VDP_Data(vram + ch);
 		else
-		{
-			// add.w	vram,ch		; combine char with VRAM setting
-			// move.w	ch,(vdp_data_port)		; send to VRAM
-		}
+			VDP_Data(0);
 	}
 }
 
+// TODO:
 // LevelMenuText:	if Revision=0
 // 	incbin	"misc\Level Select Text.bin"
 // 	else

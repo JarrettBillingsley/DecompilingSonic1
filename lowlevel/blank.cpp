@@ -92,11 +92,9 @@ void VBlank()
 
 	if(routine != 0)
 	{
-		// TODO:
-		// Set VSRAM write address to 0
-		// move.l	#$40000010,(vdp_control_port).l
-		// move.l	(v_scrposy_dup).w,(vdp_data_port).l ; send screen y-axis pos. to VSRAM
-		// VBlankWaitPAL();
+		VDP_SetAddr(0, VDP_VSRAM_Write);
+		VDP_Data(v_scrposy_dup);
+		VBlankWaitPAL();
 		v_vbla_routine = 0;
 		f_hbla_pal = true;
 	}
@@ -221,11 +219,12 @@ void HBlank()
 	if(f_hbla_pal)
 	{
 		f_hbla_pal = false;
+		VDP_SetAddr(0, VDP_CRAM_Write);
 
-		// TODO:
-		// Copy v_pal_water to CRAM here
+		for(int i = 0; i < 64; i++)
+			VDP_Data(v_pal_water[i]);
 
-		// move.w	#$8A00+223,4(a1) ; reset HBlank register
+		VDP_RegWrite(0x0A, 223); // reset HBlank register
 
 		if(f_FFFFF64F)
 		{

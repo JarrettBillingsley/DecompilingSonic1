@@ -3,13 +3,9 @@ void GM_Continue()
 	PaletteFadeOut();
 	DISABLE_INTERRUPTS();
 
-	// TODO:
-	// move.w	(v_vdp_buffer1).w,d0
-	// andi.b	#0xBF,d0
-	// move.w	d0,(vdp_control_port).l
-	// lea	(vdp_control_port).l,a6
-	// move.w	#0x8004,(a6)	; 8 colour mode
-	// move.w	#0x8700,(a6)	; background colour
+	VDP_Control(v_vdp_buffer1 & 0xFFBF);
+	VDP_RegWrite(0x00, 4); // 8 color mode
+	VDP_RegWrite(0x07, 0); // BG color
 
 	ClearScreen();
 	Clear_Objects();
@@ -36,9 +32,7 @@ void GM_Continue()
 	ExecuteObjects();
 	BuildSprites();
 
-	// move.w	(v_vdp_buffer1).w,d0
-	// ori.b	#0x40,d0
-	// move.w	d0,(vdp_control_port).l
+	VDP_Control(v_vdp_buffer1 | 0x40);
 
 	PaletteFadeIn();
 
@@ -75,9 +69,6 @@ void GM_Continue()
 
 void ContScrCounter(int d1)
 {
-	// ?? Original doesn't use d4
-	// moveq	#0,d4
-
 	for(int i = 0; i < 2; i++)
 	{
 		int digit = 0;
@@ -89,25 +80,11 @@ void ContScrCounter(int d1)
 			digit++;
 		}
 
-		a3 = Art_Hud[digit << 6];
+		auto art = Art_Hud[digit << 6];
 
-		// TOOD:
-		// locVRAM	$DF80
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
-		// move.l	(a3)+,(vdp_data_port)
+		VDP_SetAddr(0xDF80, VDP_VRAM_Write);
+
+		for(int i = 0; i < 16; i++)
+			VDP_Data(art[i]); // longword
 	}
 }

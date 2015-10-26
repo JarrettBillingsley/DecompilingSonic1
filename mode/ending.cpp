@@ -7,21 +7,17 @@ void GM_Ending()
 	Clear_F700_F800();
 	Clear_FE60_FF80();
 	DISABLE_INTERRUPTS();
-		// TODO:
-		// move.w	(v_vdp_buffer1).w,d0
-		// andi.b	#0xBF,d0
-		// move.w	d0,(vdp_control_port).l
+		VDP_Control(v_vdp_buffer1 & 0xFFBF);
 		ClearScreen();
-
-		// move.w	#0x8B03,(vdp_control_port)	; line scroll mode
-		// move.w	#0x8200+(vram_fg>>10),(vdp_control_port) ; set foreground nametable address
-		// move.w	#0x8400+(vram_bg>>13),(vdp_control_port) ; set background nametable address
-		// move.w	#0x8500+(vram_sprites>>9),(vdp_control_port) ; set sprite table address
-		// move.w	#0x9001,(vdp_control_port)		; 64-cell hscroll size
-		// move.w	#0x8004,(vdp_control_port)		; 8-colour mode
-		// move.w	#0x8720,(vdp_control_port)		; set background colour (line 3; colour 0)
-		// move.w	#0x8A00+223,(v_hbla_hreg).w ; set palette change position (for water)
-		// move.w	(v_hbla_hreg).w,(vdp_control_port)
+		VDP_RegWrite(0x0B, 3);                 // line scroll mode
+		VDP_RegWrite(0x02, vram_fg >> 10);     // set foreground nametable address
+		VDP_RegWrite(0x04, vram_bg >> 13);     // set background nametable address
+		VDP_RegWrite(0x05, vram_sprites >> 9); // set sprite table address
+		VDP_RegWrite(0x10, 1);                 // 64-cell hscroll size
+		VDP_RegWrite(0x00, 4);                 // 8-colour mode
+		VDP_RegWrite(0x07, 0x20);              // set background colour (line 3; colour 0)
+		v_hbla_hreg = 0x8A00 + 223;
+		VDP_Control(v_hbla_hreg);
 
 		v_air = 30;
 		v_zone = Zone_EndZ;
@@ -68,12 +64,7 @@ void GM_Ending()
 	f_timecount false;
 	v_demolength = 1800;
 	WaitForVBlank(VBlank_Ending);
-
-	// TODO:
-	// move.w	(v_vdp_buffer1).w,d0
-	// ori.b	#0x40,d0
-	// move.w	d0,(vdp_control_port).l
-
+	VDP_Control(v_vdp_buffer1 | 0x40);
 	v_pfade_start = 63;
 	PaletteFadeIn();
 
@@ -125,14 +116,18 @@ void GM_Ending()
 
 			f_restart = false;
 
+			// This replaces the un-flowered chunks with the flowered chunks
+			v_lvllayout[128] = 0x2E;
+			v_lvllayout[129] = 0x2F;
+
 			// TODO:
-			// move.w	#0x2E2F,(v_lvllayout+0x80).w ; modify level layout
 			// lea	(vdp_control_port).l,a5
 			// lea	(vdp_data_port).l,a6
 			// lea	(v_screenposx).w,a3
 			// lea	(v_lvllayout).w,a4
 			// move.w	#0x4000,d2
 			// jsr	DrawChunks
+
 			PalLoad1(Palette_Ending);
 			PaletteWhiteIn();
 		}

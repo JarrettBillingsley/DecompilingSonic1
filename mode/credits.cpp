@@ -2,17 +2,13 @@ void GM_Credits()
 {
 	ClearPLC();
 	PaletteFadeOut();
-
-	// TODO:
-	// lea	(vdp_control_port).l,a6
-	// move.w	#0x8004,(a6)		; 8-colour mode
-	// move.w	#0x8200+(vram_fg>>10),(a6) ; set foreground nametable address
-	// move.w	#0x8400+(vram_bg>>13),(a6) ; set background nametable address
-	// move.w	#0x9001,(a6)		; 64-cell hscroll size
-	// move.w	#0x9200,(a6)		; window vertical position
-	// move.w	#0x8B03,(a6)		; line scroll mode
-	// move.w	#0x8720,(a6)		; set background colour (line 3; colour 0)
-
+	VDP_RegWrite(0x00, 4); // 8-color
+	VDP_RegWrite(0x02, vram_fg >> 10);
+	VDP_RegWrite(0x04, vram_bg >> 13);
+	VDP_RegWrite(0x10, 1); // 64-cell hscroll
+	VDP_RegWrite(0x12, 0); // vertical pos
+	VDP_RegWrite(0x0B, 3); // line scroll mode
+	VDP_RegWrite(0x07, 0x20); // BG color
 	f_wtr_state = false;
 	ClearScreen();
 	Clear_Objects();
@@ -43,17 +39,13 @@ void GM_Credits()
 	{
 		ClearPLC();
 		PaletteFadeOut();
-
-		// TODO:
-		// lea	(vdp_control_port).l,a6
-		// move.w	#0x8004,(a6)	; use 8-colour mode
-		// move.w	#0x8200+(vram_fg>>10),(a6) ; set foreground nametable address
-		// move.w	#0x8400+(vram_bg>>13),(a6) ; set background nametable address
-		// move.w	#0x9001,(a6)	; 64-cell hscroll size
-		// move.w	#0x9200,(a6)	; window vertical position
-		// move.w	#0x8B03,(a6)	; line scroll mode
-		// move.w	#0x8720,(a6)	; set background colour (line 3; colour 0)
-
+		VDP_RegWrite(0x00, 4);             // use 8-colour mode
+		VDP_RegWrite(0x02, vram_fg >> 10); // set foreground nametable address
+		VDP_RegWrite(0x04, vram_bg >> 13); // set background nametable address
+		VDP_RegWrite(0x10, 1);             // 64-cell hscroll size
+		VDP_RegWrite(0x12, 0);             // window vertical position
+		VDP_RegWrite(0x0B, 3);             // line scroll mode
+		VDP_RegWrite(0x07, 0x20);          // set background colour (line 3; colour 0)
 		f_wtr_state = false;
 		ClearScreen();
 		Clear_Objects();
