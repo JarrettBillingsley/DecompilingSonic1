@@ -44,14 +44,14 @@ void VDP_PSG_Write(ubyte val)
 	*(vdp_control_port + 0x11) = val;
 }
 
-void VDP_ClearVRAM()
+void VDP_ClearVRAM(uint addr = 0, uint length = 0xFFFF)
 {
-	VDP_RegWrite(0x13, 0xFF);
-	VDP_RegWrite(0x14, 0xFF);
+	VDP_RegWrite(0x13, length & 0xFF);
+	VDP_RegWrite(0x14, (length >> 8) & 0xFF);
 	VDP_RegWrite(0x15, 0);
 	VDP_RegWrite(0x16, 0);
 	VDP_RegWrite(0x17, 0x80);
-	VDP_SetAddr(0, VDP_VRAM_Write);
+	VDP_SetAddr(addr, VDP_VRAM_Write);
 	VDP_Data(0);
 }
 
@@ -105,4 +105,30 @@ void VDP_SetupGame()
 	VDP_ClearVRAM();
 	VDP_WaitForDMA();
 	VDP_RegWrite(0x0F, 2);
+}
+
+void ClearScreen()
+{
+	VDP_Clear_VRAM(vram_fg, 0x1000);
+	VDP_WaitForDMA();
+	VDP_RegWrite(0x0F, 2);
+	VDP_Clear_VRAM(vram_bg, 0x1000);
+	VDP_WaitForDMA();
+	VDP_RegWrite(0x0F, 2);
+	v_scrposy_dup = 0;
+	v_scrposx_dup = 0;
+	memset(v_spritetablebuffer, 0, sizeof(v_spritetablebuffer));
+	memset(v_hscrolltablebuffer, 0, sizeof(v_hscrolltablebuffer));
+}
+
+//                           a1        d0        d1        d2
+void TilemapToVRAM(ushort* tiles, int vram, int cols, int rows)
+{
+	for(int i = 0; i < rows; i++, vram += 0x800000)
+	{
+		VDP_Control(vram);
+
+		for(int j = 0; j < cols; j++)
+			VDP_Data(*tiles++);
+	}
 }

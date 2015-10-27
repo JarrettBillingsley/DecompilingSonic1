@@ -97,3 +97,37 @@ void MvSonicOnPtfmCommon(Object* self, int top, int prevX)
 		v_player->x -= prevX - self->x;
 	}
 }
+
+// Sloped platform subroutine (GHZ collapsing ledges and SLZ seesaws)
+//                        a0            d1                a2
+void SlopeObject(Object* self, int halfWidth, ushort* heightTable)
+{
+	if(v_player->velY >= 0)
+	{
+		auto diffX = v_player->x - (self->x - halfWidth);
+
+		if(diffX < 0 || diffX >= (halfWidth * 2))
+			return;
+
+		if(BTST(self->render, ObjRender_HorizFlip))
+			diffX = (halfWidth * 2) - diffX - 1);
+
+		Plat_NoXCheck2(self, self->y - heightTable[diffX]);
+	}
+}
+
+// Sloped platform subroutine (GHZ collapsing ledges and MZ platforms)
+//                         a0           d1           d2              a2
+void SlopeObject2(Object* self, int halfwidth, int prevX, ubyte* heightTable)
+{
+	if(BTST(v_player->status, ObjStatus_StandingOn))
+	{
+		auto diffX = (v_player->x - (self->x - halfWidth)) / 2;
+
+		if(BTST(self->render, ObjRender_HorizFlip))
+			diffX = halfWidth - diffX - 1;
+
+		v_player->y = self->y - heightTable[diffX] - v_player->height
+		v_player->x -= prevX - self->x;
+	}
+}

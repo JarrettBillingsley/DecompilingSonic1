@@ -92,9 +92,8 @@ void EntryPoint()
 	memset(0xFFFF0000, 0, 0xFE00);
 
 	VDP_SetupGame();
-	// TODO:
-	// SoundDriverLoad();
-	// JoypadInit();
+	SoundDriverLoad();
+	JoypadInit();
 	v_gamemode = GameMode_Sega;
 
 	while(true)

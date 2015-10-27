@@ -329,7 +329,6 @@ void LevSelControls()
 	}
 }
 
-
 void LevSelDisplayText()
 {
 	for(int i = 0, textpos = 0xE210; i < 0x15; i++, textpos += 0x80)
@@ -361,7 +360,7 @@ void LevSel_DrawDigit(ushort digit, ushort vram)
 
 void LevSel_ChgLine(const char* text, ushort vram)
 {
-	for(int i = 0; i < 0x18; i++)
+	for(int i = 0; i < 24; i++)
 	{
 		if(auto ch = *text++)
 			VDP_Data(vram + ch);
@@ -369,11 +368,3 @@ void LevSel_ChgLine(const char* text, ushort vram)
 			VDP_Data(0);
 	}
 }
-
-// TODO:
-// LevelMenuText:	if Revision=0
-// 	incbin	"misc\Level Select Text.bin"
-// 	else
-// 	incbin	"misc\Level Select Text (JP1).bin"
-// 	endc
-// 	even

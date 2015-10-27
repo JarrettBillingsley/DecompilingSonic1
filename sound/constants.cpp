@@ -76,3 +76,14 @@ enum
 	SFX_Waterfall,
 	SFX_Sega,
 };
+
+const ubyte MusicList[] =
+{
+	BGM_GHZ,
+	BGM_LZ,
+	BGM_MZ,
+	BGM_SLZ,
+	BGM_SYZ,
+	BGM_SBZ,
+	BGM_FZ
+};

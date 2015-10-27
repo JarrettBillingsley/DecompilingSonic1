@@ -38,6 +38,11 @@ void LevelLayoutLoad2(ubyte* dest, uint layer)
 	}
 }
 
+void ColIndexLoad()
+{
+	v_collindex = ColPointers[v_zone];
+}
+
 void ObjPosLoad()
 {
 	uint slot = 0;

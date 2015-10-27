@@ -310,11 +310,6 @@ void SignpostArtLoad()
 	}
 }
 
-void ColIndexLoad()
-{
-	v_collindex = ColPointers[v_zone];
-}
-
 // ===========================================================================
 // Subroutine to change synchronised animation variables (rings, giant rings)
 // ===========================================================================

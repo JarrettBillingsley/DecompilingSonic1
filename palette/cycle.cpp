@@ -93,6 +93,8 @@ void PalCycle_SYZ()
 	}
 }
 
+// include	"_inc\SBZ Palette Scripts.asm"
+
 void PalCycle_SBZ()
 {
 	// TODO:
