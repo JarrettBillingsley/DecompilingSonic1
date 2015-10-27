@@ -6,14 +6,14 @@ SS_Animation v_ssanimations[SS_NumAnimations];             // 0xFFFF4400* ; anim
 Point16 v_ssposbuffer[SS_PosBufferSize][SS_PosBufferSize]; // 0xFFFF8000* ; calculated screen positions of tiles based on rotation
 
 // Regular variables:
-ubyte v_256x256[0xA400];                 // 0xFFFF0000	; 256x256 tile mappings (0xA400 bytes)
-ubyte v_lvllayout[1024];                 // 0xFFFFA400	; level and background 256tile layouts (0x400 bytes) (indices are interleaved FG, BG, FG, BG...)
+ushort v_256x256[82][16][16];            // 0xFFFF0000	; 256x256 tile mappings (0xA400 bytes)
+ubyte v_lvllayout[8][128];               // 0xFFFFA400	; level and background 256tile layouts (0x400 bytes) (each row is 64 FG chunks and 64 BG chunks)
                                          // 0xFFFFA800
                                          // ... (512 bytes unaccounted for)
                                          // 0xFFFFA9FF
 ushort v_ngfx_buffer[256];               // 0xFFFFAA00	; Nemesis graphics decompression dictionary buffer (0x200 bytes)
 Object* v_spritequeue[8][64];            // 0xFFFFAC00	; sprite display queue, in order of priority (0x400 bytes). (v_spritequeue[n][0] holds next free slot)
-ubyte v_16x16[0x1800];                   // 0xFFFFB000	; 16x16 tile mappings (? bytes)
+uint v_16x16[768][2];                    // 0xFFFFB000	; 16x16 tile mappings (1800 bytes) (768 tiles, each is two longwords, top and bottom)
                                          // possible unaccounted space? not sure how big v_16x16 is
 ubyte v_sgfx_buffer[768];                // 0xFFFFC800	; buffered Sonic graphics (0x18 cells) (0x300 bytes)
 ushort v_tracksonic[128];                // 0xFFFFCB00	; position tracking data for Sonic (0x100 bytes)
@@ -95,32 +95,14 @@ ushort nem_tileDecodeCount;              // 0xFFFFF6FA  ; how many tiles to deco
                                          // 0xFFFFF6FD
                                          // 0xFFFFF6FE
                                          // 0xFFFFF6FF
-ushort v_screenposx;                     // 0xFFFFF700	; screen position x (2 bytes)
-                                         // 0xFFFFF702
-                                         // 0xFFFFF703
-ushort v_screenposy;                     // 0xFFFFF704	; screen position y (2 bytes)
-                                         // 0xFFFFF706
-                                         // 0xFFFFF707
-ushort v_bg1posx;                        // 0xFFFFF708
-                                         // 0xFFFFF70A
-                                         // 0xFFFFF70B
-ushort v_bg1posy;                        // 0xFFFFF70C
-                                         // 0xFFFFF70E
-                                         // 0xFFFFF70F
-                                         // 0xFFFFF710 ; pos x of something? seems to be used in layer deformation
-                                         // 0xFFFFF711 ;
-                                         // 0xFFFFF712
-                                         // 0xFFFFF713
-                                         // 0xFFFFF714 ; pos y of something? seems to be used in layer deformation
-                                         // 0xFFFFF715 ;
-                                         // 0xFFFFF716
-                                         // 0xFFFFF717
-ushort v_bg2posx;                        // 0xFFFFF718
-                                         // 0xFFFFF71A
-                                         // 0xFFFFF71B
-ushort v_bg2posy;                        // 0xFFFFF71C
-                                         // 0xFFFFF71E
-                                         // 0xFFFFF71F
+uint v_screenposx;                       // 0xFFFFF700	; screen position x (2 bytes, but little bits of code and the memory alignment suggest 4)
+uint v_screenposy;                       // 0xFFFFF704	; screen position y (2 bytes, but little bits of code and the memory alignment suggest 4)
+uint v_bg1posx;                          // 0xFFFFF708
+uint v_bg1posy;                          // 0xFFFFF70C
+uint v_somethingposx;                    // 0xFFFFF710  ; pos x of something? seems to be used in layer deformation
+uint v_somethingposy;                    // 0xFFFFF714  ; pos y of something? seems to be used in layer deformation
+uint v_bg2posx;                          // 0xFFFFF718
+uint v_bg2posy;                          // 0xFFFFF71C
 ushort v_limitleft1;                     // 0xFFFFF720	; left level boundary (2 bytes)
 ushort v_limitright1;                    // 0xFFFFF722	; right level boundary (2 bytes)
 ushort v_limittop1;                      // 0xFFFFF724	; top level boundary (2 bytes)
@@ -165,8 +147,7 @@ bool f_nobgscroll;                       // 0xFFFFF744	; flag set to cancel back
 ushort v_bgscroll1;                      // 0xFFFFF754	; background scrolling variable 1
 ushort v_bgscroll2;                      // 0xFFFFF756	; background scrolling variable 2
 ushort v_bgscroll3;                      // 0xFFFFF758	; background scrolling variable 3
-                                         // 0xFFFFF75A
-                                         // 0xFFFFF75B
+ushort v_bgscroll4;                      // 0xFFFFF75A  ; background scrolling variable 4
 bool f_bgscrollvert;                     // 0xFFFFF75C	; flag for vertical background scrolling
                                          // 0xFFFFF75D
                                          // 0xFFFFF75E
@@ -436,7 +417,37 @@ ushort v_ani3_buf;                       // 0xFFFFFEC8	; synchronised sprite ani
 ushort v_limittopdb;                     // 0xFFFFFEF0	; level upper boundary, buffered for debug mode (2 bytes)
 ushort v_limitbtmdb;                     // 0xFFFFFEF2	; level bottom boundary, buffered for debug mode (2 bytes)
                                          // 0xFFFFFEE4
-                                         // ... (156 bytes unaccounted for)
+                                         // ... (28 bytes unaccounted for)
+                                         // 0xFFFFFEFF
+ushort v_dummytile;                      // 0xFFFFFF00  ; maybe? FindNearestTile seems to return this address if there is no tile
+                                         // 0xFFFFFF02
+                                         // 0xFFFFFF03
+                                         // 0xFFFFFF04
+                                         // 0xFFFFFF05
+                                         // 0xFFFFFF06
+                                         // 0xFFFFFF07
+                                         // 0xFFFFFF08
+                                         // 0xFFFFFF09
+                                         // 0xFFFFFF0A
+                                         // 0xFFFFFF0B
+                                         // 0xFFFFFF0C
+                                         // 0xFFFFFF0D
+                                         // 0xFFFFFF0E
+                                         // 0xFFFFFF0F
+uint v_screenposx_dup;                   // 0xFFFFFF10
+uint v_screenposy_dup;                   // 0xFFFFFF14
+uint v_bg1posx_dup;                      // 0xFFFFFF18
+uint v_bg1posy_dup;                      // 0xFFFFFF1C
+uint v_somethingposx_dup;                // 0xFFFFFF20
+uint v_somethingposy_dup;                // 0xFFFFFF24
+uint v_bg2posx_dup;                      // 0xFFFFFF28
+uint v_bg2posy_dup;                      // 0xFFFFFF2C
+ushort v_bgscroll1_dup;                  // 0xFFFFFF30
+ushort v_bgscroll2_dup;                  // 0xFFFFFF32
+ushort v_bgscroll3_dup;                  // 0xFFFFFF34
+ushort v_bgscroll4_dup;                  // 0xFFFFFF36
+                                         // 0xFFFFFF38
+                                         // ... (72 bytes unaccounted for)
                                          // 0xFFFFFF7F
 ushort v_levseldelay;                    // 0xFFFFFF80	; level select - time until change when up/down is held (2 bytes)
 ushort v_levselitem;                     // 0xFFFFFF82	; level select - item selected (2 bytes)

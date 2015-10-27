@@ -205,7 +205,6 @@ bool Make_Object(ushort*& objData, ubyte stateSlot) // cc if succeeded, cs if fa
 
 	if(auto newObj = FindFreeObj())
 	{
-		auto newObj = &v_objspace[slot];
 		newObj->x = objData[0];
 		newObj->y = objData[1] & 0xFFF;
 		auto flags = objData[1] >> 14;

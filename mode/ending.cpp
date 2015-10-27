@@ -117,17 +117,10 @@ void GM_Ending()
 			f_restart = false;
 
 			// This replaces the un-flowered chunks with the flowered chunks
-			v_lvllayout[128] = 0x2E;
-			v_lvllayout[129] = 0x2F;
+			v_lvllayout[1][0] = 0x2E;
+			v_lvllayout[1][1] = 0x2F;
 
-			// TODO:
-			// lea	(vdp_control_port).l,a5
-			// lea	(vdp_data_port).l,a6
-			// lea	(v_screenposx).w,a3
-			// lea	(v_lvllayout).w,a4
-			// move.w	#0x4000,d2
-			// jsr	DrawChunks
-
+			DrawChunks(0x4000, &v_screenposx, v_lvllayout);
 			PalLoad1(Palette_Ending);
 			PaletteWhiteIn();
 		}

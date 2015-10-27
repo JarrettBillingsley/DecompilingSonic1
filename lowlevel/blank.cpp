@@ -41,10 +41,20 @@ void V_H_BlankCommon()
 	VBlankDecreaseDemoLength();
 }
 
-void VBlankBackupSomeThings()
+void VBlankBackupScrollVars()
 {
-	// copy v_screenposx, v_screenposy, and a bunch of bytes FFFFF700..FFFFF71F to FFFFFF10..FFFFFF2F
-	// copy v_bgscroll1, v_bgscroll2, v_bgscroll3, and v_bgscrollvert to FFFFFF30..FFFFFF37
+	v_screenposx_dup =    v_screenposx;
+	v_screenposy_dup =    v_screenposy;
+	v_bg1posx_dup =       v_bg1posx;
+	v_bg1posy_dup =       v_bg1posy;
+	v_somethingposx_dup = v_somethingposx;
+	v_somethingposy_dup = v_somethingposy;
+	v_bg2posx_dup =       v_bg2posx;
+	v_bg2posy_dup =       v_bg2posy;
+	v_bgscroll1_dup =     v_bgscroll1;
+	v_bgscroll2_dup =     v_bgscroll2;
+	v_bgscroll3_dup =     v_bgscroll3;
+	v_bgscroll4_dup =     v_bgscroll4;
 }
 
 void VBlankDecreaseDemoLength()
@@ -155,7 +165,7 @@ void VBlank()
 		// Level main loop
 		case VBlank_Level:
 			VBlankCommon2();
-			VBlankBackupSomeThings();
+			VBlankBackupScrollVars();
 
 			if(v_hbla_line >= 96)
 				V_H_BlankCommon();
@@ -172,7 +182,7 @@ void VBlank()
 		// Ending screen
 		case VBlank_Ending:
 			VBlankCommon2();
-			VBlankBackupSomeThings();
+			VBlankBackupScrollVars();
 			LoadTilesAsYouMove();
 			AnimateLevelGfx();
 			HUD_Update();

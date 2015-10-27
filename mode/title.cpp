@@ -52,15 +52,7 @@ void GM_Title()
 	PaletteFadeOut();
 	DISABLE_INTERRUPTS();
 	ClearScreen();
-
-	// TODO:
-	// lea	(vdp_control_port).l,a5
-	// lea	(vdp_data_port).l,a6
-	// lea	(0xFFFFF708).w,a3
-	// lea	(v_lvllayout+0x40).w,a4
-	// move.w	#0x6000,d2
-	// bsr.w	DrawChunks
-
+	DrawChunks(0x6000, &v_bg1posx, v_lvllayout + 0x40);
 	EniDec(Eni_Title, 0xFF0000, 0);
 	CopyTilemap(0xFF0000, 0xC206, 0x21, 0x15);
 	NemDec(Nem_GHZ_1st, 0);

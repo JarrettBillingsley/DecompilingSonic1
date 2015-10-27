@@ -290,35 +290,18 @@ ushort* FindWall2(Object* self, int objBottom, int objX, int solidityBit, int wa
 
 ushort* FindNearestTile(Object* self, int objBottom, int objX)
 {
-	auto addr = v_lvllayout[(objBottom >> 1) & 0x380 + (objX >> 8) & 0x7F];
+	auto chunk = v_lvllayout[objBottom & 7][objX & 0x7F];
 
-	if(addr == 0)
-		return 0xFFFFFF00 | addr;
+	if(chunk == 0)
+		return &v_dummytile;
 
-	if(addr & 0x80) // special tile?
+	if(chunk & 0x80) // special chunk?
 	{
-		addr &= 0x7F;
+		chunk &= 0x7F;
 
-		if(BTST(self->render, ObjRender_Behind))
-		{
-			addr++;
-
-			if(addr == 0x29)
-				addr = 0x51;
-		}
-
-		addr--;
-	}
-	else
-	{
-		addr--;
-
-		// sign ext lower byte
-		if(addr & 0x80)
-			addr |= 0xFF00;
+		if(BTST(self->render, ObjRender_Behind) && chunk == 0x28)
+			chunk = (chunk == 0x28) : 0x51 : chunk + 1; // some weird hardcoded thing
 	}
 
-	addr = ((addr >> 7) & 0x1FF) | ((addr << 9) & 0xFE00); // ror 7
-	addr += ((objBottom * 2) & 0x1E0) + ((objX >> 3) & 0x1E);
-	return 0xFFFF0000 | addr;
+	return &v_256x256[(chunk - 1) & 0x7F][objBottom & 0xF][objX & 0xF];
 }

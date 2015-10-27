@@ -2,6 +2,20 @@
 #define BSET(a, b) ((a) |= (b))
 #define BCLR(a, b) ((a) &= ~(b))
 
+bool BTST_AND_CLR(int& a, int b)
+{
+	auto ret = BTST(a, b);
+	BCLR(a, b);
+	return ret;
+}
+
+bool BTST_AND_SET(int& a, int b)
+{
+	auto ret = BTST(a, b);
+	BSET(a, b);
+	return ret;
+}
+
 // bne
 template<typename T>
 bool TimerZero(T& timer)
