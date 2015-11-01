@@ -74,7 +74,7 @@ void HUD(Object* self)
 			self->screenY = HUD_ScreenY;
 			self->map = Map_HUD;
 			self->gfx = GFX_HUD;
-			self->render = 0; // makes it screen-positioned
+			self->render = ObjRender_LayerScreen;
 			self->priority = 0;
 			// fall through
 		case Routine_Main:
@@ -87,5 +87,28 @@ void HUD(Object* self)
 
 			DisplaySprite(self);
 			break;
+	}
+}
+
+//                   d0
+void AddPoints(int points)
+{
+	f_scorecount = true;
+
+	v_score += d0;
+
+	if(v_score > 999999)
+		v_score = 999999;
+
+	if(v_score >= v_scorelife)
+	{
+		v_scorelife += 5000; // really 50,000
+
+		if(!(v_megadrive & 0x80))
+		{
+			v_lives++;
+			f_lifecount = true;
+			PlaySound_Special(BGM_ExtraLife);
+		}
 	}
 }

@@ -21,10 +21,10 @@ enum : ubyte
 	ObjRender_HorizFlip =     0x01, // 0
 	ObjRender_VertFlip =      0x02, // 1
 
+	ObjRender_LayerScreen =   0x00, // 2
 	ObjRender_LayerNormal =   0x04, // 2
-	ObjRender_LayerBG1 =      0x00, // 2
-	ObjRender_LayerBG2 =      0x04, // 2
-	ObjRender_LayerBG =       0x08, // 3
+	ObjRender_LayerBG1 =      0x08, // 3
+	ObjRender_LayerBG2 =      0x0C, // 3
 	ObjRender_Layer =         0x0C, // 2 + 3; 0 = screen-relative; 1 = normal; 2 = BG1-relative; 3 = BG2-relative
 
 	ObjRender_Something =     0x10, // 4; changes Y positioning somehow?
