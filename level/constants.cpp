@@ -12,6 +12,14 @@ enum
 
 enum
 {
+	Act_1,
+	Act_2,
+	Act_3,
+	Act_SBZ3,
+};
+
+enum
+{
 	Scrolled_U =  0x01,
 	Scrolled_D =  0x02,
 	Scrolled_L =  0x04,
