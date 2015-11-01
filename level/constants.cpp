@@ -10,6 +10,23 @@ enum
 	Zone_SS,
 };
 
+enum
+{
+	Scrolled_U =  0x01,
+	Scrolled_D =  0x02,
+	Scrolled_L =  0x04,
+	Scrolled_R =  0x08,
+	Scrolled_L2 = 0x10,
+	Scrolled_R2 = 0x20,
+	Scrolled_L3 = 0x40,
+	Scrolled_R3 = 0x80,
+
+	Scrolled_L4 = 0x01,
+	Scrolled_R4 = 0x02,
+
+	Scrolled_AnyR = Scrolled_R | Scrolled_R2 | Scrolled_R3,
+};
+
 const LevelHeader LevelHeaders[] =
 {
 	{ (PLC_GHZ << 24) + Nem_GHZ_2nd, (PLC_GHZ2 << 24) + Blk16_GHZ, Blk256_GHZ, BGM_GHZ, Palette_GHZ    }, // Green Hill

@@ -136,7 +136,7 @@ void VBlank()
 		// Title screen, Credits screen
 		case VBlank_Title:
 			VBlankCommon();
-			sub_6886(); // something to do with loading tiles
+			DrawTitleCreditsBGTiles();
 			PLC_Decode9Tiles();
 			break;
 

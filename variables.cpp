@@ -8,16 +8,13 @@ Point16 v_ssposbuffer[SS_PosBufferSize][SS_PosBufferSize]; // 0xFFFF8000* ; calc
 // Regular variables:
 ushort v_256x256[82][16][16];            // 0xFFFF0000	; 256x256 tile mappings (0xA400 bytes)
 ubyte v_lvllayout[8][128];               // 0xFFFFA400	; level and background 256tile layouts (0x400 bytes) (each row is 64 FG chunks and 64 BG chunks)
-                                         // 0xFFFFA800
-                                         // ... (512 bytes unaccounted for)
-                                         // 0xFFFFA9FF
+ushort v_scrollsomething[256];           // 0xFFFFA800  ; scroll array of some sort
 ushort v_ngfx_buffer[256];               // 0xFFFFAA00	; Nemesis graphics decompression dictionary buffer (0x200 bytes)
 Object* v_spritequeue[8][64];            // 0xFFFFAC00	; sprite display queue, in order of priority (0x400 bytes). (v_spritequeue[n][0] holds next free slot)
 uint v_16x16[768][2];                    // 0xFFFFB000	; 16x16 tile mappings (1800 bytes) (768 tiles, each is two longwords, top and bottom)
-                                         // possible unaccounted space? not sure how big v_16x16 is
 ubyte v_sgfx_buffer[768];                // 0xFFFFC800	; buffered Sonic graphics (0x18 cells) (0x300 bytes)
 ushort v_tracksonic[128];                // 0xFFFFCB00	; position tracking data for Sonic (0x100 bytes)
-ubyte v_hscrolltablebuffer[1024];        // 0xFFFFCC00	; scrolling table data (0x400 bytes)
+uint v_hscrolltablebuffer[256];          // 0xFFFFCC00	; scrolling table data (0x400 bytes)
 Object v_objspace[MaxObjects];           // 0xFFFFD000	; object variable space (0x40 bytes per object) (0x2000 bytes)
 Object* v_player = &v_objspace[0];       // 0xFFFFD000*	; object variable space for Sonic (0x40 bytes)
 Object* v_lvlobjspace = &v_objspace[32]; // 0xFFFFD800*	; level object variable space (0x1800 bytes)
@@ -42,15 +39,11 @@ ushort v_vdp_buffer1;                    // 0xFFFFF60C	; VDP instruction buffer 
                                          // 0xFFFFF613
 ushort v_demolength;                     // 0xFFFFF614	; the length of a demo in frames (2 bytes)
 short v_scrposy_dup;                     // 0xFFFFF616	; screen position y (duplicate) (2 bytes)
-                                         // 0xFFFFF618
-                                         // 0xFFFFF619
+short v_bg1posy_dupx;                    // 0xFFFFF618  ; BG1 pos y duplicate (2 bytes)
 short v_scrposx_dup;                     // 0xFFFFF61A	; screen position x (duplicate) (2 bytes)
-                                         // 0xFFFFF61C
-                                         // 0xFFFFF61D
-                                         // 0xFFFFF61E
-                                         // 0xFFFFF61F
-                                         // 0xFFFFF620
-                                         // 0xFFFFF621
+short v_bg1posx_dupx;                    // 0xFFFFF61C  ;
+short v_bg2posy_dupx;                    // 0xFFFFF61E  ;
+short v_bg2posx_dupx;                    // 0xFFFFF620  ;
                                          // 0xFFFFF622
                                          // 0xFFFFF623
 ushort v_hbla_hreg;                      // 0xFFFFF624	; VDP H.interrupt register buffer (8Axx) (2 bytes)
@@ -121,8 +114,7 @@ ushort v_limitleft3;                     // 0xFFFFF732	; left level boundary, at
                                          // 0xFFFFF738
                                          // 0xFFFFF739
 short v_scrshiftx;                       // 0xFFFFF73A	; screen shift as Sonic moves horizontally
-                                         // 0xFFFFF73C
-                                         // 0xFFFFF73D
+short v_scrshifty;                       // 0xFFFFF73C  ; vertical screen shift?
 short v_lookshift;                       // 0xFFFFF73E	; screen shift when Sonic looks up/down (2 bytes)
                                          // 0xFFFFF740
                                          // 0xFFFFF741
@@ -134,13 +126,13 @@ bool f_nobgscroll;                       // 0xFFFFF744	; flag set to cancel back
                                          // 0xFFFFF747
                                          // 0xFFFFF748
                                          // 0xFFFFF749
-                                         // 0xFFFFF74A
-                                         // 0xFFFFF74B
-                                         // 0xFFFFF74C
-                                         // 0xFFFFF74D
-                                         // 0xFFFFF74E
+ubyte v_screenscrollx16;                 // 0xFFFFF74A  ; used to detect if the screen has scrolled 16 pixels left or right
+ubyte v_screenscrolly16;                 // 0xFFFFF74B  ; ditto but up or down
+ubyte v_bg1scrollx16;                    // 0xFFFFF74C  ; ditto but for BG1
+ubyte v_bg1scrolly16;                    // 0xFFFFF74D  ;
+ubyte v_somethingscrollx16;              // 0xFFFFF74E  ; ditto but for "something"
                                          // 0xFFFFF74F
-                                         // 0xFFFFF750
+ubyte v_bg2scrollx16;                    // 0xFFFFF750  ; ditto but for BG2
                                          // 0xFFFFF751
                                          // 0xFFFFF752
                                          // 0xFFFFF753
@@ -233,8 +225,7 @@ ushort v_timebonus;                      // 0xFFFFF7D2	; time bonus at the end o
 ushort v_ringbonus;                      // 0xFFFFF7D4	; ring bonus at the end of an act (2 bytes)
 bool f_endactbonus;                      // 0xFFFFF7D6	; time/ring bonus update flag at the end of an act
 ubyte v_sonicend;                        // 0xFFFFF7D7	; routine counter for Sonic in the ending sequence
-                                         // 0xFFFFF7D8
-                                         // 0xFFFFF7D9
+ushort v_lzrippleheight;                 // 0xFFFFF7D8  ; JP1: vertical position of the ripple in the FG/BG
                                          // 0xFFFFF7DA
                                          // 0xFFFFF7DB
                                          // 0xFFFFF7DC
@@ -501,8 +492,8 @@ ushort v_FFFFFFEA;                       // 0xFFFFFFEA  ; unused; set to 0 in on
 ushort f_demo;                           // 0xFFFFFFF0	; demo mode flag (0 = no; 1 = yes; 0x8001 = ending) (2 bytes)
 ushort v_demonum;                        // 0xFFFFFFF2	; demo level number (not the same as the level number) (2 bytes)
 ushort v_creditsnum;                     // 0xFFFFFFF4	; credits index number (2 bytes)
-                                         // 0xFFFFFFE6
-                                         // 0xFFFFFFE7
+                                         // 0xFFFFFFF6
+                                         // 0xFFFFFFF7
 ubyte v_megadrive;                       // 0xFFFFFFF8	; Megadrive machine type
                                          // 0xFFFFFFF9
 bool f_debugmode;                        // 0xFFFFFFFA	; debug mode flag (sometimes 2 bytes)
