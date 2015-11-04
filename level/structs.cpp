@@ -20,3 +20,18 @@ struct LevelSize
 	ushort bottom;
 	ushort lookshift;
 };
+
+struct DebugListEntry
+{
+	uint map;
+	ubyte id;
+	ubyte subtype;
+	ubyte frame;
+	ushort vram;
+};
+
+struct DebugList_
+{
+	uint count;
+	DebugListEntry objects[];
+};
