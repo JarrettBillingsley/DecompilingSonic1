@@ -88,19 +88,25 @@ bool IncTo(T& val, T limit)
 }
 
 template<typename T>
-void DecWrap(T& val, T max)
+T DecWrap(T& val, T max)
 {
 	if(val == 0)
+	{
 		val = max;
+		return 0;
+	}
 	else
-		val--;
+		return val--;
 }
 
 template<typename T>
-void IncWrap(T& val, T max)
+T IncWrap(T& val, T max)
 {
 	if(val == max)
+	{
 		val = 0;
+		return max;
+	}
 	else
-		val++;
+		return val++;
 }
