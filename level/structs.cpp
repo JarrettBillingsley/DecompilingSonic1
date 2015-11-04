@@ -14,7 +14,9 @@ static_assert(sizeof(LevelHeader) == 16);
 struct LevelSize
 {
 	ushort unk;
-	uint left;
-	uint top;
+	ushort left;
+	ushort right;
+	ushort top;
+	ushort bottom;
 	ushort lookshift;
 };

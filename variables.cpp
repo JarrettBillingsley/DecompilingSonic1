@@ -233,8 +233,10 @@ ushort v_lzrippleheight;                 // 0xFFFFF7D8  ; JP1: vertical position
                                          // 0xFFFFF7DE
                                          // 0xFFFFF7DF
 ubyte f_switch[16];                      // 0xFFFFF7E0	; flags set when Sonic stands on a switch (0x10 bytes)
-uint v_rev0something1;                   // 0xFFFFF7F0? ; something to do with level boundaries or tiles
-uint v_rev0something2;                   // 0xFFFFF7F4? ; ditto
+ushort v_rev0something1;                 // 0xFFFFF7F0? ; something to do with level boundaries or tiles
+ushort v_rev0something2;                 // 0xFFFFF7F2? ; ditto
+ushort v_rev0something3;                 // 0xFFFFF7F4? ; ditto
+ushort v_rev0something4;                 // 0xFFFFF7F6? ; ditto
                                          // 0xFFFFF7F8
                                          // 0xFFFFF7F9
                                          // 0xFFFFF7FA
