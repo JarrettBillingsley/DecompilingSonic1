@@ -203,21 +203,20 @@ void SS_BGAnimate()
 {
 	if(v_FFFFF7A0 == 0) // set in PalCycle_SS from the plane A nametable offset
 	{
-		// ??? these variables seem to have something to do with BG layer deformation
-		v_FFFFF70C = 0;
-		v_FFFFF618 = 0;
+		v_bg1posy = 0;
+		v_bg1posy_dupx = 0;
 	}
 
 	if(v_FFFFF7A0 < 8) // always true?
 	{
 		if(v_FFFFF7A0 == 6)
 		{
-			v_FFFFF718++;
-			v_FFFFF70C++;
-			v_FFFFF618 = v_FFFFF70C;
+			v_bg2posx++;
+			v_bg1posy++;
+			v_bg1posy_dupx = v_bg1posy;
 		}
 
-		d0 = WSWAP(-v_FFFFF708) //w
+		d0 = WSWAP(-v_bg1posx) //w
 		a1 = byte_4CCC //b
 		a3 = v_ngfx_buffer //w
 
@@ -239,7 +238,7 @@ void SS_BGAnimate()
 	{
 		if(v_FFFFF7A0 == 12)
 		{
-			v_FFFFF718--;
+			v_bg2posx--;
 			a3 = v_ngfx_buffer + 0x100 //l
 			d2 = 0x18000
 
@@ -255,9 +254,9 @@ void SS_BGAnimate()
 		a2 = byte_4CC4 //b
 	}
 
-	d0 = WSWAP(-v_FFFFF718)
+	d0 = WSWAP(-v_bg2posx)
 	d3 = *a2++ //b
-	d2 = (-v_FFFFF70C & 0xFF) << 2 //w
+	d2 = (-v_bg1posy & 0xFF) << 2 //w
 
 	for(; d3 >= 0; d3--)
 	{
