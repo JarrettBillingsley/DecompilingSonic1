@@ -290,7 +290,7 @@ ushort* FindWall2(Object* self, int objBottom, int objX, int solidityBit, int wa
 
 ushort* FindNearestTile(Object* self, int objBottom, int objX)
 {
-	auto chunk = v_lvllayout[objBottom & 7][objX & 0x7F];
+	auto chunk = v_lvllayout[(objBottom >> 8) & 7][(objX >> 8) & 0x7F];
 
 	if(chunk == 0)
 		return &v_dummytile;

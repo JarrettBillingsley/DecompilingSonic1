@@ -38,9 +38,19 @@ void Player_SetInAir()
 	BSET(v_player->status, ObjStatus_Air);
 }
 
+void Player_SetAnimFloat()
+{
+	v_player->anim = 0xF;
+}
+
 void Player_SetAnimDrowning()
 {
 	v_player->anim = 0x17;
+}
+
+void Player_SetAnimSlide()
+{
+	v_player->anim = 0x1F;
 }
 
 //                       a0             a2

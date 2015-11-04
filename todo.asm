@@ -29,7 +29,6 @@ include	"_inc\DebugList.asm"
 include	"_inc\HUD (part 2).asm"
 include	"_inc\HUD_Update.asm"
 include	"_inc\LevelSizeLoad & BgScrollSpeed (JP1).asm"
-include	"_inc\LZWaterFeatures.asm"
 
 SONIC
 Boss*

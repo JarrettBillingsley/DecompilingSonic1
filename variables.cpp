@@ -270,7 +270,7 @@ byte v_debugxspeed;                      // 0xFFFFFE0A	; debug mode - horizontal
 byte v_debugyspeed;                      // 0xFFFFFE0B	; debug mode - vertical speed
 uint v_vbla_count;                       // 0xFFFFFE0C	; vertical interrupt counter (adds 1 every VBlank) (4 bytes)
 // ushort v_vbla_word;                   // 0xFFFFFE0E*	; low word for vertical interrupt counter (2 bytes)
-// ubytev_vbla_byte;                     // 0xFFFFFE0F*	; low byte for vertical interrupt counter
+// ubyte v_vbla_byte;                    // 0xFFFFFE0F*	; low byte for vertical interrupt counter
 ubyte v_zone;                            // 0xFFFFFE10	; current zone number (often accessed as a word to read/write zone and act simultaneously)
 ubyte v_act;                             // 0xFFFFFE11	; current act number
 ubyte v_lives;                           // 0xFFFFFE12	; number of lives
