@@ -47,18 +47,63 @@ const LevelSizeArray[][] =
 	}
 };
 
-// TODO:
-// EndingStLocArray:
-// 	incbin	"startpos\ghz1 (Credits demo 1).bin"
-// 	incbin	"startpos\mz2 (Credits demo).bin"
-// 	incbin	"startpos\syz3 (Credits demo).bin"
-// 	incbin	"startpos\lz3 (Credits demo).bin"
-// 	incbin	"startpos\slz3 (Credits demo).bin"
-// 	incbin	"startpos\sbz1 (Credits demo).bin"
-// 	incbin	"startpos\sbz2 (Credits demo).bin"
-// 	incbin	"startpos\ghz1 (Credits demo 2).bin"
+const Point16 EndingStLocArray[] =
+{
+	{ 0x0050, 0x03B0 },
+	{ 0x0EA0, 0x046C },
+	{ 0x1750, 0x00BD },
+	{ 0x0A00, 0x062C },
+	{ 0x0BB0, 0x004C },
+	{ 0x1570, 0x016C },
+	{ 0x0030, 0x074C },
+	{ 0x1400, 0x02AC },
+};
 
-// StartLocArray:	include	"_inc\Start Location Array - Levels.asm"
+const Point16 StartLocArray[][] =
+{
+	{
+		{ 0x0050, 0x03B0 }, // GHZ 1
+		{ 0x0050, 0x00FC }, // GHZ 2
+		{ 0x0050, 0x03B0 }, // GHZ 3
+		{ 0x0080, 0x00A8 }, // blank
+	},
+	{
+		{ 0x0060, 0x006C }, // LZ 1
+		{ 0x0050, 0x00EC }, // LZ 2
+		{ 0x0050, 0x02EC }, // LZ 3
+		{ 0x0B80, 0x0000 }, // SBZ 3
+	},
+	{
+		{ 0x0030, 0x0266 }, // MZ 1
+		{ 0x0030, 0x0266 }, // MZ 2
+		{ 0x0030, 0x0166 }, // MZ 3
+		{ 0x0080, 0x00A8 }, // blank
+	},
+	{
+		{ 0x0040, 0x02CC }, // SLZ 1
+		{ 0x0040, 0x014C }, // SLZ 2
+		{ 0x0040, 0x014C }, // SLZ 3
+		{ 0x0080, 0x00A8 }, // blank
+	},
+	{
+		{ 0x0030, 0x03BD }, // SYZ 1
+		{ 0x0030, 0x01BD }, // SYZ 2
+		{ 0x0030, 0x00EC }, // SYZ 3
+		{ 0x0080, 0x00A8 }, // blank
+	},
+	{
+		{ 0x0030, 0x048C }, // SBZ 1
+		{ 0x0030, 0x074C }, // SBZ 2
+		{ 0x2140, 0x05AC }, // FZ
+		{ 0x0080, 0x00A8 }, // blank
+	},
+	{
+		{ 0x0620, 0x016B }, // End
+		{ 0x0EE0, 0x016C }, // End 2??
+		{ 0x0080, 0x00A8 }, // blank
+		{ 0x0080, 0x00A8 }, // blank
+	},
+};
 
 const ubyte LoopTileNums[][] =
 {
