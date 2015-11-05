@@ -58,7 +58,7 @@ void ObjPosLoad()
 			v_opl_data[3] = objDataPointers[1];
 			v_objstate[0] = 1;
 			v_objstate[1] = 1;
-			memset(v_objstate + 2, 0, 380); // only clear 380 of the slots? (plus the two above)
+			memset(v_objstate + 2, 0, sizeof(v_objstate) - 2);
 
 			// This rounds down to next lower multiple of 128, floored at 0
 			auto d6 = ((v_screenposx > 128) ? v_screenposx - 128 : 0) & 0xFF80;

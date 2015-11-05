@@ -272,10 +272,11 @@ ushort v_pal_water_dup[64];              // 0xFFFFFA00	; duplicate underwater pa
 ushort v_pal_water[64];                  // 0xFFFFFA80	; main underwater palette (0x80 bytes)
 ushort v_pal_dry[64];                    // 0xFFFFFB00	; main palette (0x80 bytes)
 ushort v_pal_dry_dup[64];                // 0xFFFFFB80	; duplicate palette, used for transitions (0x80 bytes)
-ubyte v_objstate[512];                   // 0xFFFFFC00	; object state list (0x200 bytes)
-int v_regbuffer[16]                      // 0xFFFFFC00*	; stores registers d0-a7 during an error event (0x40 bytes)
-int v_spbuffer;                          // 0xFFFFFC40*	; stores most recent sp address (4 bytes)
-int v_errortype;                         // 0xFFFFFC44*	; error type
+ubyte v_objstate[384];                   // 0xFFFFFC00	; object state list (0x180 bytes)
+int v_regbuffer[16]                      // 0xFFFFFC00* ; stores registers d0-a7 during an error event (0x40 bytes)
+int v_spbuffer;                          // 0xFFFFFC40* ; stores most recent sp address (4 bytes)
+int v_errortype;                         // 0xFFFFFC44* ; error type
+ubyte v_systemstack[128];                // 0xFFFFFD80  ; system stack (0x80 bytes)
                                          // 0xFFFFFE00
                                          // 0xFFFFFE01
 bool f_restart;                          // 0xFFFFFE02	; restart level flag (2 bytes)
@@ -345,36 +346,7 @@ ubyte v_emeralds;                        // 0xFFFFFE57	; number of chaos emerald
 ubyte v_emldlist[6];                     // 0xFFFFFE58	; which individual emeralds you have (00 = no; 01 = yes) (6 bytes)
 ushort v_oscillate[33];                  // 0xFFFFFE5E	; values which oscillate - for swinging platforms, et al (0x42 bytes)
                                          // 0xFFFFFEA0
-                                         // 0xFFFFFEA1
-                                         // 0xFFFFFEA2
-                                         // 0xFFFFFEA3
-                                         // 0xFFFFFEA4
-                                         // 0xFFFFFEA5
-                                         // 0xFFFFFEA6
-                                         // 0xFFFFFEA7
-                                         // 0xFFFFFEA8
-                                         // 0xFFFFFEA9
-                                         // 0xFFFFFEAA
-                                         // 0xFFFFFEAB
-                                         // 0xFFFFFEAC
-                                         // 0xFFFFFEAD
-                                         // 0xFFFFFEAE
-                                         // 0xFFFFFEAF
-                                         // 0xFFFFFEB0
-                                         // 0xFFFFFEB1
-                                         // 0xFFFFFEB2
-                                         // 0xFFFFFEB3
-                                         // 0xFFFFFEB4
-                                         // 0xFFFFFEB5
-                                         // 0xFFFFFEB6
-                                         // 0xFFFFFEB7
-                                         // 0xFFFFFEB8
-                                         // 0xFFFFFEB9
-                                         // 0xFFFFFEBA
-                                         // 0xFFFFFEBB
-                                         // 0xFFFFFEBC
-                                         // 0xFFFFFEBD
-                                         // 0xFFFFFEBE
+                                         // ... (32 bytes unaccounted for)
                                          // 0xFFFFFEBF
 ubyte v_ani0_time;                       // 0xFFFFFEC0	; synchronised sprite animation 0 - time until next frame (used for synchronised animations)
 ubyte v_ani0_frame;                      // 0xFFFFFEC1	; synchronised sprite animation 0 - current frame
@@ -386,42 +358,7 @@ ubyte v_ani3_time;                       // 0xFFFFFEC6	; synchronised sprite ani
 ubyte v_ani3_frame;                      // 0xFFFFFEC7	; synchronised sprite animation 3 - current frame
 ushort v_ani3_buf;                       // 0xFFFFFEC8	; synchronised sprite animation 3 - info buffer (2 bytes)
                                          // 0xFFFFFECA
-                                         // 0xFFFFFECB
-                                         // 0xFFFFFECC
-                                         // 0xFFFFFECD
-                                         // 0xFFFFFECE
-                                         // 0xFFFFFECF
-                                         // 0xFFFFFED0
-                                         // 0xFFFFFED1
-                                         // 0xFFFFFED2
-                                         // 0xFFFFFED3
-                                         // 0xFFFFFED4
-                                         // 0xFFFFFED5
-                                         // 0xFFFFFED6
-                                         // 0xFFFFFED7
-                                         // 0xFFFFFED8
-                                         // 0xFFFFFED9
-                                         // 0xFFFFFEDA
-                                         // 0xFFFFFEDB
-                                         // 0xFFFFFEDC
-                                         // 0xFFFFFEDD
-                                         // 0xFFFFFEDE
-                                         // 0xFFFFFEDF
-                                         // 0xFFFFFEE0
-                                         // 0xFFFFFEE1
-                                         // 0xFFFFFEE2
-                                         // 0xFFFFFEE3
-                                         // 0xFFFFFEE4
-                                         // 0xFFFFFEE5
-                                         // 0xFFFFFEE6
-                                         // 0xFFFFFEE7
-                                         // 0xFFFFFEE8
-                                         // 0xFFFFFEE9
-                                         // 0xFFFFFEEA
-                                         // 0xFFFFFEEB
-                                         // 0xFFFFFEEC
-                                         // 0xFFFFFEED
-                                         // 0xFFFFFEEE
+                                         // ... (38 bytes unaccounted for)
                                          // 0xFFFFFEEF
 ushort v_limittopdb;                     // 0xFFFFFEF0	; level upper boundary, buffered for debug mode (2 bytes)
 ushort v_limitbtmdb;                     // 0xFFFFFEF2	; level bottom boundary, buffered for debug mode (2 bytes)
@@ -462,37 +399,12 @@ ushort v_levseldelay;                    // 0xFFFFFF80	; level select - time unt
 ushort v_levselitem;                     // 0xFFFFFF82	; level select - item selected (2 bytes)
 ushort v_levselsound;                    // 0xFFFFFF84	; level select - sound selected (2 bytes)
                                          // 0xFFFFFF86
-                                         // ... (314 bytes unaccounted for)
+                                         // ... (58 bytes unaccounted for)
                                          // 0xFFFFFFBF
 uint v_scorecopy;                        // 0xFFFFFFC0	; score, duplicate (4 bytes)
 // uint v_scorelife;                     // 0xFFFFFFC0*	; points required for an extra life (4 bytes) (JP1 only)
                                          // 0xFFFFFFC4
-                                         // 0xFFFFFFC5
-                                         // 0xFFFFFFC6
-                                         // 0xFFFFFFC7
-                                         // 0xFFFFFFC8
-                                         // 0xFFFFFFC9
-                                         // 0xFFFFFFCA
-                                         // 0xFFFFFFCB
-                                         // 0xFFFFFFCC
-                                         // 0xFFFFFFCD
-                                         // 0xFFFFFFCE
-                                         // 0xFFFFFFCF
-                                         // 0xFFFFFFD0
-                                         // 0xFFFFFFD1
-                                         // 0xFFFFFFD2
-                                         // 0xFFFFFFD3
-                                         // 0xFFFFFFD4
-                                         // 0xFFFFFFD5
-                                         // 0xFFFFFFD6
-                                         // 0xFFFFFFD7
-                                         // 0xFFFFFFD8
-                                         // 0xFFFFFFD9
-                                         // 0xFFFFFFDA
-                                         // 0xFFFFFFDB
-                                         // 0xFFFFFFDC
-                                         // 0xFFFFFFDD
-                                         // 0xFFFFFFDE
+                                         // ... (28 bytes unaccounted for)
                                          // 0xFFFFFFDF
 bool f_levselcheat;                      // 0xFFFFFFE0	; level select cheat flag
 bool f_slomocheat;                       // 0xFFFFFFE1	; slow motion & frame advance cheat flag
