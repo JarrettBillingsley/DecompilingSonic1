@@ -5,6 +5,28 @@ SSTileInfo v_sstileinfo[SSObj_COUNT + 1];                  // 0xFFFF4000* ; tile
 SS_Animation v_ssanimations[SS_NumAnimations];             // 0xFFFF4400* ; animations in progress
 Point16 v_ssposbuffer[SS_PosBufferSize][SS_PosBufferSize]; // 0xFFFF8000* ; calculated screen positions of tiles based on rotation
 
+// Vague memory map:
+// 0000-A7FF: Level layout stuff
+// A800-A9FF: BG scrolling variable array
+// AA00-ABFF: Nemesis decompression dictionary buffer
+// AC00-AFFF: Object display queue
+// B000-C7FF: 16x16 tile mappings
+// C800-CAFF: Buffered Sonic graphics
+// CB00-CBFF: Sonic position tracking buffer
+// CC00-CFFF: Hardware horizontal scrolling table buffer
+// D000-EFFF: Object space
+// F000-F5FF: Sound driver
+// F600-F6FF: Input, V/HBlank-related variables (like water position, palette buffer, PLC stuff)
+// F700-F75F: Scrolling, BG, DLE stuff
+// F760-F7FF: Sonic/Object-specific variables, object loading stuff, animation timers, other miscellany
+// F800-F9FF: Hardware sprite buffer
+// FA00-FBFF: Palettes
+// FC00-FDFF: Offscreen object memory
+// FE00-FE5F: Various gameplay-related counters, timers, flags, lamppost stuff, emeralds etc.
+// FE60-FE9F: Oscillating value array
+// FEA0-FF7F: Mostly empty with some random shit
+// FF80-FFFF: Mostly debug-related things (level select, that kind of thing), some more mode flags, system stuff
+
 // Regular variables:
 ushort v_256x256[82][16][16];            // 0xFFFF0000	; 256x256 tile mappings (0xA400 bytes)
 ubyte v_lvllayout[8][128];               // 0xFFFFA400	; level and background 256tile layouts (0x400 bytes) (each row is 64 FG chunks and 64 BG chunks)
@@ -19,7 +41,7 @@ Object v_objspace[MaxObjects];           // 0xFFFFD000	; object variable space (
 Object* v_player = &v_objspace[0];       // 0xFFFFD000*	; object variable space for Sonic (0x40 bytes)
 Object* v_lvlobjspace = &v_objspace[32]; // 0xFFFFD800*	; level object variable space (0x1800 bytes)
 ubyte v_snddriver_ram[0x600];            // 0xFFFFF000  ; sound driver RAM
-GameMode v_gamemode;                     // 0xFFFFF600	; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; +8C=PreLevel)
+GameMode v_gamemode;                     // 0xFFFFF600	; game mode
 ubyte v_jpadhold2;                       // 0xFFFFF602	; joypad input - held, duplicate
 ubyte v_jpadpress2;                      // 0xFFFFF603	; joypad input - pressed, duplicate
 ubyte v_jpadhold1;                       // 0xFFFFF604	; joypad input - held
@@ -92,8 +114,8 @@ uint v_screenposx;                       // 0xFFFFF700	; screen position x (2 by
 uint v_screenposy;                       // 0xFFFFF704	; screen position y (2 bytes, but little bits of code and the memory alignment suggest 4)
 uint v_bg1posx;                          // 0xFFFFF708
 uint v_bg1posy;                          // 0xFFFFF70C
-uint v_somethingposx;                    // 0xFFFFF710  ; pos x of something? seems to be used in layer deformation
-uint v_somethingposy;                    // 0xFFFFF714  ; pos y of something? seems to be used in layer deformation
+uint v_somethingposx;                    // 0xFFFFF710
+uint v_somethingposy;                    // 0xFFFFF714
 uint v_bg2posx;                          // 0xFFFFF718
 uint v_bg2posy;                          // 0xFFFFF71C
 ushort v_limitleft1;                     // 0xFFFFF720	; left level boundary (2 bytes)
@@ -114,7 +136,7 @@ ushort v_limitleft3;                     // 0xFFFFF732	; left level boundary, at
                                          // 0xFFFFF738
                                          // 0xFFFFF739
 short v_scrshiftx;                       // 0xFFFFF73A	; screen shift as Sonic moves horizontally
-short v_scrshifty;                       // 0xFFFFF73C  ; vertical screen shift?
+short v_scrshifty;                       // 0xFFFFF73C  ; vertical screen shift
 short v_lookshift;                       // 0xFFFFF73E	; screen shift when Sonic looks up/down (2 bytes)
                                          // 0xFFFFF740
                                          // 0xFFFFF741
@@ -297,7 +319,7 @@ bool v_invinc;                           // 0xFFFFFE2D	; invinciblity status (00
 bool v_shoes;                            // 0xFFFFFE2E	; speed shoes status (00 = no; 01 = yes)
 ubyte v_FFFFFE2F;                        // 0xFFFFFE2F?	; specifically zeroed in a few places, not sure if read
 ubyte v_lastlamp;                        // 0xFFFFFE30	; number of the last lamppost you hit
-ubyte v_FFFFFE31;                        // 0xFFFFFE31?	; set in the credits sequence...
+ubyte v_lamp_lastlamp;                   // 0xFFFFFE31	; technically same as v_lastlamp, not sure why saved/restored
 ushort v_lamp_xpos;                      // 0xFFFFFE32	; x-axis for Sonic to respawn at lamppost (2 bytes)
 ushort v_lamp_ypos;                      // 0xFFFFFE34	; y-axis for Sonic to respawn at lamppost (2 bytes)
 ushort v_lamp_rings;                     // 0xFFFFFE36	; rings stored at lamppost (2 bytes)
@@ -307,12 +329,12 @@ ubyte v_FFFFFE3D;                        // 0xFFFFFE3D?	; set in the credits seq
 ushort v_lamp_limitbtm;                  // 0xFFFFFE3E	; level bottom boundary at lamppost (2 bytes)
 ushort v_lamp_scrx;                      // 0xFFFFFE40	; x-axis screen at lamppost (2 bytes)
 ushort v_lamp_scry;                      // 0xFFFFFE42	; y-axis screen at lamppost (2 bytes)
-ushort v_FFFFFE44;                       // 0xFFFFFE44?	; scrolling info?
-ushort v_FFFFFE46;                       // 0xFFFFFE46?	; scrolling info?
-ushort v_FFFFFE48;                       // 0xFFFFFE48?	; scrolling info?
-ushort v_FFFFFE4A;                       // 0xFFFFFE4A?	; scrolling info?
-ushort v_FFFFFE4C;                       // 0xFFFFFE4C?	; scrolling info?
-ushort v_FFFFFE4E;                       // 0xFFFFFE4E?	; scrolling info?
+ushort v_lamp_bg1x;                      // 0xFFFFFE44	; scrolling info
+ushort v_lamp_bg1y;                      // 0xFFFFFE46	; scrolling info
+ushort v_lamp_somethingx;                // 0xFFFFFE48	; scrolling info
+ushort v_lamp_somethingy;                // 0xFFFFFE4A	; scrolling info
+ushort v_lamp_bg2x;                      // 0xFFFFFE4C	; scrolling info
+ushort v_lamp_bg2y;                      // 0xFFFFFE4E	; scrolling info
 ushort v_lamp_wtrpos;                    // 0xFFFFFE50	; water position at lamppost (2 bytes)
 ubyte v_lamp_wtrrout;                    // 0xFFFFFE52	; water routine at lamppost
 ubyte v_lamp_wtrstat;                    // 0xFFFFFE53	; water state at lamppost

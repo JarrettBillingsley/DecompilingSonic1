@@ -23,9 +23,10 @@ void NewPLC(uint plc)
 void ClearPLC()
 {
 	Clear_PLC_Buffer();
-	v_ptrnemcode = 0;
-	Clear_F6E4_F680();
+	memset(&nem_plcState, 0, sizeof(nem_plcState));
 	f_plc_execute = 0;
+	nem_tileDecodeCount = 0;
+	// also F6FC..F6FF
 }
 
 void RunPLC()

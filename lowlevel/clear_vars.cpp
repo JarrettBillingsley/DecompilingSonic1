@@ -29,6 +29,7 @@ void Clear_PLC_Buffer()
 void Clear_A400_AC00()
 {
 	memset(v_lvllayout, 0, sizeof(v_lvllayout));
+	memset(v_scrollsomething, 0, sizeof(v_scrollsomething));
 	memset(v_ngfx_buffer, 0, sizeof(v_ngfx_buffer));
 }
 
@@ -48,12 +49,8 @@ void Clear_F628_F680()
 	f_water = false;
 	v_wtr_routine = 0;
 	f_wtr_state = false;
+	f_FFFFF64F = 0;
 	memset(v_pal_buffer, 0, sizeof(v_pal_buffer));
-}
-
-void Clear_F6E4_F680()
-{
-	// blerp
 }
 
 void Clear_F700_F800()
@@ -132,11 +129,6 @@ void Clear_F700_F800()
 	memset(f_switch, 0, sizeof(f_switch));
 }
 
-void Clear_FE60_FF80()
-{
-	Clear_FE60_FF00();
-}
-
 void Clear_FE60_FF00()
 {
 	memset(v_oscillate + 1, 0, sizeof(ushort) * 32);
@@ -151,4 +143,22 @@ void Clear_FE60_FF00()
 	v_ani3_buf = 0;
 	v_limittopdb = 0;
 	v_limitbtmdb = 0;
+}
+
+void Clear_FE60_FF80()
+{
+	Clear_FE60_FF00();
+	v_dummytile = 0;
+	v_screenposx_dup = 0;
+	v_screenposy_dup = 0;
+	v_bg1posx_dup = 0;
+	v_bg1posy_dup = 0;
+	v_somethingposx_dup = 0;
+	v_somethingposy_dup = 0;
+	v_bg2posx_dup = 0;
+	v_bg2posy_dup = 0;
+	v_bgscroll1_dup = 0;
+	v_bgscroll2_dup = 0;
+	v_bgscroll3_dup = 0;
+	v_bgscroll4_dup = 0;
 }

@@ -96,7 +96,7 @@ void EndingDemoLoad()
 		if(v_creditsnum == 4) // SLZ demo
 		{
 			v_lastlamp = 1;
-			v_FFFFFE31 = 1;
+			v_lamp_lastlamp = 1;
 			v_lamp_xpos = 0x0A00;
 			v_lamp_ypos = 0x62C;
 			v_lamp_rings = 13;
@@ -106,12 +106,12 @@ void EndingDemoLoad()
 			v_lamp_limitbtm = 0x800;
 			v_lamp_scrx = 0x957;
 			v_lamp_scry = 0x5CC;
-			v_FFFFFE44 = 0x4AB;
-			v_FFFFFE46 = 0x3A6;
-			v_FFFFFE48 = 0;
-			v_FFFFFE4A = 0x28C;
-			v_FFFFFE4C = 0;
-			v_FFFFFE4E = 0;
+			v_lamp_bg1x = 0x4AB;
+			v_lamp_bg1y = 0x3A6;
+			v_lamp_somethingx = 0;
+			v_lamp_somethingy = 0x28C;
+			v_lamp_bg2x = 0;
+			v_lamp_bg2y = 0;
 			v_lamp_wtrpos = 0x308;
 			v_lamp_wtrrout = 1;
 			v_lamp_wtrstat = 1;
