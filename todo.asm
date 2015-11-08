@@ -24,9 +24,6 @@ Col_SLZ:	    incbin	"collide\SLZ.bin"	; SLZ index
 Col_SYZ:	    incbin	"collide\SYZ.bin"	; SYZ index
 Col_SBZ:	    incbin	"collide\SBZ.bin"	; SBZ index
 
-include	"_inc\HUD (part 2).asm"
-include	"_inc\HUD_Update.asm"
-
 SONIC
 Boss*
 

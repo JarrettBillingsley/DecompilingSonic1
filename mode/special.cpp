@@ -113,7 +113,7 @@ void GM_Special()
 	VDP_RegWrite(0x10, 1);             // 64-cell hscroll size
 	ClearScreen();
 	NemDec(Nem_TitleCard, 0xB000);
-	Hud_Base();
+	Hud_Init();
 	ENABLE_INTERRUPTS();
 	PalLoad2(Palette_SSResult);
 	NewPLC(PLC_Main);

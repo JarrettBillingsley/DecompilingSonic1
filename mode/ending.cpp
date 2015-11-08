@@ -24,7 +24,7 @@ void GM_Ending()
 		v_act = (v_emeralds == 6) ? 0 : 1;
 
 		QuickPLC(PLC_Ending);
-		Hud_Base();
+		Hud_Init();
 		LevelSizeLoad();
 		DeformLayers();
 		v_bgscroll1 |= 4;

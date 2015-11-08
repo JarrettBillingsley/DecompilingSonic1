@@ -21,7 +21,8 @@ Point16 v_ssposbuffer[SS_PosBufferSize][SS_PosBufferSize]; // 0xFFFF8000* ; calc
 // F760-F7FF: Sonic/Object-specific variables, object loading stuff, animation timers, other miscellany
 // F800-F9FF: Hardware sprite buffer
 // FA00-FBFF: Palettes
-// FC00-FDFF: Offscreen object memory
+// FC00-FD7F: Offscreen object memory
+// FD80-FDFF: Stack
 // FE00-FE5F: Various gameplay-related counters, timers, flags, lamppost stuff, emeralds etc.
 // FE60-FE9F: Oscillating value array
 // FEA0-FF7F: Mostly empty with some random shit

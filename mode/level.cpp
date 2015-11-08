@@ -88,7 +88,7 @@ _restart:
 
 		} while(v_objspace[4].x != v_objspace[4].mainX || v_plc_buffer != 0);
 
-		Hud_Base();
+		Hud_Init();
 	}
 
 	// Load a bunch of crap
