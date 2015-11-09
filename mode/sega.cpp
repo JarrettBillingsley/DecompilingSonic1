@@ -3,21 +3,14 @@ void GM_Sega()
 	PlaySound_Special(BGM_Stop);
 	ClearPLC();
 	PaletteFadeOut();
-
-	// lea	(vdp_control_port).l,a6
-	// move.w	#$8004,(a6)	; use 8-colour mode
-	// move.w	#$8200+(vram_fg>>10),(a6) ; set foreground nametable address
-	// move.w	#$8400+(vram_bg>>13),(a6) ; set background nametable address
-	// move.w	#$8700,(a6)	; set background colour (palette entry 0)
-	// move.w	#$8B00,(a6)	; full-screen vertical scrolling
-
+	VDP_RegWrite(0x0, 4);
+	VDP_RegWrite(0x2, vram_fg >> 10);
+	VDP_RegWrite(0x4, vram_bg >> 13);
+	VDP_RegWrite(0x7, 0);
+	VDP_RegWrite(0xB, 0);
 	f_wtr_state = false;
 	DISABLE_INTERRUPTS();
-
-	// move.w	(v_vdp_buffer1).w,d0
-	// andi.b	#$BF,d0
-	// move.w	d0,(vdp_control_port).l
-
+	VDP_Control(v_vdp_buffer1 & 0xBF);
 	ClearScreen();
 	NemDec(Nem_SegaLogo, 0);
 	EniDec(Eni_SegaLogo, 0xFF0000, 0);
@@ -35,17 +28,13 @@ void GM_Sega()
 	v_pcyc_time = 0;
 	v_pal_buffer[0x12] = 0; // word, byte offset
 	v_pal_buffer[0x10] = 0; // word, byte offset
-
-	// move.w	(v_vdp_buffer1).w,d0
-	// ori.b	#$40,d0
-	// move.w	d0,(vdp_control_port).l
+	VDP_Control(v_vdp_buffer1 | 0x40);
 
 	do
 		WaitForVBlank(VBlank_Sega);
 	while(PalCycle_Sega());
 
 	PlaySound_Special(SFX_Sega);
-
 	WaitForVBlank(VBlank_SegaSwitch);
 	v_demolength = 31;
 
