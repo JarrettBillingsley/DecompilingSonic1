@@ -26,7 +26,7 @@ void VBlankCommon2()
 	WAIT_Z80();
 	ReadJoypads();
 	VBlankWriteWaterPalette();
-	DoSomethingWithHblaHreg();
+	SetHBlankRegister();
 	VBlankWriteSpriteAndScroll();
 	VBlankWriteSonic();
 	START_Z80();
@@ -62,10 +62,9 @@ void VBlankDecreaseDemoLength()
 	DecToZero(v_demolength);
 }
 
-void DoSomethingWithHblaHreg()
+void SetHBlankRegister()
 {
-	// is a5 the VDP control port?? it's never explicitly set but that seems to be the convention
-	// *a5 = v_hbla_hreg
+	VDP_Control(v_hbla_hreg);
 }
 
 void VBlankWaitPAL()
@@ -119,7 +118,7 @@ void VBlank()
 				STOP_Z80();
 				WAIT_Z80();
 				VBlankWriteWaterPalette();
-				DoSomethingWithHblaHreg();
+				SetHBlankRegister();
 				START_Z80();
 			}
 			break;
@@ -143,7 +142,7 @@ void VBlank()
 		// Palette fading
 		case VBlank_PaletteFade:
 			VBlankCommon();
-			DoSomethingWithHblaHreg();
+			SetHBlankRegister();
 			PLC_Decode9Tiles();
 			break;
 
