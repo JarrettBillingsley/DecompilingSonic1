@@ -286,8 +286,8 @@ ushort v_framecount;                     // 0xFFFFFE04	; frame counter (adds 1 e
 ubyte v_debugitem;                       // 0xFFFFFE06	; debug item currently selected (NOT the object number of the item)
                                          // 0xFFFFFE07
 ushort v_debuguse;                       // 0xFFFFFE08	; debug mode use & routine counter (when Sonic is a ring/item) (2 bytes)
-byte v_debugxspeed;                      // 0xFFFFFE0A	; debug mode - horizontal speed
-byte v_debugyspeed;                      // 0xFFFFFE0B	; debug mode - vertical speed
+byte v_debugmovedelay;                   // 0xFFFFFE0A	; debug mode - delay between initial direction press and "autorepeat"
+byte v_debugmovespeed;                   // 0xFFFFFE0B	; debug mode - movement speed
 uint v_vbla_count;                       // 0xFFFFFE0C	; vertical interrupt counter (adds 1 every VBlank) (4 bytes)
 // ushort v_vbla_word;                   // 0xFFFFFE0E*	; low word for vertical interrupt counter (2 bytes)
 // ubyte v_vbla_byte;                    // 0xFFFFFE0F*	; low byte for vertical interrupt counter

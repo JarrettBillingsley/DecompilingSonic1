@@ -6,12 +6,8 @@ enum : ushort
 void SonicPlayer(Object* self)
 {
 	if(v_debuguse)
-	{
-		DebugMode();
-		return;
-	}
-
-	switch(self->routine)
+		DebugMode(self);
+	else switch(self->routine)
 	{
 		case PlayerRoutine_Init:
 			self->routine = PlayerRoutine_Normal;
