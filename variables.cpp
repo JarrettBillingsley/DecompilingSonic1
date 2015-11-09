@@ -174,7 +174,7 @@ ubyte v_sonframenum;                     // 0xFFFFF766	; frame to display for So
 bool f_sonframechg;                      // 0xFFFFF767	; flag set to update Sonic's sprite frame
 ubyte v_anglebuffer;                     // 0xFFFFF768	; angle of collision block that Sonic or object is standing on
                                          // 0xFFFFF769
-                                         // 0xFFFFF76A
+ubyte v_b_F76A;                          // 0xFFFFF76A  ; ?? copied to a player variable. it's stored as the last angle the player jumped from
                                          // 0xFFFFF76B
 ubyte v_opl_routine;                     // 0xFFFFF76C	; ObjPosLoad - routine counter
                                          // 0xFFFFF71D

@@ -38,6 +38,16 @@ void Player_SetInAir()
 	BSET(v_player->status, ObjStatus_Air);
 }
 
+void Player_SetUnderwater()
+{
+	BSET(v_player->status, ObjStatus_Underwater);
+}
+
+void Player_SetAboveWater()
+{
+	BCLR(v_player->status, ObjStatus_Underwater);
+}
+
 void Player_SetAnimFloat()
 {
 	v_player->anim = 0xF;

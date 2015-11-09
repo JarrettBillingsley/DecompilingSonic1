@@ -19,5 +19,7 @@ enum : ubyte
 	PlayerRoutine_LevelReset = 8,
 
 	Player_InvincibilityW = 0x30,
+	Player_InvTimeW = 0x32,
+	Player_ShoeTimeW = 0x34,
 	Player_StandingObjectB = 0x3D,
 };
