@@ -38,7 +38,7 @@ void SpinningLight(Object* self)
 			self->routine = Routine_Main;
 			self->map = Map_Light;
 			self->gfx = GFX_Light;
-			self->render = ObjRender_LayerNormal;
+			Obj_SetLayerNormal(self);
 			self->actWid = 16;
 			self->priority = 6;
 			// fall through

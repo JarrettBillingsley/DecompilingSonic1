@@ -58,10 +58,12 @@ void SonicSpecial(Object* self)
 			self->width = 7;
 			self->map = Map_Sonic;
 			self->gfx = GFX_SS_Sonic;
-			self->render = ObjRender_LayerNormal;
+			Obj_SetLayerNormal(self);
+			Obj_SetLayerNormal(self);
 			self->priority = 0;
 			self->anim = PlayerAnim_Roll;
-			self->status = ObjStatus_Air | ObjStatus_Rolling;
+			Obj_SetInAir(self);
+			Obj_SetRolling(self);
 			// fall through
 		case Routine_Main:
 			if(f_debugmode && (v_jpadpress1 & Buttons_B))
@@ -69,7 +71,7 @@ void SonicSpecial(Object* self)
 
 			VAR_B(self, collidedTypeB) = SSObj_None;
 
-			if(!(self->status & ObjStatus_Air))
+			if(!Obj_InAir(self))
 				SS_Jump(self);
 
 			SS_Move(self);
@@ -160,7 +162,7 @@ void SS_Move(Object* self)
 
 void SS_MoveLeft(Object* self)
 {
-	BSET(self->status, ObjStatus_Flip);
+	Obj_SetFlipped(self);
 
 	if(self->inertia > 0)
 		self->inertia -= SS_MoveAccelFast;
@@ -175,7 +177,7 @@ void SS_MoveLeft(Object* self)
 
 void SS_MoveRight(Object* self)
 {
-	BCLR(self->status, ObjStatus_Flip);
+	Obj_SetNotFlipped(self);
 
 	if(self->inertia < 0)
 		self->inertia += SS_MoveAccelFast;
@@ -197,7 +199,7 @@ void SS_Jump(Object* self)
 
 		self->velX = (cosine * SS_JumpVel) >> 8;
 		self->velY = (sine * SS_JumpVel) >> 8;
-		BSET(self->status, ObjStatus_Air);
+		Obj_SetInAir(self);
 		PlaySound_Special(SFX_Jump);
 	}
 }
@@ -228,7 +230,7 @@ void SS_Fall(Object* self)
 	if(SS_CheckCollision(self, self->x + velX, self->y))
 	{
 		velX = 0;
-		BCLR(self->status, ObjStatus_Air);
+		Obj_SetNotInAir(self);
 
 		if(SS_CheckCollision(self, self->x, self->y + velY))
 			velY = 0;
@@ -236,10 +238,10 @@ void SS_Fall(Object* self)
 	else if(SS_CheckCollision(self, self->x + velX, self->y + velY))
 	{
 		velY = 0;
-		BCLR(self->status, ObjStatus_Air);
+		Obj_SetNotInAir(self);
 	}
 	else
-		BSET(self->status, ObjStatus_Air);
+		Obj_SetInAir(self);
 
 	self->velX = velX >> 8;
 	self->velY = velY >> 8;
@@ -381,7 +383,7 @@ void SS_CheckStaticObjects(Object* self)
 			sine = CalcSine(CalcAngle(xdiff, ydiff), &cosine);
 			self->velX = (cosine * -SS_BumperVel) >> 8;
 			self->velY = (sine * -SS_BumperVel) >> 8;
-			BSET(self->status, ObjStatus_Air);
+			Obj_SetInAir(self);
 
 			if(auto slot = SS_FindAnimSlot())
 			{

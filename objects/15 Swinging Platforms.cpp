@@ -98,7 +98,7 @@ void SwingingPlatform(Object* self)
 	{
 		case Routine_Init:
 			self->routine = Routine_Main;
-			self->render = ObjRender_LayerNormal;
+			Obj_SetLayerNormal(self);
 			self->priority = 3;
 			VAR_W(self, baseYW) = self->y;
 			VAR_W(self, baseXW) = self->x;
@@ -161,7 +161,7 @@ void SwingingPlatform(Object* self)
 				chain->map = self->map;
 				chain->gfx = self->gfx;
 				BCLR(chain->gfx, 1 << 6);
-				chain->render = ObjRender_LayerNormal;
+				Obj_SetLayerNormal(chain);
 				chain->priority = 4;
 				chain->actWid = 8;
 				chain->frame = 1;
@@ -254,7 +254,7 @@ void Swing_Move(Object* self)
 	// They swing on a global timer.
 	auto angle = v_oscillate[26];
 
-	if(BTST(self->status, ObjStatus_Flip))
+	if(Obj_IsFlipped(self))
 		angle = -angle + 0x80;
 
 	Swing_PositionLinks(self, angle);

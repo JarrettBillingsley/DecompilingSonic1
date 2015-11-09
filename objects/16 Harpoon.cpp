@@ -47,7 +47,7 @@ void Harpoon(Object* self)
 			self->routine = Routine_Main;
 			self->map = Map_Harp;
 			self->gfx = GFX_Harpoon;
-			self->render = ObjRender_LayerNormal;
+			Obj_SetLayerNormal(self);
 			self->priority = 4;
 			self->anim = self->subtype; // vert/horiz;
 			self->actWid = 20;

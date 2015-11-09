@@ -36,7 +36,7 @@ void Splash(Object* self)
 		case Routine_Init:
 			self->routine = Routine_Main;
 			self->map = Map_Splash;
-			BSET(self->render, ObjRender_Something);
+			Obj_SetSomething(self);
 			self->priority = 1;
 			self->obActWid = 16;
 			self->gfx = GFX_Splash;

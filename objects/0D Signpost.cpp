@@ -67,7 +67,7 @@ void Signpost(Object* self)
 			self->routine = Routine_Touch;
 			self->map = Map_Sign;
 			self->gfx = GFX_Signpost;
-			self->render = ObjRender_LayerNormal;
+			Obj_SetLayerNormal(self);
 			self->actWid = 24;
 			self->priority = 4;
 			// fall through
@@ -98,7 +98,7 @@ void Signpost(Object* self)
 					sparkle->y = self->y + Sign_SparkPos[idx][1];
 					sparkle->map = Map_Ring;
 					sparkle->gfx = GFX_Ring;
-					sparkle->render = ObjRender_LayerNormal;
+					Obj_SetLayerNormal(sparkle);
 					sparkle->priority = 2;
 					sparkle->actWid = 8;
 				}

@@ -30,10 +30,10 @@ void Plat_NoXCheck2(Object* self, int platTop)
 	self->routine += 2;
 
 // loc_74AE: (called by monitor)
-	if(BTST(v_player->status, ObjStatus_StandingOn))
+	if(Player_IsStanding())
 	{
 		auto obj = &v_objspace[VAR_B(v_player, Player_StandingObjectB)];
-		BCLR(obj->status, ObjStatus_StandingOn);
+		Obj_SetNotStanding(obj);
 		obj->routine2 = 0;
 
 		if(obj->routine == 4)
@@ -48,8 +48,8 @@ void Plat_NoXCheck2(Object* self, int platTop)
 	if(Player_IsInAir())
 		Player_ResetOnFloor(v_player);
 
-	BSET(v_player->status, ObjStatus_StandingOn);
-	BSET(self->status, ObjStatus_StandingOn);
+	Player_SetStanding();
+	Obj_SetStanding(self);
 }
 
 // Returns true when player leaves platform (cs in original)
@@ -70,9 +70,9 @@ bool ExitPlatform(Object* self, int leftOffset, int halfWidth, int& diffX)
 			return false;
 	}
 
-	BCLR(v_player->status, ObjStatus_StandingOn);
+	Player_SetNotStanding();
 	self->routine = 2;
-	BCLR(self->status, ObjStatus_StandingOn);
+	Obj_SetNotStanding(self);
 	return true;
 }
 
@@ -109,7 +109,7 @@ void SlopeObject(Object* self, int halfWidth, ushort* heightTable)
 		if(diffX < 0 || diffX >= (halfWidth * 2))
 			return;
 
-		if(BTST(self->render, ObjRender_HorizFlip))
+		if(Obj_IsHorizFlip(self))
 			diffX = (halfWidth * 2) - diffX - 1);
 
 		Plat_NoXCheck2(self, self->y - heightTable[diffX]);
@@ -120,11 +120,11 @@ void SlopeObject(Object* self, int halfWidth, ushort* heightTable)
 //                         a0           d1           d2              a2
 void SlopeObject2(Object* self, int halfwidth, int prevX, ubyte* heightTable)
 {
-	if(BTST(v_player->status, ObjStatus_StandingOn))
+	if(Player_IsStanding())
 	{
 		auto diffX = (v_player->x - (self->x - halfWidth)) / 2;
 
-		if(BTST(self->render, ObjRender_HorizFlip))
+		if(Obj_IsHorizFlip(self))
 			diffX = halfWidth - diffX - 1;
 
 		v_player->y = self->y - heightTable[diffX] - v_player->height

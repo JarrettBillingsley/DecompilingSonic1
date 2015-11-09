@@ -1,4 +1,73 @@
 // =====================================================================================================================
+// Flags
+// =====================================================================================================================
+
+#define SET_FLAG(VAR, FLAG, VALUE)\
+	(VAR) = ((VAR) & ~(FLAG)) | ((VALUE) ? (FLAG) : 0)
+
+bool Obj_IsFlipped   (Object* self) { return BTST(self->status, ObjStatus_Flip);       }
+bool Obj_IsInAir     (Object* self) { return BTST(self->status, ObjStatus_Air);        }
+bool Obj_IsRolling   (Object* self) { return BTST(self->status, ObjStatus_Rolling);    }
+bool Obj_IsStanding  (Object* self) { return BTST(self->status, ObjStatus_StandingOn); }
+bool Obj_IsJumping   (Object* self) { return BTST(self->status, ObjStatus_Jumping);    }
+bool Obj_IsPushing   (Object* self) { return BTST(self->status, ObjStatus_Pushing);    }
+bool Obj_IsUnderwater(Object* self) { return BTST(self->status, ObjStatus_Underwater); }
+bool Obj_IsDead      (Object* self) { return BTST(self->status, ObjStatus_Dead);       }
+
+void Obj_SetFlipped   (Object* self, bool val = true) { SET_FLAG(self->status, ObjStatus_Flip,       val); }
+void Obj_SetInAir     (Object* self, bool val = true) { SET_FLAG(self->status, ObjStatus_Air,        val); }
+void Obj_SetRolling   (Object* self, bool val = true) { SET_FLAG(self->status, ObjStatus_Rolling,    val); }
+void Obj_SetStanding  (Object* self, bool val = true) { SET_FLAG(self->status, ObjStatus_StandingOn, val); }
+void Obj_SetJumping   (Object* self, bool val = true) { SET_FLAG(self->status, ObjStatus_Jumping,    val); }
+void Obj_SetPushing   (Object* self, bool val = true) { SET_FLAG(self->status, ObjStatus_Pushing,    val); }
+void Obj_SetUnderwater(Object* self, bool val = true) { SET_FLAG(self->status, ObjStatus_Underwater, val); }
+void Obj_SetDead      (Object* self, bool val = true) { SET_FLAG(self->status, ObjStatus_Dead,       val); }
+
+void Obj_SetNotFlipped   (Object* self) { Obj_SetFlipped   (self, false); }
+void Obj_SetNotInAir     (Object* self) { Obj_SetInAir     (self, false); }
+void Obj_SetNotRolling   (Object* self) { Obj_SetRolling   (self, false); }
+void Obj_SetNotStanding  (Object* self) { Obj_SetStanding  (self, false); }
+void Obj_SetNotJumping   (Object* self) { Obj_SetJumping   (self, false); }
+void Obj_SetNotPushing   (Object* self) { Obj_SetPushing   (self, false); }
+void Obj_SetNotUnderwater(Object* self) { Obj_SetUnderwater(self, false); }
+void Obj_SetNotDead      (Object* self) { Obj_SetDead      (self, false); }
+
+bool Obj_IsHorizFlip    (Object* self) { return BTST(obj->render, ObjRender_HorizFlip);     }
+bool Obj_IsVertFlip     (Object* self) { return BTST(obj->render, ObjRender_VertFlip);      }
+bool Obj_IsLayerScreen  (Object* self) { return Obj_Layer(self) == ObjRender_LayerScreen;   }
+bool Obj_IsLayerNormal  (Object* self) { return Obj_Layer(self) == ObjRender_LayerNormal;   }
+bool Obj_IsLayerBG1     (Object* self) { return Obj_Layer(self) == ObjRender_LayerBG1;      }
+bool Obj_IsLayerBG2     (Object* self) { return Obj_Layer(self) == ObjRender_LayerBG2;      }
+bool Obj_IsSomething    (Object* self) { return BTST(obj->render, ObjRender_Something);     }
+bool Obj_IsSmashFragment(Object* self) { return BTST(obj->render, ObjRender_SmashFragment); }
+bool Obj_IsBehind       (Object* self) { return BTST(obj->render, ObjRender_Behind);        }
+bool Obj_IsVisible      (Object* self) { return BTST(obj->render, ObjRender_Visible);       }
+
+int Obj_Layer(Object* self) { return obj->render & ObjRender_Layer; }
+
+void Obj_SetHorizFlip    (Object* self, bool val = true) { SET_FLAG(self->render, ObjRender_HorizFlip,     val); }
+void Obj_SetVertFlip     (Object* self, bool val = true) { SET_FLAG(self->render, ObjRender_VertFlip,      val); }
+void Obj_SetLayerScreen  (Object* self, bool val = true) { Obj_SetLayer(self, ObjRender_LayerScreen);            }
+void Obj_SetLayerNormal  (Object* self, bool val = true) { Obj_SetLayer(self, ObjRender_LayerNormal);            }
+void Obj_SetLayerBG1     (Object* self, bool val = true) { Obj_SetLayer(self, ObjRender_LayerBG1);               }
+void Obj_SetLayerBG2     (Object* self, bool val = true) { Obj_SetLayer(self, ObjRender_LayerBG2);               }
+void Obj_SetSomething    (Object* self, bool val = true) { SET_FLAG(self->render, ObjRender_Something,     val); }
+void Obj_SetSmashFragment(Object* self, bool val = true) { SET_FLAG(self->render, ObjRender_SmashFragment, val); }
+void Obj_SetBehind       (Object* self, bool val = true) { SET_FLAG(self->render, ObjRender_Behind,        val); }
+void Obj_SetVisible      (Object* self, bool val = true) { SET_FLAG(self->render, ObjRender_Visible,       val); }
+
+void Obj_SetLayer(Object* self, int val) { obj->render = (obj->render & ~ObjRender_Layer) | (val & ObjRender_Layer); };
+
+void Obj_SetNotHorizFlip    (Object* self) { Obj_SetHorizFlip    (self, false)); }
+void Obj_SetNotVertFlip     (Object* self) { Obj_SetVertFlip     (self, false)); }
+void Obj_SetNotSomething    (Object* self) { Obj_SetSomething    (self, false)); }
+void Obj_SetNotSmashFragment(Object* self) { Obj_SetSmashFragment(self, false)); }
+void Obj_SetNotBehind       (Object* self) { Obj_SetBehind       (self, false)); }
+void Obj_SetNotVisible      (Object* self) { Obj_SetVisible      (self, false)); }
+
+#undef SET_FLAG
+
+// =====================================================================================================================
 // Slot management
 // =====================================================================================================================
 
@@ -79,7 +148,7 @@ void ExecuteObjects()
 	{
 		for(int i = 32; i < MaxObjects; i++)
 		{
-			if(v_objspace[i].id != 0 && BTST(v_objspace[i].render, ObjRender_Visible))
+			if(v_objspace[i].id != 0 && Obj_IsVisible(&v_objspace[i]))
 				DisplaySprite(&v_objspace[i]);
 		}
 	}
@@ -206,16 +275,6 @@ bool ChkPartiallyVisible(Object* self)
 	return false;
 }
 
-bool Object_IsVisible(Object* self)
-{
-	return BTST(self->render, ObjRender_Visible);
-}
-
-bool Object_IsFlipped(Object* self)
-{
-	return BTST(self->status, ObjStatus_Flip);
-}
-
 bool Object_OutOfRange(Object* self)
 {
 	return Object_OutOfRange(self, self->x);
@@ -337,7 +396,7 @@ const short Smash_FragSpd2[] =
 void SmashObject(Object* self, ID newID, int numFrags, short* velocityArray)
 {
 	auto newMapping = self->map + self->frame + 1
-	BSET(self->render, ObjRender_SmashFragment);
+	Obj_SetSmashFragment(self);
 	self->id = newID;
 	auto renderBits = self->render;
 	auto newObj = self;

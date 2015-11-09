@@ -66,7 +66,7 @@ void LavaBall(Object* self)
 			self->width = 8;
 			self->map = Map_Fire;
 			self->gfx = (v_zone == Zone_SLZ) ? GFX_LavaBall_SLZ : GFX_LavaBall_MZ;
-			self->render = ObjRender_LayerNormal;
+			Obj_SetLayerNormal(self);
 			self->priority = 3;
 			self->colType = ColClass_Hurt | ColSize_8x8_A;
 
@@ -101,15 +101,12 @@ void LavaBall(Object* self)
 					if(self->y >= VAR_W(self, origYW))
 						self->routine = Routine_Delete;
 
-					if(self->velY < 0)
-						BSET(self->status, ObjStatus_Air);
-					else
-						BCLR(self->status, ObjStatus_Air);
+					Obj_SetInAir(self, self->velY < 0);
 					break;
 
 				case Subtype_Up:
 					// moves up until it hits the ceiling
-					BSET(self->status, ObjStatus_Air);
+					Obj_SetInAir(self);
 
 					if(ObjHitCeiling(self) < 0)
 					{
@@ -121,7 +118,7 @@ void LavaBall(Object* self)
 
 				case Subtype_Down:
 					// moves down until it hits the floor
-					BCLR(self->status, ObjStatus_Air);
+					Obj_SetNotInAir(self);
 
 					if(ObjFloorDist(self, &dist, nullptr) < 0)
 					{
@@ -133,7 +130,7 @@ void LavaBall(Object* self)
 
 				case Subtype_Left:
 					// moves left until it hits a wall
-					BSET(self->status, ObjStatus_Flip);
+					Obj_SetFlipped(self);
 
 					if(ObjHitWallLeft(self, -8) < 0)
 					{
@@ -145,7 +142,7 @@ void LavaBall(Object* self)
 
 				case Subtype_Right:
 					// moves right until it hits a wall
-					BCLR(self->status, ObjStatus_Flip);
+					Obj_SetNotFlipped(self);
 
 					if(ObjHitWallRight(self, 8) < 0)
 					{

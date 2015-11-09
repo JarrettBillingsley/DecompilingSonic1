@@ -21,7 +21,7 @@ void SonicPlayer(Object* self)
 			self->gfx = GFX_Sonic;
 			self->priority = 2;
 			self->actWid = 24;
-			self->render = ObjRender_LayerNormal;
+			Obj_SetLayerNormal(self);
 			v_sonspeedmax = 0xC00;
 			v_sonspeedacc = 0x1C;
 			v_sonspeeddec = 0x80;
@@ -199,19 +199,19 @@ void Sonic_Loops(Object* self)
 		else if(chunk == v_256loop1 || chunk == v_256loop2)
 		{
 			if(Player_IsInAir() || HIWORD(self->x) < 44)
-				BCLR(self->render, ObjRender_Behind);
+				Obj_SetNotBehind(self);
 			else if(HIWORD(self->x) >= 112)
-				BSET(self->render, ObjRender_Behind);
-			else if(BTST(self->render, ObjRender_Behind))
+				Obj_SetBehind(self);
+			else if(Obj_IsBehind(self))
 			{
 				if(self->angle >= 0x80)
-					BCLR(self->render, ObjRender_Behind);
+					Obj_SetNotBehind(self);
 			}
 			else if(self->angle > 0 && self->angle <= 0x80)
-				BSET(self->render, ObjRender_Behind);
+				Obj_SetBehind(self);
 		}
 		else
-			BCLR(self->render, ObjRender_Behind);
+			Obj_SetNotBehind(self);
 	}
 }
 

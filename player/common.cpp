@@ -1,67 +1,36 @@
-bool Player_IsFlipped()
-{
-	return BTST(v_player->status, ObjStatus_Flip);
-}
+bool Player_IsFlipped   () { return Obj_IsFlipped(v_player);    }
+bool Player_IsInAir     () { return Obj_IsInAir(v_player);      }
+bool Player_IsRolling   () { return Obj_IsRolling(v_player);    }
+bool Player_IsStanding  () { return Obj_IsStanding(v_player);   }
+bool Player_IsJumping   () { return Obj_IsJumping(v_player);    }
+bool Player_IsPushing   () { return Obj_IsPushing(v_player);    }
+bool Player_IsUnderwater() { return Obj_IsUnderwater(v_player); }
 
-bool Player_IsInAir()
-{
-	return BTST(v_player->status, ObjStatus_Air);
-}
+void Player_SetFlipped   (bool val = true) { Obj_SetFlipped   (v_player, val); }
+void Player_SetInAir     (bool val = true) { Obj_SetInAir     (v_player, val); }
+void Player_SetRolling   (bool val = true) { Obj_SetRolling   (v_player, val); }
+void Player_SetStanding  (bool val = true) { Obj_SetStanding  (v_player, val); }
+void Player_SetJumping   (bool val = true) { Obj_SetJumping   (v_player, val); }
+void Player_SetPushing   (bool val = true) { Obj_SetPushing   (v_player, val); }
+void Player_SetUnderwater(bool val = true) { Obj_SetUnderwater(v_player, val); }
 
-bool Player_IsUnderwater()
-{
-	return BTST(v_player->status, ObjStatus_Underwater);
-}
+void Player_SetNotFlipped()    { Obj_SetNotFlipped(v_player);    }
+void Player_SetNotInAir()      { Obj_SetNotInAir(v_player);      }
+void Player_SetNotRolling()    { Obj_SetNotRolling(v_player);    }
+void Player_SetNotStanding()   { Obj_SetNotStanding(v_player);   }
+void Player_SetNotJumping()    { Obj_SetNotJumping(v_player);    }
+void Player_SetNotPushing()    { Obj_SetNotPushing(v_player);    }
+void Player_SetNotUnderwater() { Obj_SetNotUnderwater(v_player); }
 
-bool Player_IsDead()
-{
-	return v_player->routine >= PlayerRoutine_Dead;
-}
+bool Player_IsDead()         { return v_player->routine >= PlayerRoutine_Dead; }
+bool Player_IsControllable() { return v_player->routine < PlayerRoutine_Hurt;  }
 
-bool Player_IsControllable()
-{
-	return v_player->routine < PlayerRoutine_Hurt;
-}
+void Player_SetHurt() { v_player->routine = PlayerRoutine_Hurt; }
+void Player_SetDead() { v_player->routine = PlayerRoutine_Dead; }
 
-void Player_SetHurt()
-{
-	v_player->routine = PlayerRoutine_Hurt;
-}
-
-void Player_SetDead()
-{
-	v_player->routine = PlayerRoutine_Dead;
-}
-
-void Player_SetInAir()
-{
-	BSET(v_player->status, ObjStatus_Air);
-}
-
-void Player_SetUnderwater()
-{
-	BSET(v_player->status, ObjStatus_Underwater);
-}
-
-void Player_SetAboveWater()
-{
-	BCLR(v_player->status, ObjStatus_Underwater);
-}
-
-void Player_SetAnimFloat()
-{
-	v_player->anim = 0xF;
-}
-
-void Player_SetAnimDrowning()
-{
-	v_player->anim = 0x17;
-}
-
-void Player_SetAnimSlide()
-{
-	v_player->anim = 0x1F;
-}
+void Player_SetAnimFloat()    { v_player->anim = 0xF;  }
+void Player_SetAnimDrowning() { v_player->anim = 0x17; }
+void Player_SetAnimSlide()    { v_player->anim = 0x1F; }
 
 //                       a0             a2
 void Player_Hurt(Object* player, Object* obj)

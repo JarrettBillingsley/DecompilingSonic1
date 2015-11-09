@@ -57,10 +57,10 @@ void Sonic_Roll(Object* self)
 // This should be called Sonic_Roll..
 void Sonic_ChkRoll(Object* self)
 {
-	if(BTST(self->status, ObjStatus_Rolling))
+	if(Player_IsRolling())
 		return;
 
-	BSET(self->status, ObjStatus_Rolling);
+	Player_SetRolling();
 	self->height = 14;
 	self->width = 7;
 	self->anim = PlayerAnim_Roll;

@@ -152,7 +152,8 @@ void DrownCount(Object* self)
 			self->routine = Routine_BubbleExpanding;
 			self->map = Map_Bub;
 			self->gfx = GFX_Bubble;
-			self->render = ObjRender_Visible | ObjRender_Behind;
+			Obj_SetVisible(self);
+			Obj_SetBehind(self);
 			self->actWid = 16;
 			self->priority = 1;
 
@@ -357,7 +358,8 @@ void CheckNumberBubbleConversion(Object* self)
 	if(VAR_W(self, frameTimerW) != 0 && TimerZero(VAR_W(self, frameTimerW), NumberBubble_Timer2) && self->anim < 7)
 	{
 		self->velY = 0;
-		self->render = ObjRender_Visible; // makes it screen-relative positioned
+		Obj_SetVisible(self);
+		Obj_SetLayerScreen(self);
 		self->x = self->x - v_screenposx + 128;
 		self->screenY = self->y - v_screenposy + 128;
 		self->routine = Routine_NumberTransition;

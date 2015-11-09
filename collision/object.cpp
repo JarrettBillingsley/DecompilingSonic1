@@ -101,11 +101,11 @@ void React_Enemy(Object* player, Object* obj)
 
 		// Did we finish him off?
 		if(DecToZero(obj->colProp))
-			BSET(obj->status, ObjStatus_Dead);
+			Obj_SetDead(obj);
 	}
 	else
 	{
-		BSET(obj->status, ObjStatus_Dead);
+		Obj_SetDead(obj);
 
 		// Hopping on successive things increases point bonus
 		auto pointsIdx = v_itembonus > 6 ? 6 : v_itembonus;
@@ -140,7 +140,7 @@ void React_Special(Object* player, Object* obj, int ydiff, int playerLeft)
 		// Is the player close enough to the top of the Yadrin?
 		if(ydiff < 8)
 		{
-			auto spikeLeft = obj->x - (Object_IsFlipped(obj) ? 4 : 20);
+			auto spikeLeft = obj->x - (Obj_IsFlipped(obj) ? 4 : 20);
 			auto spikeRight = spikeLeft + 24;
 			auto leftDiff = spikeLeft - playerLeft;
 
@@ -161,7 +161,7 @@ void React_Special(Object* player, Object* obj, int ydiff, int playerLeft)
 
 void React_Caterkiller(Object* player, Object* obj)
 {
-	BSET(obj->status, ObjStatus_Dead);
+	Obj_SetDead(obj);
 	React_ChkHurt(player, obj);
 }
 

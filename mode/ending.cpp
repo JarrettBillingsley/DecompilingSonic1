@@ -40,7 +40,7 @@ void GM_Ending()
 		f_debugmode = true;
 
 	v_player->id = ID_SonicPlayer;
-	v_player->status |= 1; // face left
+	Player_SetFlipped();
 	f_lockctrl = true;
 	v_jpadhold2 |= Buttons_L;
 	v_player->inertia = 0xF800;

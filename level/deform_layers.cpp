@@ -69,9 +69,9 @@ void ScrollHoriz()
 
 void ScrollVertical()
 {
-	auto diffY = v_player->y - v_screenposy - (BTST(v_player->status, ObjStatus_Rolling) ? 5 : 0);
+	auto diffY = v_player->y - v_screenposy - (Player_IsRolling() ? 5 : 0);
 
-	if(BTST(v_player->status, ObjStatus_Air))
+	if(Player_IsInAir())
 	{
 		diffY += 32 - v_lookshift;
 

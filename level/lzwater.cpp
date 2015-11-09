@@ -214,7 +214,7 @@ void LZDoWindTunnel(ushort* coords)
 				v_player->velX = 0x400;
 				v_player->velY = 0;
 				Player_SetAnimFloat();
-				BSET(v_player->status, ObjStatus_Air);
+				Player_SetInAir();
 
 				if(v_jpadhold2 & Buttons_Up)
 					v_player->y--;
@@ -239,12 +239,7 @@ void LZWaterSlides()
 			if(chunk == SlideChunks[i])
 			{
 				v_player->inertia = SlideVelocities[i] << 8;
-
-				if(v_player->inertia >= 0)
-					BCLR(v_player->status, ObjStatus_Flip);
-				else
-					BSET(v_player->status, ObjStatus_Flip);
-
+				Player_SetFlipped(v_player->inertia < 0);
 				Player_SetAnimSlide();
 				f_jumponly = true;
 

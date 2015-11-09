@@ -40,7 +40,7 @@ void Pole(Object* self)
 			self->routine = Routine_Action;
 			self->map = Map_Pole;
 			self->gfx = GFX_Pole;
-			self->render = ObjRender_LayerNormal;
+			Obj_SetLayerNormal(self);
 			self->actWid = 8;
 			self->priority = 4;
 			self->colType = ColClass_Special | ColSize_4x32;

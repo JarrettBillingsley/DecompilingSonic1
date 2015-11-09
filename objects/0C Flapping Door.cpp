@@ -42,7 +42,7 @@ void FlapDoor(Object* self)
 			self->routine = Routine_Main;
 			self->map = Map_Flap;
 			self->gfx = GFX_FlapDoor;
-			self->render |= ObjRender_LayerNormal;
+			Obj_SetLayerNormal(self);
 			self->actWid = 40;
 			VAR_W(self, flapTimeW) = self->subtype * 60;
 			// fall through

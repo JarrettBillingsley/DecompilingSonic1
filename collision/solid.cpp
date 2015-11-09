@@ -12,7 +12,7 @@ int SolidObject(Object* self, int width, int jumpHH, int walkHH, int objX)
 	if(!self->solid)
 		return Solid_ChkEnter(self, width, jumpHH);
 
-	if(!BTST(v_player->status, ObjStatus_Air))
+	if(!Player_IsInAir())
 	{
 		auto dist = v_player->x - self->x + width;
 
@@ -23,9 +23,8 @@ int SolidObject(Object* self, int width, int jumpHH, int walkHH, int objX)
 		}
 	}
 
-	// clear standing flags
-	BCLR(v_player->status, ObjStatus_StandingOn);
-	BCLR(self->status, ObjStatus_StandingOn);
+	Player_SetNotStanding();
+	Obj_SetNotStanding(self);
 	self->solid = 0;
 	return 0;
 }
@@ -36,7 +35,7 @@ int SolidObject71(Object* self, int width, int objX)
 	if(!self->solid)
 		return Solid_Common(self);
 
-	if(!BTST(v_player->status, ObjStatus_Air))
+	if(!Player_IsInAir())
 	{
 		auto dist = v_player->x - self->x + width;
 
@@ -47,9 +46,8 @@ int SolidObject71(Object* self, int width, int objX)
 		}
 	}
 
-	// clear standing flags
-	BCLR(v_player->status, ObjStatus_StandingOn);
-	BCLR(self->status, ObjStatus_StandingOn);
+	Player_SetNotStanding();
+	Obj_SetNotStanding(self);
 	self->solid = 0;
 	return 0;
 }
@@ -66,7 +64,7 @@ int SolidObject2F(Object* self, int width, int jumpHH, byte* heightArray)
 		return Solid_Ignore(self);
 
 	// flipped horiz?
-	if(BTST(self->render, ObjRender_HorizFlip))
+	if(Obj_IsHorizFlip(self))
 		dist = ~dist + width * 2;
 
 	auto diff = self->y - heightArray[dist >> 1] - heightArray[0]
@@ -82,7 +80,7 @@ int SolidObject2F(Object* self, int width, int jumpHH, byte* heightArray)
 //d4                        a0         d1          d2
 int Solid_ChkEnter(Object* self, int width, int jumpHH)
 {
-	if(BTST(self->render, ObjRender_Visible))
+	if(Obj_IsVisible(self))
 		return Solid_Common(self, width, jumpHH)
 	else
 		return Solid_Ignore(self);
@@ -135,21 +133,21 @@ int Solid_Common(Object* self, int width, int jumpHH)
 
 		v_player->x -= distX; // push out of object
 
-		if(BTST(v_player->status, ObjStatus_Air)) // in air?
+		if(Player_IsInAir())
 		{
-			BCLR(self->status, ObjStatus_Pushing);
-			BCLR(v_player->status, ObjStatus_Pushing);
+			Obj_SetNotPushing(self);
+			Player_SetNotPushing();
 		}
 		else
 		{
-			BSET(v_player->status, ObjStatus_Pushing);
-			BSET(self->status, ObjStatus_Pushing);
+			Player_SetPushing();
+			Obj_SetPuhsing(self);
 		}
 	}
 	else
 	{
-		BCLR(self->status, ObjStatus_Pushing);
-		BCLR(v_player->status, ObjStatus_Pushing);
+		Obj_SetNotPushing(self);
+		Player_SetNotPushing();
 	}
 
 	return 1;
@@ -158,11 +156,11 @@ int Solid_Common(Object* self, int width, int jumpHH)
 //d4                      a0
 int Solid_Ignore(Object* self)
 {
-	if(self->status & ObjStatus_Pushing) // being pushed?
+	if(Obj_IsPushing(self)) // being pushed?
 	{
 		v_player->anim = SonicAnim::Run;
-		BCLR(self->status, ObjStatus_Pushing);
-		BCLR(v_player->status, ObjStatus_Pushing);
+		Obj_SetNotPushing(self);
+		Player_SetNotPushing();
 	}
 
 	return 0;
@@ -173,7 +171,7 @@ void Solid_TopBottom(Object* self, int distY)
 {
 	if(distY < 0)
 	{
-		if(v_player->velY == 0 && !BTST(v_player->status, ObjStatus_Air))
+		if(v_player->velY == 0 && !Player_IsInAir())
 			Player_Kill(v_player); // squisho
 		else if(v_player->velY < 0 && distY <= 0) // moving down and sonic is above?
 		{
@@ -196,7 +194,7 @@ void Solid_TopBottom(Object* self, int distY)
 			v_player->y -= (distY + 1); // push out of object
 			Solid_ResetFloor(self);
 			self->solid = 2;
-			BSET(self->status, ObjStatus_StandingOn); // stand on it!
+			Obj_SetStanding(self);
 			return -1; // top/bottom
 		}
 
@@ -209,10 +207,10 @@ void Solid_TopBottom(Object* self, int distY)
 //                             a0
 void Solid_ResetFloor(Object* self)
 {
-	if(BTST(v_player->status, ObjStatus_StandingOn)) // sonic standing on something?
+	if(Player_IsStanding())
 	{
 		auto stoodOn = v_objspace[VAR_B(v_player, 0x3D)];
-		BCLR(stoodOn->status, ObjStatus_StandingOn);
+		Obj_SetNotStanding(stoodOn);
 		stoodOn->solid = 0;
 	}
 
@@ -221,9 +219,9 @@ void Solid_ResetFloor(Object* self)
 	v_player->velY = 0;
 	v_player->inertia = v_player->velX;
 
-	if(BTST(v_player->status, ObjStatus_Air)) // in air?
+	if(Player_IsInAir()) // in air?
 		Player_ResetOnFloor(v_player);
 
-	BSET(v_player->status, ObjStatus_StandingOn);
-	BSET(self->status, ObjStatus_StandingOn);
+	Player_SetStanding();
+	Obj_SetStanding(self);
 }

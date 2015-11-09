@@ -21,13 +21,13 @@ ushort* BuildSprites()
 			if(self == nullptr)
 				continue;
 
-			BCLR(self->render, ObjRender_Visible);
+			Obj_SetNotVisible(self);
 			int spriteX, spriteY;
 
-			if(self->render & ObjRender_Layer)
+			if(Obj_Layer(self) != 0)
 			{
-				auto offsX = *BldSpr_ScrPos[(self->render & ObjRender_Layer) >> 1];
-				auto offsY = *BldSpr_ScrPos[((self->render & ObjRender_Layer) >> 1) + 1];
+				auto offsX = *BldSpr_ScrPos[Obj_Layer(self) >> 1];
+				auto offsY = *BldSpr_ScrPos[(Obj_Layer(self) >> 1) + 1];
 
 				spriteX = self->x - offsX;
 
@@ -36,7 +36,7 @@ ushort* BuildSprites()
 
 				spriteX += 128;
 
-				if(BTST(self->render, ObjRender_Something) != 0)
+				if(Obj_IsSomething(self))
 				{
 					spriteY = self->y - offsY;
 
@@ -62,7 +62,7 @@ ushort* BuildSprites()
 			auto mapping = self->map;
 			int numPieces = 0;
 
-			if(BTST(self->render, ObjRender_SmashFragment))
+			if(Obj_IsSmashFragment(self))
 				EnqueueSprite(self->gfx, mapping, numPieces, spriteX, spriteY, self->render, spriteCount, spriteBuffer);
 			else
 			{
@@ -73,7 +73,7 @@ ushort* BuildSprites()
 					EnqueueSprite(self->gfx, mapping, numPieces, spriteX, spriteY, self->render, spriteCount, spriteBuffer);
 			}
 
-			BSET(self->render, ObjRender_Visible);
+			Obj_SetVisible(self);
 		}
 	}
 
@@ -89,7 +89,7 @@ ushort* BuildSprites()
 }
 
 // sub_D750
-//                          a0            a1             d1             d3           d2            d4               d5                  a2
+//                        a0            a1             d1             d3           d2            d4               d5                  a2
 void EnqueueSprite(ushort gfx, byte* mapping, int numPieces, int spriteX, int spriteY, int renderFlags, int& spriteCount, ushort*& spriteBuffer)
 {
 	if(BTST(renderFlags, ObjRender_HorizFlip))

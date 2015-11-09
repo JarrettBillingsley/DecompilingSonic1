@@ -299,7 +299,7 @@ ushort* FindNearestTile(Object* self, int objBottom, int objX)
 	{
 		chunk &= 0x7F;
 
-		if(BTST(self->render, ObjRender_Behind) && chunk == 0x28)
+		if(Obj_IsBehind(self) && chunk == 0x28)
 			chunk = (chunk == 0x28) : 0x51 : chunk + 1; // some weird hardcoded thing
 	}
 

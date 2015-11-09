@@ -62,7 +62,7 @@ void Lamppost(Object* self)
 			self->routine = Routine_Blue;
 			self->map = Map_Lamp;
 			self->gfx = GFX_Lamp
-			self->render = ObjRender_LayerNormal;
+			Obj_SetLayerNormal(self);
 			self->actWid = 8;
 			self->priority = 5;
 
@@ -99,7 +99,7 @@ void Lamppost(Object* self)
 					VAR_W(obj, origYW) = self->y - Lamppost_BallYOffs;
 					obj->map = Map_Lamp;
 					obj->gfx = GFX_Lamp;
-					obj->render = ObjRender_LayerNormal;
+					Obj_SetLayerNormal(obj);
 					obj->actWid = 8;
 					obj->priority = 4;
 					obj->frame = Frame_RedBallOnly;

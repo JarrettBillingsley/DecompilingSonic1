@@ -74,7 +74,7 @@ void HUD(Object* self)
 			self->screenY = HUD_ScreenY;
 			self->map = Map_HUD;
 			self->gfx = GFX_HUD;
-			self->render = ObjRender_LayerScreen;
+			Obj_SetLayerScreen(self);
 			self->priority = 0;
 			// fall through
 		case Routine_Main:
