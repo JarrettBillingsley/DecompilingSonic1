@@ -415,11 +415,11 @@ ushort v_title_dcount;                   // 0xFFFFFFE4	; number of times the d-p
 ushort v_title_ccount;                   // 0xFFFFFFE6	; number of times C is pressed on title screen (2 bytes)
                                          // 0xFFFFFFE8
                                          // 0xFFFFFFE9
-ushort v_FFFFFFEA;                       // 0xFFFFFFEA  ; unused; set to 0 in one spot and never touched
-                                         // 0xFFFFFFEC
-                                         // 0xFFFFFFED
-                                         // 0xFFFFFFEE
-                                         // 0xFFFFFFEF
+ushort v_w_FFEA;                         // 0xFFFFFFEA  ; unused; set to 0 in one spot and never touched
+ubyte v_b_FFEC;                          // 0xFFFFFFEC  ; pretty sure these were used in debugging collision and just got left in
+ubyte v_b_FFED;                          // 0xFFFFFFED  ; "
+ubyte v_b_FFEE;                          // 0xFFFFFFEE  ; "
+ubyte v_b_FFEF;                          // 0xFFFFFFEF  ; "
 ushort f_demo;                           // 0xFFFFFFF0	; demo mode flag (0 = no; 1 = yes; 0x8001 = ending) (2 bytes)
 ushort v_demonum;                        // 0xFFFFFFF2	; demo level number (not the same as the level number) (2 bytes)
 ushort v_creditsnum;                     // 0xFFFFFFF4	; credits index number (2 bytes)

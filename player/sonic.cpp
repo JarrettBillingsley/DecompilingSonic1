@@ -37,6 +37,8 @@ void SonicPlayer(Object* self)
 			{
 				if(Player_IsInAir())
 				{
+					// In the original, this is split into two states, Jump and Jump2, where Jump2 is for when you're
+					// curled into a ball in midair. The code for these two states is identical, so I merged them.
 					Sonic_JumpHeight(self);
 					Sonic_JumpDirection(self);
 					Sonic_LevelBound(self);
@@ -244,5 +246,53 @@ void Sonic_LevelBound(Object* self)
 		}
 		else
 			Player_Kill(self, self);
+	}
+}
+
+void Sonic_Water(Object* self)
+{
+	if(v_zone != Zone_LZ)
+		return;
+
+	if(self->y > v_waterpos1)
+	{
+		if(!Player_IsUnderwater())
+		{
+			Player_SetUnderwater();
+			ResumeMusic();
+
+			v_objspace[13].id = ID_DrownCount;
+			v_objspace[13].subtype = 0x81; // master
+			v_sonspeedmax = 0x300;
+			v_sonspeedacc = 6;
+			v_sonspeeddec = 0x40;
+			self->velX /= 2;
+			self->velY /= 4;
+
+			if(self->velY != 0)
+			{
+				v_objspace[12].id = ID_Splash;
+				PlaySound_Special(SFX_Splash);
+			}
+		}
+	}
+	else if(Player_IsUnderwater())
+	{
+		Player_SetAboveWater();
+		ResumeMusic();
+		v_sonspeedmax = 0x600;
+		v_sonspeedacc = 0xC;
+		v_sonspeeddec = 0x80;
+		self->velY *= 2;
+
+		if(self->velY != 0)
+		{
+			v_objspace[12].id = ID_Splash;
+
+			if(self->velY < -0x1000)
+				self->velY = -0x1000;
+
+			PlaySound_Special(SFX_Splash);
+		}
 	}
 }

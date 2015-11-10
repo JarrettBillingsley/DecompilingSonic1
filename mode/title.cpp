@@ -39,7 +39,7 @@ void GM_Title()
 	v_lastlamp = 0;
 	v_debuguse = 0;
 	f_demo = 0;
-	v_FFFFFFEA = 0;
+	v_w_FFEA = 0;
 	v_zone = 0;
 	v_pcyc_time = 0;
 
