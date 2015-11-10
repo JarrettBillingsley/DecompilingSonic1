@@ -102,7 +102,7 @@ void Player_Kill(Object* player, Object* killer)
 	player->velY = -0x700;
 	player->velX = 0;
 	player->inertia = 0;
-	VAR_W(player, 0x38) = player->y;
+	VAR_W(player, Player_DeathOrigYW) = player->y;
 	player->anim = Anim::Death;
 	BSET(player->gfx, 0x80);
 

@@ -29,7 +29,7 @@ int Sonic_CheckUp(Object* self, int* outAngle, int* otherDist)
 	int dist1, dist2;
 	FindFloor(self, (self->y - self->height) ^ 0xF, self->x + self->width, 0xE, 0x1000, -16, &dist1, &v_anglebuffer)
 	FindWall(self, (self->y - self->height) ^ 0xF, self->x - self->width, 0xE, 0x1000, -16, &dist2, &v_b_F76A)
-	return Sonic_CheckCommon(dist1, dist2, -0x80, outAngle, otherDist);
+	return Sonic_CheckCommon(dist1, dist2, 0x80, outAngle, otherDist);
 }
 
 int Sonic_CheckRight(Object* self, int* outAngle, int* otherDist)
@@ -37,7 +37,7 @@ int Sonic_CheckRight(Object* self, int* outAngle, int* otherDist)
 	int dist1, dist2;
 	FindWall(self, self->y - self->width, self->x + self->height, 0xE, 0, 16, &dist1, &v_anglebuffer)
 	FindWall(self, self->y + self->width, self->x + self->height, 0xE, 0, 16, &dist2, &v_b_F76A)
-	return Sonic_CheckCommon(dist1, dist2, -0x40, outAngle, otherDist);
+	return Sonic_CheckCommon(dist1, dist2, 0xC0, outAngle, otherDist);
 }
 
 // aka "Sonic_HitFloor"
@@ -75,11 +75,10 @@ int Sonic_CheckCommon(int dist1, int dist2, int defaultAngle, int* outAngle, int
 //d1                           a0          d3
 int Sonic_HitWallLeft(Object* self, int* outAngle)
 {
-	return Sonic_HitWallLeft2(self, self->x, self->y, outAngle);
+	return Sonic_GetLeftWallDistAngle(self, self->x, self->y, outAngle);
 }
 
-// loc_1504A:
-int Sonic_HitWallLeft2(Object* self, int x, int y, int* outAngle)
+int Sonic_GetLeftWallDistAngle(Object* self, int x, int y, int* outAngle)
 {
 	int dist;
 	FindWall(self, y, (x - 10) ^ 0xF, 0xE, 0x800, -16, &dist, &v_anglebuffer);
@@ -93,11 +92,10 @@ int Sonic_HitWallLeft2(Object* self, int x, int y, int* outAngle)
 //d1                            a0           d3
 int Sonic_HitWallRight(Object* self, int* outAngle)
 {
-	return Sonic_HitWallRight2(self, self->x, self->y, outAngle);
+	return Sonic_GetRightWallDistAngle(self, self->x, self->y, outAngle);
 }
 
-// loc_14EBC:
-int Sonic_HitWallRight2(Object* self, int x, int y, int* outAngle)
+int Sonic_GetRightWallDistAngle(Object* self, int x, int y, int* outAngle)
 {
 	int dist;
 	FindWall(self, y, x + 10, 0xE, 0, 16, &dist, &v_anglebuffer);
@@ -109,7 +107,7 @@ int Sonic_HitWallRight2(Object* self, int x, int y, int* outAngle)
 }
 
 //d1                   a0      d3     d2          d3
-int loc_14DF0(Object* self, int x, int y, int* outAngle)
+int Sonic_GetFloorDistAngle(Object* self, int x, int y, int* outAngle)
 {
 	int dist;
 	FindFloor(self, y + 10, x, 0xE, 0, 16, &dist, &v_anglebuffer);
@@ -121,7 +119,7 @@ int loc_14DF0(Object* self, int x, int y, int* outAngle)
 }
 
 //d1                   a0      d3     d2          d3
-int loc_14F7C(Object* self, int x, int y, int* outAngle)
+int Sonic_GetCeilingDistAngle(Object* self, int x, int y, int* outAngle)
 {
 	int dist;
 	FindFloor(self, (y - 10) ^ 0xF, x, 0xE, 0x1000, -16, &dist, &v_anglebuffer);
@@ -134,10 +132,13 @@ int loc_14F7C(Object* self, int x, int y, int* outAngle)
 
 void Sonic_SlopeRepel(Object* self)
 {
-	if(VAR_B(self, 0x38) == 0 && TimerZero(VAR_W(self, 0x3E)) && (self->angle & 0x20) & 0xC0 != 0 && abs(self->inertia) < 0x280)
+	if(VAR_B(self, Player_DeathOrigYW) == 0 &&
+		TimerZero(VAR_W(self, Player_SomeTimerW)) &&
+		(self->angle & 0x20) & 0xC0 != 0 &&
+		abs(self->inertia) < 0x280)
 	{
 		self->inertia = 0;
 		Player_SetInAir();
-		VAR_W(self, 0x3E) = OneSecond / 2;
+		VAR_W(self, Player_SomeTimerW) = OneSecond / 2;
 	}
 }

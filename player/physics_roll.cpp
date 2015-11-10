@@ -5,7 +5,7 @@ void Sonic_RollSpeed(Object* self)
 
 	if(!f_jumponly)
 	{
-		if(VAR_W(self, 0x3E) == 0)
+		if(VAR_W(self, Player_SomeTimerW) == 0)
 		{
 			if(v_jpadhold2 & Buttons_L)
 			{
@@ -61,7 +61,7 @@ void Sonic_RollSpeed(Object* self)
 	auto sine = CalcSine(self->angle, &cosine);
 	self->velY = (self->inertia * sine) / 256;
 	self->velX = clamp((self->inertia * cosine) / 256, -0x1000, 0x1000);
-	loc_1300C(self);
+	Sonic_StickToGround(self);
 }
 
 void Sonic_RollRepel(Object* self)

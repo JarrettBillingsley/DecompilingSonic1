@@ -76,8 +76,8 @@ void SonicPlayer(Object* self)
 			Sonic_Display(self);
 			Sonic_RecordPosition(self);
 			Sonic_Water(self);
-			VAR_B(self, 0x36) = v_anglebuffer;
-			VAR_B(self, 0x37) = v_b_F76A;
+			VAR_B(self, Player_LastAngle1B) = v_anglebuffer;
+			VAR_B(self, Player_LastAngle2B) = v_b_F76A;
 
 			if(f_wtunnelmode && self->anim == 0)
 				self->anim = self->nextAni;
@@ -116,7 +116,7 @@ void SonicPlayer(Object* self)
 			break;
 
 		case PlayerRoutine_LevelReset:
-			if(TimerZero(VAR_W(self, 0x3A)))
+			if(TimerZero(VAR_W(self, Player_DeathResetTimerW)))
 				f_restart = true;
 			break;
 	}
@@ -154,7 +154,7 @@ void GameOver(Object* self)
 
 		if(v_lives == 0)
 		{
-			VAR_W(self, 0x3A) = 0;
+			VAR_W(self, Player_DeathResetTimerW) = 0;
 			v_objspace[2].id = ID_GameOverCard;
 			v_objspace[3].id = ID_GameOverCard;
 			v_objspace[3].frame = 1;
@@ -162,7 +162,7 @@ void GameOver(Object* self)
 		}
 		else if(f_timeover)
 		{
-			VAR_W(self, 0x3A) = 0;
+			VAR_W(self, Player_DeathResetTimerW) = 0;
 			v_objspace[2].id = ID_GameOverCard;
 			v_objspace[3].id = ID_GameOverCard;
 			v_objspace[2].frame = 2;
@@ -170,7 +170,7 @@ void GameOver(Object* self)
 		}
 		else
 		{
-			VAR_W(self, 0x3A) = OneSecond;
+			VAR_W(self, Player_DeathResetTimerW) = OneSecond;
 			return;
 		}
 

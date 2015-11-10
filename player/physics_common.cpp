@@ -11,8 +11,8 @@ void Sonic_Jump(Object* self)
 			self->velY += (jumpVel * sine) / 256;
 			Player_SetInAir();
 			Player_SetNotPushing();
-			VAR_B(self, 0x3C) = 1;
-			VAR_B(self, 0x38) = 0;
+			VAR_B(self, Player_IsJumpingB) = 1;
+			VAR_B(self, Player_DeathOrigYW) = 0;
 			PlaySound_Special(SFX_Jump);
 			self->height = 19;
 			self->width = 9;
@@ -73,7 +73,7 @@ void Sonic_WalkFloor(Object* self)
 	}
 	else if(dist1 > 0)
 	{
-		if(dist1 <= 14 || VAR_B(self, 0x38) != 0)
+		if(dist1 <= 14 || VAR_B(self, Player_DeathOrigYW) != 0)
 			self->y += dist1; // move down to stick to ground
 		else
 		{
@@ -98,7 +98,7 @@ void Sonic_WalkVertR(Object* self)
 	}
 	else if(dist1 > 0)
 	{
-		if(dist1 <= 14 || VAR_B(self, 0x38) != 0)
+		if(dist1 <= 14 || VAR_B(self, Player_DeathOrigYW) != 0)
 			self->x += dist1; // move right to stick to wall
 		else
 		{
@@ -123,7 +123,7 @@ void Sonic_WalkCeiling(Object* self)
 	}
 	else if(dist1 > 0)
 	{
-		if(dist1 <= 14 || VAR_B(self, 0x38) != 0)
+		if(dist1 <= 14 || VAR_B(self, Player_DeathOrigYW) != 0)
 			self->y -= dist1; // move up to stick to ceiling
 		else
 		{
@@ -148,7 +148,7 @@ void Sonic_WalkVertL(Object* self)
 	}
 	else if(dist1 > 0)
 	{
-		if(dist1 <= 14 || VAR_B(self, 0x38) != 0)
+		if(dist1 <= 14 || VAR_B(self, Player_DeathOrigYW) != 0)
 			self->x -= dist1; // move left to stick to wall
 		else
 		{
@@ -179,7 +179,7 @@ int Sonic_Angle(Object* self, int dist1, int dist2)
 }
 
 
-void loc_1300C(Object* self)
+void Sonic_StickToGround(Object* self)
 {
 	if((self->angle + 0x40) >= 0 && self->inertia != 0)
 	{
@@ -228,17 +228,17 @@ int Sonic_WalkSpeed(Object* self, int angle)
 	angle2 &= 0xC0;
 
 	if(angle2 == 0)
-		return loc_14DF0(self, x, y, nullptr);
+		return Sonic_GetFloorDistAngle(self, x, y, nullptr);
 	else if(angle2 == 0x80)
-		return loc_14F7C(self, x, y, nullptr);
+		return Sonic_GetCeilingDistAngle(self, x, y, nullptr);
 	else
 	{
 		if((angle & 0x38) == 0)
 			y += 8;
 
 		if(angle2 == 0x40)
-			return Sonic_HitWallLeft2(self, x, y, nullptr);
+			return Sonic_GetLeftWallDistAngle(self, x, y, nullptr);
 		else
-			return Sonic_HitWallRight2(self, x, y, nullptr);
+			return Sonic_GetRightWallDistAngle(self, x, y, nullptr);
 	}
 }

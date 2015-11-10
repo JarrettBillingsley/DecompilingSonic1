@@ -1,6 +1,6 @@
 void Sonic_JumpHeight(Object* self)
 {
-	if(VAR_B(self, 0x3C))
+	if(VAR_B(self, Player_IsJumpingB))
 	{
 		auto accel = Player_IsUnderwater() ? -0x200 : -0x400;
 
@@ -249,6 +249,6 @@ void Sonic_ResetOnFloor(Object* self)
 		self->y -= 5;
 	}
 
-	VAR_B(self, 0x3C) = 0;
+	VAR_B(self, Player_IsJumpingB) = 0;
 	v_itembonus = 0;
 }

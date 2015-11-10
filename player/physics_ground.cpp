@@ -40,7 +40,7 @@ void Sonic_Move(Object* self)
 	{
 		bool isLooking = false;
 
-		if(VAR_W(self, 0x3E) == 0)
+		if(VAR_W(self, Player_SomeTimerW) == 0)
 		{
 			if(v_jpadhold2 & Buttons_L)
 				Sonic_MoveLeft(self);
@@ -68,7 +68,7 @@ void Sonic_Move(Object* self)
 	auto sine = CalcSine(self->angle, &cosine);
 	self->velX = (self->inertia >> 8) * cosine;
 	self->velY = (self->inertia >> 8) * sine;
-	loc_1300C(self);
+	Sonic_StickToGround(self);
 }
 
 void Sonic_ResetLookShift(Object* self)
@@ -109,13 +109,13 @@ bool Sonic_CheckBalancing(Object* self)
 
 		if(d1 >= 12)
 		{
-			if(VAR_B(self, 0x36) == 3)
+			if(VAR_B(self, Player_LastAngle1B) == 3)
 			{
 				Player_SetNotFlipped();
 				self->anim = PlayerAnim_Balance;
 				return true;
 			}
-			else if(VAR_B(self, 0x37) == 3)
+			else if(VAR_B(self, Player_LastAngle2B) == 3)
 			{
 				Player_SetFlipped();
 				self->anim = PlayerAnim_Balance;
