@@ -194,81 +194,78 @@ void SS_BGLoad()
 	TilemapToVRAM(gfxBuffer, 0x50000003, 63, 63);
 }
 
-const ubyte byte_4CB8[] = { 9, 0x28, 0x18, 0x10, 0x28, 0x18, 0x10, 0x30, 0x18, 8, 0x10, 0 };
-const ubyte byte_4CC4[] = { 6, 0x30, 0x30, 0x30, 0x28, 0x18, 0x18, 0x18 };
-const ubyte byte_4CCC[] = { 8, 2, 4, 0xFF, 2, 3, 8, 0xFF, 4, 2, 2, 3, 8, 0xFD, 4, 2, 2, 3, 2, 0xFF };
+const ubyte SS_BG_BubblesSections[] = { 10, 0x28, 0x18, 0x10, 0x28, 0x18, 0x10, 0x30, 0x18, 8, 0x10 };
+const ubyte SS_BG_CloudsSections[] = { 7, 0x30, 0x30, 0x30, 0x28, 0x18, 0x18, 0x18 };
+const byte SS_BG_BubblesOffsets[10][2] =
+{
+	{ 8,  2 },
+	{ 4, -2 },
+	{ 2,  3 },
+	{ 8, -2 },
+	{ 4,  2 },
+	{ 2,  3 },
+	{ 8, -3 },
+	{ 4,  2 },
+	{ 2,  3 },
+	{ 2, -2 },
+};
 
-// don't even pretend to know what's doing on in this
 void SS_BGAnimate()
 {
-	if(v_FFFFF7A0 == 0) // set in PalCycle_SS from the plane A nametable offset
-	{
-		v_bg1posy = 0;
-		v_bg1posy_dupx = 0;
-	}
+	if(v_ssbgstate == 0)
+		v_bg1posy = v_bg1posy_dupx = 0;
 
-	if(v_FFFFF7A0 < 8) // always true?
+	ushort* scrollPos;
+	ubyte* scrollSections;
+
+	// Precalculate the scroll values
+	if(v_ssbgstate < 4)
 	{
-		if(v_FFFFF7A0 == 6)
+		// Bubbles
+		if(v_ssbgstate == 3)
 		{
 			v_bg2posx++;
 			v_bg1posy++;
 			v_bg1posy_dupx = v_bg1posy;
 		}
 
-		d0 = WSWAP(-v_bg1posx) //w
-		a1 = byte_4CCC //b
-		a3 = v_ngfx_buffer //w
-
+		// Wobble each section in a sine pattern
 		for(int i = 0; i < 10; i++)
 		{
-			d0 = CalcSine((d0 & 0xFFFF0000) | a3[1]) //w (idx is w)
-			d2 = *a1++ //b
-			d0 *= d2
-			d0 >>= 8 // arithmetic
-			*a3++ = d0 //w
-			d2 = *a1++ //b
-			*a3 += d2 //w
+			v_ssbubblescroll[i * 2] = (CalcSine(a3[i * 2 + 1]) * SS_BG_BubblesOffsets[i][0]) / 256;
+			v_ssbubblescroll[i * 2 + 1] += SS_BG_BubblesOffsets[i][1];
 		}
 
-		a3 = v_ngfx_buffer //w
-		a2 = byte_4CB8
+		scrollPos = v_ssbubblescroll;
+		scrollSections = SS_BG_BubblesSections;
 	}
-	else // never taken?
+	else
 	{
-		if(v_FFFFF7A0 == 12)
+		// Clouds
+		if(v_ssbgstate == 6)
 		{
 			v_bg2posx--;
-			a3 = v_ngfx_buffer + 0x100 //l
-			d2 = 0x18000
 
-			for(int i = 0; i < 7; i++)
-			{
-				*a3 -= d2 //l
-				a3++
-				d2 -= 0x2000
-			}
+			// Scroll each section a decreasing amount
+			for(int i = 0, scrollSpeed = 0x18000; i < 7; i++, scrollSpeed -= 0x2000)
+				v_sscloudscroll[i] -= scrollSpeed;
 		}
 
-		a3 = v_ngfx_buffer + 0x100 //w
-		a2 = byte_4CC4 //b
+		scrollPos = v_sscloudscroll;
+		scrollSections = SS_BG_CloudsSections;
 	}
 
-	d0 = WSWAP(-v_bg2posx)
-	d3 = *a2++ //b
-	d2 = (-v_bg1posy & 0xFF) << 2 //w
+	// Write the scroll table
+	auto scrollTable = v_hscrolltablebuffer;
+	auto fgScroll = -v_bg2posx;
+	auto scrollIdx = -v_bg1posy & 0xFF;
 
-	for(; d3 >= 0; d3--)
+	for(int i = 0; i < scrollSections[0]; i++)
 	{
-		d0 = *a3++ //w
-		a3++
-		d1 = *a2++ - 1 //b
+		auto bgScroll = scrollPos[i * 2];
 
-		for(; d1 >= 0; d1--)
-		{
-			v_hscrolltablebuffer[d2] = d0 //l; idx is bytes
-			d2 = (d2 + 4) & 0x3FC //w
-		}
+		for(int j = 0; j < scrollSections[i + 1]; j++)
+			scrollTable[(scrollIdx++) & 0xFF] = (fgScroll << 16) | bgScroll;
 	}
 }
 

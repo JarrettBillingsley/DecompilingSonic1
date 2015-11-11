@@ -125,7 +125,7 @@ loc_1AEA:				; XREF: PalCycle_SBZ
 
 loc_1AF6:
 		move.b	d0,(a1)+
-		andi.w	#$F,d0
+		andi.w	#0xF,d0
 		add.w	d0,d0
 		movea.w	(a2)+,a0
 		movea.w	(a2)+,a3
@@ -163,7 +163,7 @@ loc_1B38:
 loc_1B52:
 		move.w	d0,(v_pcyc_num).w
 		add.w	d0,d0
-		lea	(v_pal_dry+$58).w,a1
+		lea	(v_pal_dry+0x58).w,a1
 		move.l	(a0,d0.w),(a1)+
 		move.w	4(a0,d0.w),(a1)
 
@@ -179,7 +179,7 @@ int PalCycle_Sega()
 	// TODO:
 		/*tst.b	(v_pcyc_time+1).w
 		bne.s	loc_206A
-		lea	(v_pal_dry+$20).w,a1
+		lea	(v_pal_dry+0x20).w,a1
 		lea	(Pal_Sega1).l,a0
 		moveq	#5,d1
 		move.w	(v_pcyc_num).w,d0
@@ -194,12 +194,12 @@ loc_2020:
 
 loc_202A:				; XREF: PalCycle_Sega
 		move.w	d0,d2
-		andi.w	#$1E,d2
+		andi.w	#0x1E,d2
 		bne.s	loc_2034
 		addq.w	#2,d0
 
 loc_2034:
-		cmpi.w	#$60,d0
+		cmpi.w	#0x60,d0
 		bhs.s	loc_203E
 		move.w	(a0)+,(a1,d0.w)
 
@@ -210,15 +210,15 @@ loc_203E:
 		move.w	(v_pcyc_num).w,d0
 		addq.w	#2,d0
 		move.w	d0,d2
-		andi.w	#$1E,d2
+		andi.w	#0x1E,d2
 		bne.s	loc_2054
 		addq.w	#2,d0
 
 loc_2054:
-		cmpi.w	#$64,d0
+		cmpi.w	#0x64,d0
 		blt.s	loc_2062
-		move.w	#$401,(v_pcyc_time).w
-		moveq	#-$C,d0
+		move.w	#0x401,(v_pcyc_time).w
+		moveq	#-0xC,d0
 
 loc_2062:
 		move.w	d0,(v_pcyc_num).w
@@ -231,8 +231,8 @@ loc_206A:				; XREF: loc_202A
 		bpl.s	loc_20BC
 		move.b	#4,(v_pcyc_time).w
 		move.w	(v_pcyc_num).w,d0
-		addi.w	#$C,d0
-		cmpi.w	#$30,d0
+		addi.w	#0xC,d0
+		cmpi.w	#0x30,d0
 		blo.s	loc_2088
 		moveq	#0,d0
 		rts
@@ -242,17 +242,17 @@ loc_2088:				; XREF: loc_206A
 		move.w	d0,(v_pcyc_num).w
 		lea	(Pal_Sega2).l,a0
 		lea	(a0,d0.w),a0
-		lea	(v_pal_dry+$04).w,a1
+		lea	(v_pal_dry+0x04).w,a1
 		move.l	(a0)+,(a1)+
 		move.l	(a0)+,(a1)+
 		move.w	(a0)+,(a1)
-		lea	(v_pal_dry+$20).w,a1
+		lea	(v_pal_dry+0x20).w,a1
 		moveq	#0,d0
-		moveq	#$2C,d1
+		moveq	#0x2C,d1
 
 loc_20A8:
 		move.w	d0,d2
-		andi.w	#$1E,d2
+		andi.w	#0x1E,d2
 		bne.s	loc_20B2
 		addq.w	#2,d0
 
@@ -267,106 +267,94 @@ loc_20BC:
 
 struct SSPalCycleData
 {
-	int delay;
-	uint planeAIdx;
-	uint planeBOffs;
-	uint something;
+	byte delay;
+	ubyte planeAIdx;
+	ubyte planeBOffs;
+	ubyte palOffs;
+	bool copyTo4E; // ~0x80
+	bool copyTo6E; // 0x01
+	bool isSecondary; // +10
 };
 
 const SSPalCycleData SSPalCycleStuff[] =
 {
-	// Delay, idx into SSPlaneAOffsets, Plane B Nametable offset, palette offset somethingorother
-	{  3, 0, 0x8407, 0x92 },
-	{  3, 0, 0x8407, 0x90 },
-	{  3, 0, 0x8407, 0x8E },
-	{  3, 0, 0x8407, 0x8C },
-	{  3, 0, 0x8407, 0x8B },
-	{  3, 0, 0x8407, 0x80 },
-	{  3, 0, 0x8407, 0x82 },
-	{  3, 0, 0x8407, 0x84 },
-	{  3, 0, 0x8407, 0x86 },
-	{  3, 0, 0x8407, 0x88 },
-	{  7, 4, 0x8407, 0x00 },
-	{  7, 5, 0x8407, 0x0C },
-	{ -1, 6, 0x8407, 0x18 },
-	{ -1, 6, 0x8407, 0x18 },
-	{  7, 5, 0x8407, 0x0C },
-	{  7, 4, 0x8407, 0x00 },
-	{  3, 0, 0x8406, 0x88 },
-	{  3, 0, 0x8406, 0x86 },
-	{  3, 0, 0x8406, 0x84 },
-	{  3, 0, 0x8406, 0x82 },
-	{  3, 0, 0x8406, 0x81 },
-	{  3, 0, 0x8406, 0x8A },
-	{  3, 0, 0x8406, 0x8C },
-	{  3, 0, 0x8406, 0x8E },
-	{  3, 0, 0x8406, 0x90 },
-	{  3, 0, 0x8406, 0x92 },
-	{  7, 1, 0x8406, 0x24 },
-	{  7, 2, 0x8406, 0x30 },
-	{ -1, 3, 0x8406, 0x3C },
-	{ -1, 3, 0x8406, 0x3C },
-	{  7, 2, 0x8406, 0x30 },
-	{  7, 1, 0x8406, 0x24 },
+	{  3, 0, 0xE000 >> 13, 8, false, false, true  },
+	{  3, 0, 0xE000 >> 13, 6, false, false, true  },
+	{  3, 0, 0xE000 >> 13, 4, false, false, true  },
+	{  3, 0, 0xE000 >> 13, 2, false, false, true  },
+	{  3, 0, 0xE000 >> 13, 0, false, true,  true  },
+	{  3, 0, 0xE000 >> 13, 0, false, false, false },
+	{  3, 0, 0xE000 >> 13, 2, false, false, false },
+	{  3, 0, 0xE000 >> 13, 4, false, false, false },
+	{  3, 0, 0xE000 >> 13, 6, false, false, false },
+	{  3, 0, 0xE000 >> 13, 8, false, false, false },
+	{  7, 4, 0xE000 >> 13, 0, true,  false, false },
+	{  7, 5, 0xE000 >> 13, 1, true,  false, false },
+	{ -1, 6, 0xE000 >> 13, 2, true,  false, false },
+	{ -1, 6, 0xE000 >> 13, 2, true,  false, false },
+	{  7, 5, 0xE000 >> 13, 1, true,  false, false },
+	{  7, 4, 0xE000 >> 13, 0, true,  false, false },
+	{  3, 0, 0xC000 >> 13, 8, false, false, false },
+	{  3, 0, 0xC000 >> 13, 6, false, false, false },
+	{  3, 0, 0xC000 >> 13, 4, false, false, false },
+	{  3, 0, 0xC000 >> 13, 2, false, false, false },
+	{  3, 0, 0xC000 >> 13, 0, false, true,  false },
+	{  3, 0, 0xC000 >> 13, 0, false, false, true  },
+	{  3, 0, 0xC000 >> 13, 2, false, false, true  },
+	{  3, 0, 0xC000 >> 13, 4, false, false, true  },
+	{  3, 0, 0xC000 >> 13, 6, false, false, true  },
+	{  3, 0, 0xC000 >> 13, 8, false, false, true  },
+	{  7, 1, 0xC000 >> 13, 3, true,  false, false },
+	{  7, 2, 0xC000 >> 13, 4, true,  false, false },
+	{ -1, 3, 0xC000 >> 13, 5, true,  false, false },
+	{ -1, 3, 0xC000 >> 13, 5, true,  false, false },
+	{  7, 2, 0xC000 >> 13, 4, true,  false, false },
+	{  7, 1, 0xC000 >> 13, 3, true,  false, false },
 };
 
-const ushort SSPlaneAOffsets[][] =
+const ubyte SSPlaneAOffsets[][] =
 {
 	// Plane A Nametable offset, scroll y position
-	{ 0x8210, 1 },
-	{ 0x8218, 0 },
-	{ 0x8218, 1 },
-	{ 0x8220, 0 },
-	{ 0x8220, 1 },
-	{ 0x8228, 0 },
-	{ 0x8228, 1 },
+	{ 0x4000 >> 10, 0x100 >> 8 },
+	{ 0x6000 >> 10, 0x000 >> 8 },
+	{ 0x6000 >> 10, 0x100 >> 8 },
+	{ 0x8000 >> 10, 0x000 >> 8 },
+	{ 0x8000 >> 10, 0x100 >> 8 },
+	{ 0xA000 >> 10, 0x000 >> 8 },
+	{ 0xA000 >> 10, 0x100 >> 8 },
 };
 
+// This routine not only cycles/changes the SS BG palette, but also orchestrates all the complex BG changes (swapping
+// between birds/clouds and fish/bubbles). SS_BGAnimate does different stuff depending on what this routine tells it to.
 void PalCycle_SS()
 {
-	if(f_pause)
-		return;
-
-	// Update timer
-	if(!TimerZero(v_palss_time))
-		return;
-
-	auto cycleData = SSPalCycleStuff[v_palss_num & 31];
-	v_palss_num++;
-	v_palss_time = (cycleData.delay < 0) ? 511 : cycleData.delay;
-	v_FFFFF7A0 = cycleData.planeAIdx; // this variable has something to do with the BG animation
-
-	// Handle animating the background tiles (bird/fish transformation)
-	auto planeAOffset = SSPlaneAOffsets[cycleData.planeAIdx];
-	VDP_Control(planeAOffset[0]);
-	v_scrposy_dup = planeAOffset[1];
-	VDP_Control(cycleData.planeBOffs);
-	VDP_Control(0x40000010);
-	VDP_Data(v_scrposy_dup);
-
-	// Handle animating the palette.... somehow
-	auto something = cycleData.something;
-
-	if(something & 0x80)
+	if(!f_pause && TimerZero(v_palss_time))
 	{
-		memcpy(v_pal_dry + 0x4E, Pal_SSCyc1 + something, 12);
-		return;
+		auto cycleData = SSPalCycleStuff[v_palss_num & 31];
+		v_palss_num++;
+		v_palss_time = (cycleData.delay < 0) ? 511 : cycleData.delay;
+		v_ssbgstate = cycleData.planeAIdx;
+
+		// Animate the background tiles (bird/fish transformation) by swapping plane positions
+		auto planeAOffset = SSPlaneAOffsets[cycleData.planeAIdx];
+		VDP_RegWrite(0x2, planeAOffset[0]);
+		v_scrposy_dup = planeAOffset[1] << 8;
+		VDP_RegWrite(0x4, cycleData.planeBOffs);
+		VDP_SetAddr(0, VDP_VSRAM_Write);
+		VDP_Data(v_scrposy_dup);
+		VDP_Data(v_bg1posy_dupx);
+
+		// Handle animating the palette
+		if(cycleData.copyTo4E)
+			memcpy(&v_pal_dry[0x4E], Pal_SSCyc1[cycleData.palOffs], 12);
+		else
+		{
+			auto palette = Pal_SSCyc2[v_palss_bgpalselect + (cycleData.isSecondary ? 1 : 0)];
+
+			if(cycleData.copyTo6E)
+				memcpy(&v_pal_dry[0x6E], palette[0], 12);
+
+			memcpy(&v_pal_dry[cycleData.isSecondary ? 0x7A : 0x5A], &palette[cycleData.palOffs + 1], 6);
+		}
 	}
-
-	auto src = Pal_SSCyc2 + (something < 0x8A ? v_FFFFF79E : v_FFFFF79E + 1) * 0x2A; // NO idea what this variable is
-	something &= 0x7E;
-
-	if(something != 0)
-		memcpy(v_pal_dry + 0x6E, src, 12);
-
-	src += 12;
-	auto dest = v_pal_dry + 0x5A;
-
-	if(something >= 10)
-	{
-		something -= 10;
-		dest = v_pal_dry + 0x7A;
-	}
-
-	memcpy(dest, src + (something * 3), 6);
 }

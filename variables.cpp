@@ -4,6 +4,8 @@ ubyte v_sslayout[SS_LayoutRows][SS_LayoutColumns];         // 0xFFFF0000* ; tile
 SSTileInfo v_sstileinfo[SSObj_COUNT + 1];                  // 0xFFFF4000* ; tile info (78 tile types, plus empty slot 0)
 SS_Animation v_ssanimations[SS_NumAnimations];             // 0xFFFF4400* ; animations in progress
 Point16 v_ssposbuffer[SS_PosBufferSize][SS_PosBufferSize]; // 0xFFFF8000* ; calculated screen positions of tiles based on rotation
+ushort v_ssbubblescroll[128];                              // 0xFFFFAA00* ; holds counters/offsets for bubbles background
+ulong v_sscloudscroll[64];                                 // 0xFFFFAB00* ; holds scroll offsets for clouds background
 
 // Vague memory map:
 // 0000-A7FF: Level layout stuff
@@ -200,10 +202,8 @@ ushort v_palchgspeed;                    // 0xFFFFF794	; palette fade/transition
 uint v_collindex;                        // 0xFFFFF796	; ROM address for collision index of current level (4 bytes)
 ushort v_palss_num;                      // 0xFFFFF79A	; palette cycling in Special Stage - reference number (2 bytes)
 ushort v_palss_time;                     // 0xFFFFF79C	; palette cycling in Special Stage - time until next change (2 bytes)
-                                         // 0xFFFFF79E
-                                         // 0xFFFFF79F
-                                         // 0xFFFFF7A0
-                                         // 0xFFFFF7A1
+ushort v_palss_bgpalselect;              // 0xFFFFF79E  ; SS birds/fish palette select - unused in final, but there are still 5 palettes
+ushort v_ssbgstate;                      // 0xFFFFF7A0  ; SS BG state, used to synchronize BG animation with palette/GFX changes
                                          // 0xFFFFF7A2
                                          // 0xFFFFF7A3
 ushort v_obj31ypos;                      // 0xFFFFF7A4	; y-position of object 31 (MZ stomper) (2 bytes)
