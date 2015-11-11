@@ -124,9 +124,9 @@ void ClearScreen()
 //                           a1        d0        d1        d2
 void TilemapToVRAM(ushort* tiles, int vram, int cols, int rows)
 {
-	for(int i = 0; i < rows; i++, vram += 0x800000)
+	for(int i = 0; i < rows; i++, vram += 0x80)
 	{
-		VDP_Control(vram);
+		VDP_SetAddr(vram, VDP_VRAM_Write);
 
 		for(int j = 0; j < cols; j++)
 			VDP_Data(*tiles++);

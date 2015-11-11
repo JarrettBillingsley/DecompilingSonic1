@@ -139,59 +139,58 @@ void GM_Special()
 	PaletteWhiteOut();
 }
 
+/*
+SS VRAM nametable layout
+0x5000: "all blocks" BG nametable
+0x6000: transformation BG nametable
+0x7000: transformation BG nametable
+0x8000: "all fish" BG nametable
+0x9000: transformation BG nametable
+0xA000: transformation BG nametable
+0xB000: "all birds" BG nametable
+0xC000: "bubbles" BG nametable
+0xE000: "clouds" BG nametable
+*/
+
 void SS_BGLoad()
 {
 	// Just using this as a temp buffer
-	auto gfxBuffer = (ubyte*)v_sslayout;
+	auto tilemapBuffer = (ushort*)v_sslayout;
 
 	// Birds and fish
-	EniDec(Eni_SSBg1, gfxBuffer, 0x4051);
+	EniDec(Eni_SSBg1, tilemapBuffer, 0x4051);
 
-	uint vramLoc = 0x50000001;
-	uint gfxLoc = gfxBuffer + 0x80;
-
-	for(int i = 6; i >= 0; i--)
+	// Outer loop: for each of the 7 graphics (bird, fish, and 5 transformation states)
+	// i == 0 is the middle of the transformation, the background being entirely blocks, so it's copied to every "block"
+	// of the BG.
+	// i == 1~6 is the transparent graphics, which are copied to blocks of the BG in a checkerboard pattern.
+	for(int i = 0; i < 7; i++)
 	{
-		auto destLoc = vramLoc;
-		auto someFlag = (i >= 3) ? 0 : 1
+		// This flag business is used for making the checkerboard pattern. The birds and fish are on opposite squares,
+		// so that's what the i > 3 is about (1, 2, 3 is birds, 4, 5, 6 is fish, or other way around, I dunno).
+		bool checkerFlag = i > 3;
 
-		for(int j = 3; j >= 0; j--)
+		// Four rows of eight columns each, and write them in a checkered pattern (except for i == 0 as mentioned above)
+		for(int j = 0; j < 4; j++)
 		{
-			for(int k = 7; k >= 0; k--)
+			for(int k = 0; k < 8; k++)
 			{
-				auto srcLoc = gfxLoc;
-				someFlag ^= 1;
+				checkerFlag = !checkerFlag;
 
-				if(someFlag == 0)
-				{
-					if(i != 6)
-						goto loc_48F2;
-
-					srcLoc = gfxBuffer;
-				}
-
-				TilemapToVRAM(srcLoc, destLoc, 7, 7);
-
-			loc_48F2:
-				destLoc += 0x100000;
+				if(checkerFlag || i == 0)
+					TilemapToVram(&tilemapBuffer[i * 0x80], 0x5000 + (i * 0x1000) + (j * 0x400) + (k * 0x10), 8, 8);
 			}
 
-			destLoc += 0x3800000;
-			someFlag ^= 1;
+			checkerFlag = !checkerFlag;
 		}
-
-		vramLoc += 0x10000000;
-
-		if(vramLoc & 0x80000000)
-			vramLoc = WSWAP(WSWAP(vramLoc) + 0xC000);
-
-		gfxLoc += 0x80;
 	}
 
-	// Clouds
-	EniDec(Eni_SSBg2, gfxBuffer, 0x400);
-	TilemapToVRAM(gfxBuffer, 0x40000003, 63, 31);
-	TilemapToVRAM(gfxBuffer, 0x50000003, 63, 63);
+	// Clouds and Bubbles. The bubbles are at 0xC000, and the clouds at 0xE000. This code copies the bubble map twice
+	// (so it can scroll vertically) to 0xC000-0xDFFF, and then copies the clouds map to 0xE000-0xEDFF. Since the clouds
+	// only scroll horizontally, it doesn't matter that 0xEE00-0xFFFF contains non-map data.
+	EniDec(Eni_SSBg2, tilemapBuffer, 0x4000);
+	TilemapToVRAM(tilemapBuffer, 0xC000, 64, 32);
+	TilemapToVRAM(tilemapBuffer, 0xD000, 64, 64);
 }
 
 const ubyte SS_BG_BubblesSections[] = { 10, 0x28, 0x18, 0x10, 0x28, 0x18, 0x10, 0x30, 0x18, 8, 0x10 };
